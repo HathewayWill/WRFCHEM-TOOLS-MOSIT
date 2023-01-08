@@ -23,7 +23,7 @@ This is a BASH script that provides options to install the following WRF CHEM To
 - (Make sure to download folder into your Home Directory): $HOME
 
 
-> git clone (insert link here)
+> git clone https://github.com/HathewayWill/WRFCHEM-TOOLS-MASTER.git
 
 > cd $HOME/WRFCHEM-TOOLS-MASTER
 
