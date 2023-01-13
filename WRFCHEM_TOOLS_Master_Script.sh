@@ -34,7 +34,7 @@ if [ "$SYSTEMOS" = "Linux" ]; then
    export YUM=$(command -v yum)
     if [ "$YUM" != "" ]; then
    echo " yum found"
-   read -p "Your system is a CentOS based system which is not compatible with this script"
+   read -r -p "Your system is a CentOS based system which is not compatible with this script"
    exit ;
     fi
 
@@ -70,7 +70,7 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ];
   then
     echo "Your system is 64bit version of Debian Linux Kernal"
     echo " "
-  while read -p "Which compiler do you want to use?
+  while read -r -p "Which compiler do you want to use?
   - Intel
   - GNU
 
@@ -173,7 +173,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.0.3/mpich-4.0.3.tar.gz
 
   #############################Core Management####################################
-  export CPU_CORE=$(nproc)                                             # number of available threads on system
+  export CPU_CORE=$(nproc)                                             # number of available thread -rs on system
   export CPU_6CORE="6"
   export CPU_HALF=$(($CPU_CORE / 2))                                   #half of availble cores on system
   export CPU_HALF_EVEN=$(( $CPU_HALF - ($CPU_HALF % 2) ))              #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
@@ -187,7 +187,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
 
   echo "##########################################"
-  echo "Number of threads being used $CPU_HALF_EVEN"
+  echo "Number of thread -rs being used $CPU_HALF_EVEN"
   echo "##########################################"
   echo " "
 
@@ -347,7 +347,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
   export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
-  export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl"
+  export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
   make -j $CPU_HALF_EVEN
   make -j $CPU_HALF_EVEN install |& tee make.install.log
@@ -483,7 +483,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   #  year 2010.  The files are in the MOZCART and MOZART-MOSAIC sub-directories.
   #  The MOZCART files are intended to be used for the WRF MOZCART_KPP chemical
   #  option.  The MOZART-MOSAIC files are intended to be used with the following
-  #  WRF chemical options (See Readme in Folder
+  #  WRF chemical options (See read -rme in Folder
 
   ######################### EPA Anthroprogenic Emissions ########################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
@@ -510,8 +510,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
 
   ########################## Aircraft Emissions Preprocessor #####################
-  # This is an IDL based preprocessor to create WRF-Chem ready aircraft emissions files
-  # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the README file
+  # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
+  # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the read -rME file
   # for how to use the preprocessor. The emissions inventory is not included, so the user must
   # provide their own.
   echo " "
@@ -543,7 +543,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     # The purpose of this guide is to present how to install, compile and run the pre-processor.
     # Finally, the steps for utilizing the emissions data in the CCATT-BRAMS, WRF-Chem and
     # FIM-Chem models are presented.
-    # We recommend that you read the article “PREP-CHEM-SRC – 1.0: a preprocessor of
+    # We recommend that you read -r the article “PREP-CHEM-SRC – 1.0: a preprocessor of
     # trace gas and aerosol emission fields for regional and global atmospheric chemistry
     # models” (Freitas et al., 2010 - http://www.geosci-model-dev.net/4/419/2011/gmd-4-419-
     # 2011.pdf).
@@ -585,10 +585,10 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
       if (($n >= 2))
         then
           echo "All expected files created."
-          read -t 5 -p "Finished installing WRF-CHEM-PREP. I am going to wait for 5 seconds only ..."
+          read -r -t 5 -p "Finished installing WRF-CHEM-PREP. I am going to wait for 5 seconds only ..."
         else
           echo "Missing one or more expected files. Exiting the script."
-          read -p "Please contact script authors for assistance, press 'Enter' to exit script."
+          read -r -p "Please contact script authors for assistance, press 'Enter' to exit script."
           exit
       fi
       echo " "
@@ -601,7 +601,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   echo "WRF CHEM Tools & PREP_CHEM_SRC compiled with latest version of NETCDF files available on 01/01/2023"
   echo "If error occurs using WRFCHEM tools please update your NETCDF libraries or reconfigure with older libraries"
   echo "This is a WRC Chem Community tool made by a private user and is not supported by UCAR/NCAR"
-  read -t 5 -p "BASH Script Finished"
+  read -r -t 5 -p "BASH Script Finished"
 
 fi
 
@@ -697,7 +697,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
 
   #############################Core Management####################################
-  export CPU_CORE=$(nproc)                                             #number of available threads on system
+  export CPU_CORE=$(nproc)                                             #number of available thread -rs on system
   export CPU_6CORE="6"
   export CPU_HALF=$(($CPU_CORE / 2))                                   #half of availble cores on system
   export CPU_HALF_EVEN=$(( $CPU_HALF - ($CPU_HALF % 2) ))              #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
@@ -711,7 +711,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
 
   echo "##########################################"
-  echo "Number of threads being used $CPU_HALF_EVEN"
+  echo "Number of thread -rs being used $CPU_HALF_EVEN"
   echo "##########################################"
   echo " "
 
@@ -813,7 +813,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
   export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
-  export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl"
+  export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
   make -j $CPU_HALF_EVEN
   make -j $CPU_HALF_EVEN install |& tee make.install.log
@@ -948,7 +948,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   #  year 2010.  The files are in the MOZCART and MOZART-MOSAIC sub-directories.
   #  The MOZCART files are intended to be used for the WRF MOZCART_KPP chemical
   #  option.  The MOZART-MOSAIC files are intended to be used with the following
-  #  WRF chemical options (See Readme in Folder
+  #  WRF chemical options (See read -rme in Folder
 
   ######################### EPA Anthroprogenic Emissions ########################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
@@ -973,8 +973,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
 
   ########################## Aircraft Emissions Preprocessor #####################
-  # This is an IDL based preprocessor to create WRF-Chem ready aircraft emissions files
-  # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the README file
+  # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
+  # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the read -rME file
   # for how to use the preprocessor. The emissions inventory is not included, so the user must
   # provide their own.
   echo " "
@@ -1004,7 +1004,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   # The purpose of this guide is to present how to install, compile and run the pre-processor.
   # Finally, the steps for utilizing the emissions data in the CCATT-BRAMS, WRF-Chem and
   # FIM-Chem models are presented.
-  # We recommend that you read the article “PREP-CHEM-SRC – 1.0: a preprocessor of
+  # We recommend that you read -r the article “PREP-CHEM-SRC – 1.0: a preprocessor of
   # trace gas and aerosol emission fields for regional and global atmospheric chemistry
   # models” (Freitas et al., 2010 - http://www.geosci-model-dev.net/4/419/2011/gmd-4-419-
   # 2011.pdf).
@@ -1044,10 +1044,10 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     if (($n >= 2))
      then
      echo "All expected files created."
-     read -t 5 -p "Finished installing WRF-CHEM-PREP. I am going to wait for 5 seconds only ..."
+     read -r -t 5 -p "Finished installing WRF-CHEM-PREP. I am going to wait for 5 seconds only ..."
     else
      echo "Missing one or more expected files. Exiting the script."
-     read -p "Please contact script authors for assistance, press 'Enter' to exit script."
+     read -r -p "Please contact script authors for assistance, press 'Enter' to exit script."
      exit
     fi
     echo " "
@@ -1060,7 +1060,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   echo "WRF CHEM Tools & PREP-CHEM-SRC compiled with latest version of NETCDF files available on 01/01/2023"
   echo "If error occurs using WRFCHEM tools please update your NETCDF libraries or reconfigure with older libraries"
   echo "This is a WRC Chem Community tool made by a private user and is not supported by UCAR/NCAR"
-  read -t 5 -p "BASH Script Finished"
+  read -r -t 5 -p "BASH Script Finished"
 
 
 
@@ -1220,7 +1220,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
     export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
     export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
-    export LIBS="-lnetcdf -lm -lcurl -lhdf5_hl -lhdf5 -lz -ldl"
+    export LIBS="-lnetcdf -lm -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran -lm"
     ./configure --prefix=$DIR/NETCDF --disable-shared
     make
     make install
@@ -1259,7 +1259,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
         echo "Environment Compiler Test 1 Failed"
         exit
     fi
-    read -t 3 -p "I am going to wait for 3 seconds only ..."
+    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
 
     echo " "
     echo "Test 2"
@@ -1274,7 +1274,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
         exit
     fi
     echo " "
-    read -t 3 -p "I am going to wait for 3 seconds only ..."
+    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
 
     echo " "
     echo "Test 3"
@@ -1289,7 +1289,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
         exit
     fi
     echo " "
-    read -t 3 -p "I am going to wait for 3 seconds only ..."
+    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
 
     echo " "
     echo "Test 4"
@@ -1306,7 +1306,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
         exit
     fi
     echo " "
-    read -t 3 -p "I am going to wait for 3 seconds only ..."
+    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
 
     echo " "
     ############## Testing Environment #####
@@ -1334,7 +1334,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
              exit
          fi
        echo " "
-       read -t 3 -p "I am going to wait for 3 seconds only ..."
+       read -r -t 3 -p "I am going to wait for 3 seconds only ..."
 
     echo " "
 
@@ -1355,7 +1355,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
         exit
     fi
     echo " "
-    read -t 3 -p "I am going to wait for 3 seconds only ..."
+    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
     echo " "
 
     echo " All tests completed and passed"
@@ -1493,7 +1493,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     #  year 2010.  The files are in the MOZCART and MOZART-MOSAIC sub-directories.
     #  The MOZCART files are intended to be used for the WRF MOZCART_KPP chemical
     #  option.  The MOZART-MOSAIC files are intended to be used with the following
-    #  WRF chemical options (See Readme in Folder
+    #  WRF chemical options (See read -rme in Folder
 
     ######################### EPA Anthroprogenic Emissions ########################
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
@@ -1520,8 +1520,8 @@ if [ "$macos_64bit_GNU" = "1" ]; then
 
 
     ########################## Aircraft Emissions Preprocessor #####################
-    # This is an IDL based preprocessor to create WRF-Chem ready aircraft emissions files
-    # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the README file
+    # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
+    # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the read -rME file
     # for how to use the preprocessor. The emissions inventory is not included, so the user must
     # provide their own.
     echo " "

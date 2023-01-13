@@ -18,35 +18,6 @@ This is a BASH script that provides options to install the following WRF CHEM To
     - Linux Debian Distro (Ubuntu, Mint, etc)
     - Windows Subsystem for Linux (Debian Distro, Ubuntu, Mint, etc)
 
----
-### Libraries Installed (Latest libraries as of 01/01/2023)
-- Libraries are manually installed in sub-folders utilizing either Intel or GNU Compilers.
-    - Libraries installed with GNU compilers
-        - zlib (1.2.13)
-        - MPICH (4.0.3)
-        - libpng (1.6.39)
-        - JasPer (1.900.1)
-        - HDF5 (1.13.2)
-        - PHDF5 (1.13.2)
-        - Parallel-NetCDF (1.12.3)
-        - NetCDF-C (4.9.0)
-        - NetCDF-Fortran (4.6.0)
-        - Miniconda
-    - Libraries installed with Intel compilers
-        - zlib (1.2.13)
-        - libpng (1.6.39)
-        - JasPer (1.900.1)
-        - HDF5 (1.13.2)
-        - PHDF5 (1.13.2)
-        - Parallel-NetCDF (1.12.3)
-        - NetCDF-C (4.9.0)
-        - NetCDF-Fortran (4.6.0)
-        - Miniconda
-        - Intel-Basekit
-        - Intel-HPCKIT
-        - Intel-AIKIT
-
----
 
 ### Installation
 - (Make sure to download folder into your Home Directory): $HOME
