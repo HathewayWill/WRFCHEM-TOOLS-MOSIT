@@ -1150,9 +1150,9 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     #default gcc path /usr/bin/gcc
     #default homebrew path /usr/local/bin
 
-    echo $PASSWD | sudo ln -S -s -f /usr/local/bin/gcc-1* /usr/local/bin/gcc
-    echo $PASSWD | sudo ln -S -s -f /usr/local/bin/g++-1* /usr/local/bin/g++
-    echo $PASSWD | sudo ln -S -s -f /usr/local/bin/gfortran-1* /usr/local/bin/gfortran
+    echo $PASSWD | sudo -S ln -sf /usr/local/bin/gcc-1* /usr/local/bin/gcc
+    echo $PASSWD | sudo -S ln -sf /usr/local/bin/g++-1* /usr/local/bin/g++
+    echo $PASSWD | sudo -S ln -sf /usr/local/bin/gfortran-1* /usr/local/bin/gfortran
 
     export CC=gcc
     export CXX=g++
