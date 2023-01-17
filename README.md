@@ -90,7 +90,7 @@ Click here!
 - UCAR's Katelyn F., Jim B., Jordan P., Kevin M.,.
 ---
 #### Citation:
-#### Hatheway, W. (2023). WRF CHEM Tools Install Script (Version 1.0) [Computer software]
+#### Hatheway, W. (2023). WRF CHEM Tools Install Script (Version 1.0.1) [Computer software]
 
 ---
 #### References:
