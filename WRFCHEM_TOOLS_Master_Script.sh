@@ -109,7 +109,7 @@ fi
 echo "-------------------------------------------------- "
 while true; do
   echo " "
-  read -r -p "
+  read -r -s -p "
   Password is only save locally and will not be seen when typing.
   Please enter your sudo password:
 
@@ -267,7 +267,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64"
 
   make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install |& tee make.install.log
+  make -j $CPU_HALF_EVEN install | tee make.install.log
   #make check
 
 
@@ -368,7 +368,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
   make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install |& tee make.install.log
+  make -j $CPU_HALF_EVEN install | tee make.install.log
   #make check
 
 
@@ -834,7 +834,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
   make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install |& tee make.install.log
+  make -j $CPU_HALF_EVEN install | tee make.install.log
   #make check
 
 
@@ -1053,7 +1053,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     sed -i '58s|-L/scratchin/grupos/catt-brams/shared/libs/zlib-1.2.8/lib|-L${DIR}/grib2/lib|' include.mk.intel.wrf #Changing zlib Location
     sed -i '71s|-convert big_endian|-convert big_endian -diag-disable 6405  |' include.mk.intel.wrf
 
-    make OPT=intel.wrf CHEM=RADM_WRF_FIM AER=SIMPLE |& tee make.log  # Compiling and making of PRE-CHEM-SRC-1.5
+    make OPT=intel.wrf CHEM=RADM_WRF_FIM AER=SIMPLE | tee make.log  # Compiling and making of PRE-CHEM-SRC-1.5
 
 
     # IF statement to check that all files were created.
