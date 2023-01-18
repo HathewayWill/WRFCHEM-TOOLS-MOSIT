@@ -1104,7 +1104,6 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     export WRFCHEM_FOLDER=$HOME/WRFCHEM
     cd $WRFCHEM_FOLDER/
     mkdir Downloads
-    mkdir WRFPLUS
     mkdir WRFDA
     mkdir Libs
     mkdir -p Libs/grib2
