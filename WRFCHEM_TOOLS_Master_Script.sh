@@ -61,8 +61,6 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ]; then
   echo "Installing Homebrew and Xcode Command Line Tools now"
   echo " "
   echo "Please enter password when prompted"
-  chsh -s /bin/bash
-  bash
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
 
