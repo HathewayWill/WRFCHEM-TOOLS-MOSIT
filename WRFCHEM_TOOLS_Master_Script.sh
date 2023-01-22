@@ -43,12 +43,12 @@ fi
 ############################### Intel or GNU Compiler Option #############
 
 
-if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "Darwin" ]; then
+if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "MacOS" ]; then
   echo "Your system is not compatibile with this script."
   exit ;
 fi
 
-if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Darwin" ]; then
+if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ]; then
   echo "Your system is a 64bit version of MacOS"
   echo " "
   echo "Intel compilers are not compatibile with this script"
