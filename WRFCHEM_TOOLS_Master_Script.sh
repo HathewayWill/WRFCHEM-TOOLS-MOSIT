@@ -64,39 +64,49 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ]; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
 
-if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ];
-  then
-    echo "Your system is 64bit version of Debian Linux Kernal"
-    echo " "
-  while read -r -p "Which compiler do you want to use?
-  - Intel
-  - GNU
+echo $Ubuntu_64bit_Intel
+echo $PASSWD
+if [ -z "$Ubuntu_64bit_GNU" ] && [ -z "$Ubuntu_64bit_Intel" ]; then
 
-  Please answer Intel or GNU (case sensative).
-  " yn; do
-
-    case $yn in
-    Intel)
-      echo "-------------------------------------------------- "
+  if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ];
+    then
+      echo "Your system is 64bit version of Debian Linux Kernal"
       echo " "
-      echo "Intel is selected for installation"
-      export Ubuntu_64bit_Intel=1
-      break
-      ;;
-    GNU)
-      echo "-------------------------------------------------- "
-      echo " "
-      echo "GNU is selected for installation"
-      export Ubuntu_64bit_GNU=1
-      break
-      ;;
-      * )
-     echo " "
-     echo "Please answer Intel or GNU (case sensative).";;
+    while read -r -p "Which compiler do you want to use?
+    - Intel
+    - GNU
 
-  esac
-  done
+    Please answer Intel or GNU (case sensative).
+    " yn; do
+
+      case $yn in
+      Intel)
+        echo "-------------------------------------------------- "
+        echo " "
+        echo "Intel is selected for installation"
+        export Ubuntu_64bit_Intel=1
+        break
+        ;;
+      GNU)
+        echo "-------------------------------------------------- "
+        echo " "
+        echo "GNU is selected for installation"
+        export Ubuntu_64bit_GNU=1
+        break
+        ;;
+        * )
+       echo " "
+       echo "Please answer Intel or GNU (case sensative).";;
+
+      esac
+     done
+  fi;
+else
+  echo "System complier already set.  Using exisiting Compilers";
 fi
+
+
+
 
 if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "Linux" ]; then
   echo "Your system is not compatibile with this script."
@@ -104,25 +114,31 @@ if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "Linux" ]; then
 fi
 
 ############################# Enter sudo users information #############################
-echo "-------------------------------------------------- "
-while true; do
-  echo " "
-  read -r -s -p "
-  Password is only save locally and will not be seen when typing.
-  Please enter your sudo password:
 
-  " yn
-  export PASSWD=$yn
+if [ -z "$PASSWD" ]; then
   echo "-------------------------------------------------- "
-  break
-done
+  while true; do
+    echo " "
+    read -r -s -p "
+    Password is only save locally and will not be seen when typing.
+    Please enter your sudo password:
 
-echo " "
-echo "Beginning Installation"
-echo " "
+    " yn
+    export PASSWD=$yn
+    echo "-------------------------------------------------- "
+    break
+  done
 
+  echo " "
+  echo "Beginning Installation"
+  echo " ";
 
+else
+  echo "------------------------------------------"
+  echo "Password Exists, using existing password."
+  echo "------------------------------------------";
 
+fi
 
 ##################################### WRFCHEM Tools ###############################################
 # This script will install the WRFCHEM pre-processor tools.
@@ -346,7 +362,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   cd netcdf-c-4.9.0/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
-  export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl"
+  export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-pnetcdf --enable-cdf5 --enable-parallel-tests
   make -j $CPU_HALF_EVEN
   make -j $CPU_HALF_EVEN install
@@ -746,6 +762,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   make -j $CPU_HALF_EVEN install
   #make check
 
+
+
+
   #############################libpng############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
   export LDFLAGS=-L$DIR/grib2/lib
@@ -812,7 +831,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   cd netcdf-c-4.9.0/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
-  export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl"
+  export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-pnetcdf --enable-cdf5 --enable-parallel-tests
   make -j $CPU_HALF_EVEN
   make -j $CPU_HALF_EVEN install
@@ -1008,8 +1027,6 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   echo "###########################################"
   echo " "
 
- 
-
 
 
 
@@ -1033,8 +1050,8 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     brew install wget git
     brew install gcc libtool automake autoconf make m4 java ksh  mpich grads ksh tcsh
     brew install snap
-    brew install python@3.9
-    brew install gcc libtool automake autoconf make m4 java ksh git wget mpich grads ksh tcsh python@3.9 cmake xorgproto xorgrgb xauth curl flex byacc bison gnu-sed
+    brew install python@3.10
+    brew install gcc libtool automake autoconf make m4 java ksh git wget mpich grads ksh tcsh python@3.10 cmake xorgproto xorgrgb xauth curl flex byacc bison gnu-sed
 
 
     ##############################Directory Listing############################
@@ -1068,6 +1085,29 @@ if [ "$macos_64bit_GNU" = "1" ]; then
 
     export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
 
+    #############################Core Management####################################
+  export CPU_CORE=$(sysctl -n hw.ncpu)                                             # number of available threads on system
+  export CPU_6CORE="6"
+  export CPU_HALF=$(($CPU_CORE / 2))
+  #1/2 of availble cores on system
+  export CPU_HALF_EVEN=$(( $CPU_HALF - ($CPU_HALF % 2) ))
+  #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
+
+  if [ $CPU_CORE -le $CPU_6CORE ]
+  #If statement for low core systems.  Forces computers to only use 1 core if there are 4 cores or less on the system.
+  then
+    export CPU_HALF_EVEN="2"
+  else
+    export CPU_HALF_EVEN=$(( $CPU_HALF - ($CPU_HALF % 2) ))
+  fi
+
+
+  echo "##########################################"
+  echo "Number of Threads being used $CPU_HALF_EVEN"
+  echo "##########################################"
+  echo " "
+
+
     ##############################Downloading Libraries############################
 
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
@@ -1077,6 +1117,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
     wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
     wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
+    wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.0.3/mpich-4.0.3.tar.gz
 
 
 
@@ -1092,6 +1133,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     echo $PASSWD | sudo -S ln -sf /usr/local/bin/gcc-1* /usr/local/bin/gcc
     echo $PASSWD | sudo -S ln -sf /usr/local/bin/g++-1* /usr/local/bin/g++
     echo $PASSWD | sudo -S ln -sf /usr/local/bin/gfortran-1* /usr/local/bin/gfortran
+    echo $PASSWD | sudo -S ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
 
     export CC=gcc
     export CXX=g++
@@ -1101,6 +1143,41 @@ if [ "$macos_64bit_GNU" = "1" ]; then
 
     echo " "
 
+
+    #IF statement for GNU compiler issue
+  export GCC_VERSION=$(gcc -dumpfullversion | awk '{print$1}')
+  export GFORTRAN_VERSION=$(gfortran -dumpfullversion | awk '{print$1}')
+  export GPLUSPLUS_VERSION=$(g++ -dumpfullversion | awk '{print$1}')
+
+  export GCC_VERSION_MAJOR_VERSION=$(echo $GCC_VERSION | awk -F. '{print $1}')
+  export GFORTRAN_VERSION_MAJOR_VERSION=$(echo $GFORTRAN_VERSION | awk -F. '{print $1}')
+  export GPLUSPLUS_VERSION_MAJOR_VERSION=$(echo $GPLUSPLUS_VERSION | awk -F. '{print $1}')
+
+  export version_10="10"
+
+  if [ $GCC_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GFORTRAN_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GPLUSPLUS_VERSION_MAJOR_VERSION -ge $version_10 ]
+  then
+    export fallow_argument=-fallow-argument-mismatch
+    export boz_argument=-fallow-invalid-boz
+  else
+    export fallow_argument=
+    export boz_argument=
+  fi
+
+
+  export FFLAGS="$fallow_argument -m64"
+  export FCFLAGS="$fallow_argument -m64"
+
+
+  echo "##########################################"
+  echo "FFLAGS = $FFLAGS"
+  echo "FCFLAGS = $FCFLAGS"
+  echo "##########################################"
+
+
+
+  echo " "
+
     #############################zlib############################
     #Uncalling compilers due to comfigure issue with zlib1.2.12
     #With CC & CXX definied ./configure uses different compiler Flags
@@ -1109,20 +1186,46 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     tar -xvzf v1.2.13.tar.gz
     cd zlib-1.2.13/
     ./configure --prefix=$DIR/grib2
-    make
-    make install
+    make -j $CPU_HALF_EVEN
+    make -j $CPU_HALF_EVEN install
     #make check
 
     echo " "
-    #############################libpng############################
+
+
+  ##############################MPICH############################
+  cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+  tar -xvzf mpich-4.0.3.tar.gz
+  cd mpich-4.0.3/
+  F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64"
+
+  make -j $CPU_HALF_EVEN
+  make -j $CPU_HALF_EVEN install | tee make.install.log
+  #make check
+
+
+  export PATH=$DIR/MPICH/bin:$PATH
+
+  export MPIFC=$DIR/MPICH/bin/mpifort
+  export MPIF77=$DIR/MPICH/bin/mpifort
+  export MPIF90=$DIR/MPICH/bin/mpifort
+  export MPICC=$DIR/MPICH/bin/mpicc
+  export MPICXX=$DIR/MPICH/bin/mpicxx
+
+
+  echo " "
+
+
+  #############################libpng############################
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
     export LDFLAGS=-L$DIR/grib2/lib
     export CPPFLAGS=-I$DIR/grib2/include
     tar -xvzf libpng-1.6.39.tar.gz
     cd libpng-1.6.39/
-    ./configure --prefix=$DIR/grib2
-    make
-    make install
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
+    make -j $CPU_HALF_EVEN
+    make -j $CPU_HALF_EVEN install
+    #make check
     #make check
 
     echo " "
@@ -1132,9 +1235,9 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     unzip jasper-1.900.1.zip
     cd jasper-1.900.1/
     autoreconf -i
-    ./configure --prefix=$DIR/grib2
-    make
-    make install
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
+    make -j $CPU_HALF_EVEN
+    make -j $CPU_HALF_EVEN install
     export JASPERLIB=$DIR/grib2/lib
     export JASPERINC=$DIR/grib2/include
 
@@ -1144,45 +1247,72 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
     tar -xvzf hdf5-1_13_2.tar.gz
     cd hdf5-hdf5-1_13_2
-    ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran
-    make
-    make install
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel
+    make -j $CPU_HALF_EVEN
+    make -j $CPU_HALF_EVEN install | tee make.install.log
     #make check
 
     export HDF5=$DIR/grib2
+    export PHDF5=$DIR/grib2
     export LD_LIBRARY_PATH=$DIR/grib2/lib:$LD_LIBRARY_PATH
 
     echo " "
+
+    #############################Install Parallel-netCDF##############################
+    #Make file created with half of available cpu cores
+    #Hard path for MPI added
+    ##################################################################################
+    cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+    wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
+    tar -xvzf pnetcdf-1.12.3.tar.gz
+    cd pnetcdf-1.12.3
+    export MPIFC=$DIR/MPICH/bin/mpifort
+    export MPIF77=$DIR/MPICH/bin/mpifort
+    export MPIF90=$DIR/MPICH/bin/mpifort
+    export MPICC=$DIR/MPICH/bin/mpicc
+    export MPICXX=$DIR/MPICH/bin/mpicxx
+    ./configure --prefix=$DIR/grib2  --enable-shared --enable-static
+
+    make -j $CPU_HALF_EVEN
+    make -j $CPU_HALF_EVEN install | tee make.install.log
+    #make check
+
+    export PNETCDF=$DIR/grib2
+
+
+
+
     ##############################Install NETCDF C Library############################
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
     tar -xzvf v4.9.0.tar.gz
     cd netcdf-c-4.9.0/
     export CPPFLAGS=-I$DIR/grib2/include
     export LDFLAGS=-L$DIR/grib2/lib
-    export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl"
-    ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared
-    make
-    make install
+    export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-pnetcdf --enable-cdf5 --enable-parallel-tests
+    make -j $CPU_HALF_EVEN
+    make -j $CPU_HALF_EVEN install | tee make.install.log
     #make check
 
     export PATH=$DIR/NETCDF/bin:$PATH
     export NETCDF=$DIR/NETCDF
-
     echo " "
     ##############################NetCDF fortran library############################
-
+    ##############################NetCDF fortran library############################
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
     tar -xvzf v4.6.0.tar.gz
     cd netcdf-fortran-4.6.0/
     export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
     export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
     export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
-    export LIBS="-lnetcdf -lm -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran -lm"
-    ./configure --prefix=$DIR/NETCDF --disable-shared
-    make
-    make install
+    export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc -lgfortran"
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
+    make -j $CPU_HALF_EVEN
+    make -j $CPU_HALF_EVEN install | tee make.install.log
     #make check
 
+
+    echo " "
 
     #################################### System Environment Tests ##############
     mkdir -p $WRFCHEM_FOLDER/Tests/Environment
