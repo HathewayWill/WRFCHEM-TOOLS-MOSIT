@@ -64,8 +64,6 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ]; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
 
-echo $Ubuntu_64bit_Intel
-echo $PASSWD
 if [ -z "$Ubuntu_64bit_GNU" ] && [ -z "$Ubuntu_64bit_Intel" ]; then
 
   if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ];
