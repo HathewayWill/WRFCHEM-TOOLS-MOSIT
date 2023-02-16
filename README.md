@@ -59,7 +59,7 @@ This is a BASH script that provides options to install the following WRF CHEM To
 
 > chmod 775 *.sh
 >
-> ./WRFCHEM_TOOLS_Master_Script.sh
+> ./WRFCHEM_TOOLS_Master_MOSIT.sh
 
 - Script will check for System Architecture Type.
 
