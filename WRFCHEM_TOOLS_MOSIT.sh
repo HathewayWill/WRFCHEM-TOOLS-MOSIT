@@ -195,12 +195,13 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
 
   wget -c -4 https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz
-  wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_13_2.tar.gz
+  wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_0.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
   wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
   wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
   wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.0.3/mpich-4.0.3.tar.gz
+  wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
 
   #############################Core Management####################################
   export CPU_CORE=$(nproc)                                             # number of available thread -rs on system
@@ -268,8 +269,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   tar -xvzf v1.2.13.tar.gz
   cd zlib-1.2.13/
   ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
   ##############################MPICH############################
@@ -278,8 +279,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   cd mpich-4.0.3/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64"
 
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log | tee make.install.log
   #make check
 
 
@@ -301,8 +302,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   tar -xvzf libpng-1.6.39.tar.gz
   cd libpng-1.6.39/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
 
@@ -312,8 +313,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   cd jasper-1.900.1/
   autoreconf -i
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
@@ -321,11 +322,11 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
   #############################hdf5 library for netcdf4 functionality############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xvzf hdf5-1_13_2.tar.gz
-  cd hdf5-hdf5-1_13_2
+  tar -xvzf hdf5-1_14_0.tar.gz
+  cd hdf5-hdf5-1_14_0
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2  --enable-hl --enable-fortran --enable-parallel
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
   export HDF5=$DIR/grib2
@@ -341,13 +342,12 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   #Hard path for MPI added
   ##################################################################################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
   tar -xvzf pnetcdf-1.12.3.tar.gz
   cd pnetcdf-1.12.3
   ./configure --prefix=$DIR/grib2  --enable-shared --enable-static
 
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
   export PNETCDF=$DIR/grib2
@@ -362,8 +362,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-pnetcdf --enable-cdf5 --enable-parallel-tests
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
   export PATH=$DIR/NETCDF/bin:$PATH
@@ -379,8 +379,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log | tee make.install.log
   #make check
 
 
@@ -720,11 +720,12 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
 
   wget -c -4 https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz
-  wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_13_2.tar.gz
+  wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_0.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
   wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
   wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
+  wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
 
   #############################Core Management####################################
   export CPU_CORE=$(nproc)                                             #number of available thread -rs on system
@@ -756,8 +757,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   tar -xvzf v1.2.13.tar.gz
   cd zlib-1.2.13/
   ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
 
@@ -770,8 +771,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   tar -xvzf libpng-1.6.39.tar.gz
   cd libpng-1.6.39/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
 
@@ -781,8 +782,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   cd jasper-1.900.1/
   autoreconf -i
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
@@ -790,11 +791,11 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   #############################hdf5 library for netcdf4 functionality############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xvzf hdf5-1_13_2.tar.gz
-  cd hdf5-hdf5-1_13_2
+  tar -xvzf hdf5-1_14_0.tar.gz
+  cd hdf5-hdf5-1_14_0
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2  --enable-hl --enable-fortran --enable-parallel
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
   export HDF5=$DIR/grib2
@@ -810,13 +811,12 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   #Hard path for MPI added
   ##################################################################################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
   tar -xvzf pnetcdf-1.12.3.tar.gz
   cd pnetcdf-1.12.3
   ./configure --prefix=$DIR/grib2  --enable-shared --enable-static
 
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
   export PNETCDF=$DIR/grib2
@@ -831,8 +831,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-pnetcdf --enable-cdf5 --enable-parallel-tests
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
   export PATH=$DIR/NETCDF/bin:$PATH
@@ -848,8 +848,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log | tee make.install.log
   #make check
 
 
@@ -939,7 +939,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
-
+  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
+  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
   ./make_mozbc
 
 
@@ -959,6 +960,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
+  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
+  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
 
   ./make_util megan_bio_emiss
   ./make_util megan_xform
@@ -973,6 +976,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
+  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
+  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
 
   ./make_anthro
 
@@ -990,6 +995,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
+  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
+  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
 
   ./make_anthro
 
@@ -1000,6 +1007,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
+  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
+  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
 
   ./make_util wesely
   ./make_util exo_coldens
@@ -1110,12 +1119,13 @@ if [ "$macos_64bit_GNU" = "1" ]; then
 
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
     wget -c -4 https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz
-    wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_13_2.tar.gz
+    wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_0.tar.gz
     wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
     wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
     wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
     wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
     wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.0.3/mpich-4.0.3.tar.gz
+    wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
 
 
 
@@ -1197,8 +1207,8 @@ if [ "$macos_64bit_GNU" = "1" ]; then
   cd mpich-4.0.3/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64"
 
-  make -j $CPU_HALF_EVEN
-  make -j $CPU_HALF_EVEN install | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log | tee make.install.log
   #make check
 
 
@@ -1243,8 +1253,8 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     #############################hdf5 library for netcdf4 functionality############################
 
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-    tar -xvzf hdf5-1_13_2.tar.gz
-    cd hdf5-hdf5-1_13_2
+    tar -xvzf hdf5-1_14_0.tar.gz
+    cd hdf5-hdf5-1_14_0
     CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel
     make -j $CPU_HALF_EVEN
     make -j $CPU_HALF_EVEN install | tee make.install.log
@@ -1261,7 +1271,6 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     #Hard path for MPI added
     ##################################################################################
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-    wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
     tar -xvzf pnetcdf-1.12.3.tar.gz
     cd pnetcdf-1.12.3
     export MPIFC=$DIR/MPICH/bin/mpifort

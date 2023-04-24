@@ -24,11 +24,11 @@ This is a BASH script that provides options to install the following WRF CHEM To
 - Libraries are manually installed in sub-folders utilizing either Intel or GNU Compilers.
     - Libraries installed with GNU compilers
         - zlib (1.2.13)
-        - MPICH (4.0.3)
+        - MPICH (4.1.1)
         - libpng (1.6.39)
         - JasPer (1.900.1)
-        - HDF5 (1.13.2)
-        - PHDF5 (1.13.2)
+        - HDF5 (1.14.0)
+        - PHDF5 (1.14.0)
         - Parallel-NetCDF (1.12.3)
         - NetCDF-C (4.9.0)
         - NetCDF-Fortran (4.6.0)
@@ -37,8 +37,8 @@ This is a BASH script that provides options to install the following WRF CHEM To
         - zlib (1.2.13)
         - libpng (1.6.39)
         - JasPer (1.900.1)
-        - HDF5 (1.13.2)
-        - PHDF5 (1.13.2)
+        - HDF5 (1.14.0)
+        - PHDF5 (1.14.0)
         - Parallel-NetCDF (1.12.3)
         - NetCDF-C (4.9.0)
         - NetCDF-Fortran (4.6.0)
@@ -90,7 +90,7 @@ Click here!
 - UCAR's Katelyn F., Jim B., Jordan P., Kevin M.,.
 ---
 #### Citation:
-#### Hatheway, W. (2023). WRF CHEM Tools Multi Operational System Install Toolkit (Version 1.1) [Computer software]
+#### Hatheway, W. (2023). WRF CHEM Tools Multi Operational System Install Toolkit (Version 1.4) [Computer software]
 
 ---
 #### References:
