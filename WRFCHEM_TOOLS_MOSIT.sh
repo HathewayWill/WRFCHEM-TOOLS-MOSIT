@@ -196,11 +196,11 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
   wget -c -4 https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz
   wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_0.tar.gz
-  wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
+  wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.2.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
   wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
   wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
-  wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.0.3/mpich-4.0.3.tar.gz
+  wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.1.1/mpich-4.1.1.tar.gz
   wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
 
   #############################Core Management####################################
@@ -275,8 +275,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
   ##############################MPICH############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xvzf mpich-4.0.3.tar.gz
-  cd mpich-4.0.3/
+  tar -xvzf mpich-4.1.1.tar.gz
+  cd mpich-4.1.1/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64"
 
   make -j $CPU_HALF_EVEN 2>&1 | tee make.log
@@ -356,8 +356,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
   ##############################Install NETCDF C Library############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xzvf v4.9.0.tar.gz
-  cd netcdf-c-4.9.0/
+  tar -xzvf v4.9.2.tar.gz
+  cd netcdf-c-4.9.2/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
@@ -721,7 +721,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   wget -c -4 https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz
   wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_0.tar.gz
-  wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
+  wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.2.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
   wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
   wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
@@ -825,8 +825,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   ##############################Install NETCDF C Library############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xzvf v4.9.0.tar.gz
-  cd netcdf-c-4.9.0/
+  tar -xzvf v4.9.2.tar.gz
+  cd netcdf-c-4.9.2/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
@@ -1120,11 +1120,11 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
     wget -c -4 https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz
     wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_0.tar.gz
-    wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
+    wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.2.tar.gz
     wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
     wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
     wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
-    wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.0.3/mpich-4.0.3.tar.gz
+    wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.1.1/mpich-4.1.1.tar.gz
     wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
 
 
@@ -1203,8 +1203,8 @@ if [ "$macos_64bit_GNU" = "1" ]; then
 
   ##############################MPICH############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xvzf mpich-4.0.3.tar.gz
-  cd mpich-4.0.3/
+  tar -xvzf mpich-4.1.1.tar.gz
+  cd mpich-4.1.1/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64"
 
   make -j $CPU_HALF_EVEN 2>&1 | tee make.log
@@ -1291,8 +1291,8 @@ if [ "$macos_64bit_GNU" = "1" ]; then
 
     ##############################Install NETCDF C Library############################
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-    tar -xzvf v4.9.0.tar.gz
-    cd netcdf-c-4.9.0/
+    tar -xzvf v4.9.2.tar.gz
+    cd netcdf-c-4.9.2/
     export CPPFLAGS=-I$DIR/grib2/include
     export LDFLAGS=-L$DIR/grib2/lib
     export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
