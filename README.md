@@ -14,7 +14,7 @@ This is a BASH script that provides options to install the following WRF CHEM To
 ---
 ### System Requirements
 - 64-bit system
-    - Darwin (MacOS)
+    - Darwin (MacOS) Intel Chipset
     - Linux Debian Distro (Ubuntu, Mint, etc)
     - Windows Subsystem for Linux (Debian Distro, Ubuntu, Mint, etc)
 
