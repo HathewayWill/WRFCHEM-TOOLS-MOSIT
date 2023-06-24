@@ -34,8 +34,8 @@ if [ "$SYSTEMOS" = "Linux" ]; then
    export YUM=$(command -v yum)
     if [ "$YUM" != "" ]; then
    echo " yum found"
-   read -r -p "Your system is a CentOS based system which is not compatible with this script"
-   exit ;
+   echo "Your system is a CentOS based system"
+   export SYSTEMOS=CentOS;
     fi
 
 fi
@@ -62,49 +62,49 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ]; then
   echo " "
   echo "Please enter password when prompted"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+ (echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> /Users/workhorse/.profile
+ eval "$(/usr/local/bin/brew shellenv)"
+
+ chsh -s /bin/bash
+
 fi
 
-if [ -z "$Ubuntu_64bit_GNU" ] && [ -z "$Ubuntu_64bit_Intel" ]; then
+if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ];
+  then
+    echo "Your system is 64bit version of Debian Linux Kernal"
+    echo " "
+  while read -r -p "Which compiler do you want to use?
+  -Intel
+   --Please note that Hurricane WRF (HWRF) is only compatibile with Intel Compilers.
 
-  if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ];
-    then
-      echo "Your system is 64bit version of Debian Linux Kernal"
+  -GNU
+
+  Please answer Intel or GNU and press enter (case sensative).
+  " yn; do
+
+    case $yn in
+    Intel)
+      echo "-------------------------------------------------- "
       echo " "
-    while read -r -p "Which compiler do you want to use?
-    - Intel
-    - GNU
+      echo "Intel is selected for installation"
+      export Ubuntu_64bit_Intel=1
+      break
+      ;;
+    GNU)
+      echo "-------------------------------------------------- "
+      echo " "
+      echo "GNU is selected for installation"
+      export Ubuntu_64bit_GNU=1
+      break
+      ;;
+      * )
+     echo " "
+     echo "Please answer Intel or GNU (case sensative).";;
 
-    Please answer Intel or GNU (case sensative).
-    " yn; do
-
-      case $yn in
-      Intel)
-        echo "-------------------------------------------------- "
-        echo " "
-        echo "Intel is selected for installation"
-        export Ubuntu_64bit_Intel=1
-        break
-        ;;
-      GNU)
-        echo "-------------------------------------------------- "
-        echo " "
-        echo "GNU is selected for installation"
-        export Ubuntu_64bit_GNU=1
-        break
-        ;;
-        * )
-       echo " "
-       echo "Please answer Intel or GNU (case sensative).";;
-
-      esac
-     done
-  fi;
-else
-  echo "System complier already set.  Using exisiting Compilers";
+  esac
+  done
 fi
-
-
-
 
 if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "Linux" ]; then
   echo "Your system is not compatibile with this script."
@@ -154,7 +154,6 @@ fi
 ####################################################################################################
 
 
-
 if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
 
@@ -162,7 +161,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
   echo $PASSWD | sudo -S apt -y update
   echo $PASSWD | sudo -S apt -y upgrade
-  echo $PASSWD | sudo -S apt -y install python3 python3-dev emacs flex bison libpixman-1-dev libjpeg-dev pkg-config libpng-dev unzip python2 python2-dev python3-pip pipenv gcc gfortran g++ libtool automake autoconf make m4 default-jre default-jdk csh ksh git libncurses5 libncurses6 mlocate pkg-config build-essential curl libcurl4-openssl-dev byacc flex
+  echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre emacs flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses5 libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make mlocate ncview okular openbox pipenv pkg-config python2 python2-dev python3 python3-dev python3-pip tsch unzip xauth xorg time
 
   #Directory Listings
   export HOME=`cd;pwd`
@@ -195,13 +194,15 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
 
   wget -c -4 https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz
-  wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_0.tar.gz
+  wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_1-2.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.2.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
   wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
   wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
-  wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.1.1/mpich-4.1.1.tar.gz
+  wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.1.2/mpich-4.1.2.tar.gz
   wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
+
+
 
   #############################Core Management####################################
   export CPU_CORE=$(nproc)                                             # number of available thread -rs on system
@@ -228,7 +229,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   export CXX=g++
   export FC=gfortran
   export F77=gfortran
-  export CFLAGS="-fPIC -fPIE -O3"
+  export CFLAGS="-fPIC -fPIE"
 
   #IF statement for GNU compiler issue
   export GCC_VERSION=$(/usr/bin/gcc -dumpfullversion | awk '{print$1}')
@@ -269,18 +270,18 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   tar -xvzf v1.2.13.tar.gz
   cd zlib-1.2.13/
   ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
   ##############################MPICH############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xvzf mpich-4.1.1.tar.gz
-  cd mpich-4.1.1/
+  tar -xvzf mpich-4.1.2.tar.gz
+  cd mpich-4.1.2/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64"
 
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
 
@@ -302,8 +303,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   tar -xvzf libpng-1.6.39.tar.gz
   cd libpng-1.6.39/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
 
@@ -313,8 +314,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   cd jasper-1.900.1/
   autoreconf -i
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
 
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
@@ -322,11 +323,11 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
   #############################hdf5 library for netcdf4 functionality############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xvzf hdf5-1_14_0.tar.gz
-  cd hdf5-hdf5-1_14_0
+  tar -xvzf hdf5-1_14_1-2.tar.gz
+  cd hdf5-hdf5-1_14_1-2
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2  --enable-hl --enable-fortran --enable-parallel
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
   export HDF5=$DIR/grib2
@@ -344,10 +345,10 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
   tar -xvzf pnetcdf-1.12.3.tar.gz
   cd pnetcdf-1.12.3
-  ./configure --prefix=$DIR/grib2  --enable-shared --enable-static
+  CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2  --enable-shared --enable-static
 
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
   export PNETCDF=$DIR/grib2
@@ -362,8 +363,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-pnetcdf --enable-cdf5 --enable-parallel-tests
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
   export PATH=$DIR/NETCDF/bin:$PATH
@@ -379,8 +380,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
 
@@ -470,7 +471,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  ./make_mozbc
+  ./make_mozbc 2>&1 | tee make.log
 
 
   ################## Information on Upper Boundary Conditions ###################
@@ -491,9 +492,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  ./make_util megan_bio_emiss
-  ./make_util megan_xform
-  ./make_util surfdata_xform
+  ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+  ./make_util megan_xform 2>&1 | tee make.xform.log
+  ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
 
   ############################# Anthroprogenic Emissions #########################
@@ -506,7 +507,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  ./make_anthro
+  ./make_anthro 2>&1 | tee make.log
 
   ############################# EDGAR HTAP ######################################
   #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -524,7 +525,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  ./make_anthro
+  ./make_anthro 2>&1 | tee make.log
 
   ######################### Weseley EXO Coldens ##################################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
@@ -535,8 +536,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  ./make_util wesely
-  ./make_util exo_coldens
+  ./make_util wesely 2>&1 | tee make.wesely.log
+  ./make_util exo_coldens 2>&1 | tee make.exo.log
 
 
   ########################## Aircraft Emissions Preprocessor #####################
@@ -601,12 +602,12 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
       cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
 
-      sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf  #Changing NETDCF Location
+      sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.2.3|${DIR}/NETCDF|' include.mk.gfortran.wrf  #Changing NETDCF Location
       sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf #Changing HDF5 Location
       sed -i '55s|-L/scratchin/grupos/catt-brams/shared/libs/gfortran/zlib-1.2.8/lib|-L${DIR}/grib2/lib|' include.mk.gfortran.wrf #Changing zlib Location
       sed -i '69s|-frecord-marker=4|-frecord-marker=4 ${fallow_argument}|' include.mk.gfortran.wrf #Changing adding fallow argument mismatch to fix dummy error
 
-      make OPT=gfortran.wrf CHEM=RADM_WRF_FIM AER=SIMPLE  # Compiling and making of PRE-CHEM-SRC-1.5
+      make OPT=gfortran.wrf CHEM=RADM_WRF_FIM AER=SIMPLE  2>&1 | tee make.log # Compiling and making of PRE-CHEM-SRC-1.5
 
 
     # IF statement to check that all files were created.
@@ -659,11 +660,15 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   echo $PASSWD | sudo -S apt -y update
   echo $PASSWD | sudo -S apt -y upgrade
-  echo $PASSWD | sudo -S apt -y install gcc gfortran g++ libtool automake autoconf make m4 default-jre default-jdk csh ksh git build-essential unzip mlocate byacc flex git python3 python3-dev python2 python2-dev curl cmake libcurl4-openssl-dev pkg-config build-essential
+  echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre emacs flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses5 libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make mlocate ncview okular openbox pipenv pkg-config python2 python2-dev python3 python3-dev python3-pip tcsh unzip xauth xorg time
 
 
   # install the Intel compilers
-  echo $PASSWD | sudo -S apt -y install intel-basekit intel-hpckit intel-aikit
+  echo $PASSWD | sudo -S apt -y install intel-basekit
+  echo $PASSWD | sudo -S apt -y install intel-hpckit
+  echo $PASSWD | sudo -S apt -y install intel-oneapi-python
+
+
   echo $PASSWD | sudo -S apt -y update
   echo $PASSWD | sudo -S apt -y upgrade
 
@@ -684,7 +689,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export MPIF90=mpiifort
   export MPICC=mpiicc
   export MPICXX=mpiicpc
-  export CFLAGS="-fPIC -fPIE -O3 -diag-disable=10441"
+  export CFLAGS="-fPIC -fPIE -diag-disable=10441"
 
 
 
@@ -720,12 +725,14 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
 
   wget -c -4 https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz
-  wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_0.tar.gz
+  wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_1-2.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.2.tar.gz
   wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
   wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
   wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
   wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
+
+
 
   #############################Core Management####################################
   export CPU_CORE=$(nproc)                                             #number of available thread -rs on system
@@ -757,8 +764,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   tar -xvzf v1.2.13.tar.gz
   cd zlib-1.2.13/
   ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
 
@@ -771,8 +778,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   tar -xvzf libpng-1.6.39.tar.gz
   cd libpng-1.6.39/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
 
@@ -782,8 +789,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   cd jasper-1.900.1/
   autoreconf -i
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
 
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
@@ -791,11 +798,11 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   #############################hdf5 library for netcdf4 functionality############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xvzf hdf5-1_14_0.tar.gz
-  cd hdf5-hdf5-1_14_0
+  tar -xvzf hdf5-1_14_1-2.tar.gz
+  cd hdf5-hdf5-1_14_1-2
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2  --enable-hl --enable-fortran --enable-parallel
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
   export HDF5=$DIR/grib2
@@ -813,10 +820,10 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
   tar -xvzf pnetcdf-1.12.3.tar.gz
   cd pnetcdf-1.12.3
-  ./configure --prefix=$DIR/grib2  --enable-shared --enable-static
+  CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2  --enable-shared --enable-static
 
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
   export PNETCDF=$DIR/grib2
@@ -831,8 +838,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-pnetcdf --enable-cdf5 --enable-parallel-tests
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
   #make check
 
   export PATH=$DIR/NETCDF/bin:$PATH
@@ -848,16 +855,12 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
 
   echo " "
-
-
-
-
 
   # Downloading WRF-CHEM Tools and untarring files
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
@@ -939,9 +942,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
-  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
-  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  ./make_mozbc
+
+  ./make_mozbc 2>&1 | tee make.log
 
 
   ################## Information on Upper Boundary Conditions ###################
@@ -960,12 +962,10 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
-  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
-  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
 
-  ./make_util megan_bio_emiss
-  ./make_util megan_xform
-  ./make_util surfdata_xform
+  ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+  ./make_util megan_xform 2>&1 | tee make.xform.log
+  ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
 
   ############################# Anthroprogenic Emissions #########################
@@ -976,10 +976,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
-  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
-  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
 
-  ./make_anthro
+  ./make_anthro 2>&1 | tee make.log
 
   ############################# EDGAR HTAP ######################################
   #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -995,10 +993,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
-  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
-  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
 
-  ./make_anthro
+  ./make_anthro 2>&1 | tee make.log
 
   ######################### Weseley EXO Coldens ##################################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
@@ -1007,11 +1003,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
-  sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
-  sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
 
-  ./make_util wesely
-  ./make_util exo_coldens
+  ./make_util wesely 2>&1 | tee make.wesely.log
+  ./make_util exo_coldens 2>&1 | tee make.exo.log
 
 
   ########################## Aircraft Emissions Preprocessor #####################
@@ -1039,7 +1033,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   #####################################BASH Script Finished##############################
   echo " "
-  echo "WRF CHEM Tools & PREP-CHEM-SRC compiled with latest version of NETCDF files available on 01/01/2023"
+  echo "WRF CHEM Tools & PREP-CHEM-SRC compiled with latest version of NETCDF files available on 03/01/2023"
   echo "If error occurs using WRFCHEM tools please update your NETCDF libraries or reconfigure with older libraries"
   echo "This is a WRC Chem Community tool made by a private user and is not supported by UCAR/NCAR"
   read -r -t 5 -p "BASH Script Finished"
@@ -1054,12 +1048,31 @@ if [ "$macos_64bit_GNU" = "1" ]; then
 
 
     #############################basic package managment############################
-    brew install wget git
-    brew install gcc libtool automake autoconf make m4 java ksh  mpich grads ksh tcsh
+    brew install wget
+    brew install git
+    brew install gcc@13
+    brew install libtool
+    brew install automake
+    brew install autoconf
+    brew install make
+    brew install m4
+    brew install java
+    brew install ksh
+    brew install mpich
+    brew install grads
+    brew install ksh
+    brew install tcsh
     brew install snap
     brew install python@3.10
-    brew install gcc libtool automake autoconf make m4 java ksh git wget mpich grads ksh tcsh python@3.10 cmake xorgproto xorgrgb xauth curl flex byacc bison gnu-sed
-
+    brew install cmake
+    brew install xorgproto
+    brew install xorgrgb
+    brew install xauth
+    brew install curl
+    brew install flex
+    brew install byacc
+    brew install bison
+    brew install gnu-sed
 
     ##############################Directory Listing############################
 
@@ -1119,13 +1132,14 @@ if [ "$macos_64bit_GNU" = "1" ]; then
 
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
     wget -c -4 https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz
-    wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_0.tar.gz
+    wget -c -4 https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_1-2.tar.gz
     wget -c -4 https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.2.tar.gz
     wget -c -4 https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v4.6.0.tar.gz
     wget -c -4 https://download.sourceforge.net/libpng/libpng-1.6.39.tar.gz
     wget -c -4 https://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip
-    wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.1.1/mpich-4.1.1.tar.gz
+    wget -c -4 https://github.com/pmodels/mpich/releases/download/v4.1.2/mpich-4.1.2.tar.gz
     wget -c -4  https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
+
 
 
 
@@ -1138,16 +1152,16 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     #default gcc path /usr/bin/gcc
     #default homebrew path /usr/local/bin
 
-    echo $PASSWD | sudo -S ln -sf /usr/local/bin/gcc-1* /usr/local/bin/gcc
-    echo $PASSWD | sudo -S ln -sf /usr/local/bin/g++-1* /usr/local/bin/g++
-    echo $PASSWD | sudo -S ln -sf /usr/local/bin/gfortran-1* /usr/local/bin/gfortran
+    echo $PASSWD | sudo -S ln -sf /usr/local/bin/gcc-13 /usr/local/bin/gcc
+    echo $PASSWD | sudo -S ln -sf /usr/local/bin/g++-13 /usr/local/bin/g++
+    echo $PASSWD | sudo -S ln -sf /usr/local/bin/gfortran-13 /usr/local/bin/gfortran
     echo $PASSWD | sudo -S ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
 
     export CC=gcc
     export CXX=g++
     export FC=gfortran
     export F77=gfortran
-    export CFLAGS="-fPIC -fPIE -O3 -Wno-implicit-function-declaration -Wall"
+    export CFLAGS="-fPIC -fPIE -Wno-implicit-function-declaration -Wall"
 
     echo " "
 
@@ -1195,7 +1209,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     cd zlib-1.2.13/
     ./configure --prefix=$DIR/grib2
     make -j $CPU_HALF_EVEN
-    make -j $CPU_HALF_EVEN install
+    make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
     #make check
 
     echo " "
@@ -1203,12 +1217,12 @@ if [ "$macos_64bit_GNU" = "1" ]; then
 
   ##############################MPICH############################
   cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-  tar -xvzf mpich-4.1.1.tar.gz
-  cd mpich-4.1.1/
+  tar -xvzf mpich-4.1.2.tar.gz
+  cd mpich-4.1.2/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64"
 
-  make -j $CPU_HALF_EVEN 2>&1 | tee make.log
-  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log | tee make.install.log
+  make -j $CPU_HALF_EVEN 2>&1 | tee install.log
+  make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
   #make check
 
 
@@ -1232,7 +1246,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     cd libpng-1.6.39/
     CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
     make -j $CPU_HALF_EVEN
-    make -j $CPU_HALF_EVEN install
+    make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
     #make check
     #make check
 
@@ -1245,7 +1259,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     autoreconf -i
     CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2
     make -j $CPU_HALF_EVEN
-    make -j $CPU_HALF_EVEN install
+    make -j $CPU_HALF_EVEN install 2>&1 | tee install.log
     export JASPERLIB=$DIR/grib2/lib
     export JASPERINC=$DIR/grib2/include
 
@@ -1253,11 +1267,11 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     #############################hdf5 library for netcdf4 functionality############################
 
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-    tar -xvzf hdf5-1_14_0.tar.gz
-    cd hdf5-hdf5-1_14_0
+    tar -xvzf hdf5-1_14_1-2.tar.gz
+    cd hdf5-hdf5-1_14_1-2
     CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel
     make -j $CPU_HALF_EVEN
-    make -j $CPU_HALF_EVEN install | tee make.install.log
+    make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
 
     export HDF5=$DIR/grib2
@@ -1281,7 +1295,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     ./configure --prefix=$DIR/grib2  --enable-shared --enable-static
 
     make -j $CPU_HALF_EVEN
-    make -j $CPU_HALF_EVEN install | tee make.install.log
+    make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
 
     export PNETCDF=$DIR/grib2
@@ -1298,13 +1312,13 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
     CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-pnetcdf --enable-cdf5 --enable-parallel-tests
     make -j $CPU_HALF_EVEN
-    make -j $CPU_HALF_EVEN install | tee make.install.log
+    make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
 
     export PATH=$DIR/NETCDF/bin:$PATH
     export NETCDF=$DIR/NETCDF
     echo " "
-    ##############################NetCDF fortran library############################
+
     ##############################NetCDF fortran library############################
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
     tar -xvzf v4.6.0.tar.gz
@@ -1315,146 +1329,11 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc -lgfortran"
     CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-parallel-tests --enable-hdf5
     make -j $CPU_HALF_EVEN
-    make -j $CPU_HALF_EVEN install | tee make.install.log
+    make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
 
 
     echo " "
-
-    #################################### System Environment Tests ##############
-    mkdir -p $WRFCHEM_FOLDER/Tests/Environment
-    mkdir -p $WRFCHEM_FOLDER/Tests/Compatibility
-
-
-    cd $WRFCHEM_FOLDER/Downloads
-    wget -c -4 https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
-    wget -c -4 https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
-
-
-    tar -xvf Fortran_C_tests.tar -C $WRFCHEM_FOLDER/Tests/Environment
-    tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C $WRFCHEM_FOLDER/Tests/Compatibility
-    export one="1"
-    echo " "
-    ############## Testing Environment #####
-
-    cd $WRFCHEM_FOLDER/Tests/Environment
-
-    echo " "
-    echo " "
-    echo "Environment Testing "
-    echo "Test 1"
-    gfortran TEST_1_fortran_only_fixed.f
-    ./a.out | tee env_test1.txt
-    export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test1.txt | awk  '{print$1}')
-    if [ $TEST_PASS -ge 1 ]
-      then
-        echo "Enviroment Test 1 Passed"
-      else
-        echo "Environment Compiler Test 1 Failed"
-        exit
-    fi
-    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-
-    echo " "
-    echo "Test 2"
-    gfortran TEST_2_fortran_only_free.f90
-    ./a.out | tee env_test2.txt
-    export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test2.txt | awk  '{print$1}')
-    if [ $TEST_PASS -ge 1 ]
-      then
-        echo "Enviroment Test 2 Passed"
-      else
-        echo "Environment Compiler Test 2 Failed"
-        exit
-    fi
-    echo " "
-    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-
-    echo " "
-    echo "Test 3"
-    gcc TEST_3_c_only.c
-    ./a.out | tee env_test3.txt
-    export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test3.txt | awk  '{print$1}')
-    if [ $TEST_PASS -ge 1 ]
-      then
-        echo "Enviroment Test 3 Passed"
-      else
-        echo "Environment Compiler Test 3 Failed"
-        exit
-    fi
-    echo " "
-    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-
-    echo " "
-    echo "Test 4"
-    gcc -c -m64 TEST_4_fortran+c_c.c
-    gfortran -c -m64 TEST_4_fortran+c_f.f90
-    gfortran -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
-    ./a.out | tee env_test4.txt
-    export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk  '{print$1}')
-    if [ $TEST_PASS -ge 1 ]
-      then
-        echo "Enviroment Test 4 Passed"
-      else
-        echo "Environment Compiler Test 4 Failed"
-        exit
-    fi
-    echo " "
-    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-
-    echo " "
-    ############## Testing Environment #####
-
-    cd $WRFCHEM_FOLDER/Tests/Compatibility
-
-    cp ${NETCDF}/include/netcdf.inc .
-
-    echo " "
-    echo " "
-    echo "Library Compatibility Tests "
-    echo "Test 1"
-    gfortran -c 01_fortran+c+netcdf_f.f
-    gcc -c 01_fortran+c+netcdf_c.c
-    gfortran 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
-       -L${NETCDF}/lib -lnetcdff -lnetcdf
-
-       ./a.out | tee comp_test1.txt
-       export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk  '{print$1}')
-        if [ $TEST_PASS -ge 1 ]
-           then
-             echo "Compatibility Test 1 Passed"
-           else
-             echo "Compatibility Compiler Test 1 Failed"
-             exit
-         fi
-       echo " "
-       read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-
-    echo " "
-
-    echo "Test 2"
-    mpifort -c 02_fortran+c+netcdf+mpi_f.f
-    mpicc -c 02_fortran+c+netcdf+mpi_c.c
-    mpifort 02_fortran+c+netcdf+mpi_f.o \
-    02_fortran+c+netcdf+mpi_c.o \
-       -L${NETCDF}/lib -lnetcdff -lnetcdf
-
-    mpirun ./a.out | tee comp_test2.txt
-    export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk  '{print$1}')
-    if [ $TEST_PASS -ge 1 ]
-      then
-        echo "Compatibility Test 2 Passed"
-      else
-        echo "Compatibility Compiler Test 2 Failed"
-        exit
-    fi
-    echo " "
-    read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    echo " "
-
-    echo " All tests completed and passed"
-    echo " "
-
 
 
       # Downloading WRF-CHEM Tools and untarring files
@@ -1544,7 +1423,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-    ./make_mozbc
+    ./make_mozbc 2>&1 | tee make.log
 
 
     ################## Information on Upper Boundary Conditions ###################
@@ -1565,9 +1444,9 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-    ./make_util megan_bio_emiss
-    ./make_util megan_xform
-    ./make_util surfdata_xform
+    ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+    ./make_util megan_xform 2>&1 | tee make.xform.log
+    ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
 
     ############################# Anthroprogenic Emissions #########################
@@ -1580,7 +1459,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-    ./make_anthro
+    ./make_anthro 2>&1 | tee make.log
 
     ############################# EDGAR HTAP ######################################
     #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -1598,7 +1477,7 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-    ./make_anthro
+    ./make_anthro 2>&1 | tee make.log
 
     ######################### Weseley EXO Coldens ##################################
     cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
@@ -1609,8 +1488,8 @@ if [ "$macos_64bit_GNU" = "1" ]; then
     sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-    ./make_util wesely
-    ./make_util exo_coldens
+    ./make_util wesely 2>&1 | tee make.wesley.log
+    ./make_util exo_coldens 2>&1 | tee make.exo.log
 
 
     ########################## Aircraft Emissions Preprocessor #####################
