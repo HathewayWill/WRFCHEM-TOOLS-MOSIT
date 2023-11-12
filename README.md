@@ -14,7 +14,7 @@ This is a BASH script that provides options to install the following WRF CHEM To
 ---
 ### System Requirements
 - 64-bit system
-    - Darwin (MacOS) Intel Chipset
+    - Darwin (MacOS)
     - Linux Debian Distro (Ubuntu, Mint, etc)
     - Windows Subsystem for Linux (Debian Distro, Ubuntu, Mint, etc)
 
@@ -27,20 +27,20 @@ This is a BASH script that provides options to install the following WRF CHEM To
         - MPICH (4.0.3)
         - libpng (1.6.39)
         - JasPer (1.900.1)
-        - HDF5 (1.14.0)
-        - PHDF5 (1.14.0)
+        - HDF5 (1.13.2)
+        - PHDF5 (1.13.2)
         - Parallel-NetCDF (1.12.3)
-        - NetCDF-C (4.9.2)
+        - NetCDF-C (4.9.0)
         - NetCDF-Fortran (4.6.0)
         - Miniconda
     - Libraries installed with Intel compilers
         - zlib (1.2.13)
         - libpng (1.6.39)
         - JasPer (1.900.1)
-        - HDF5 (1.14.0)
-        - PHDF5 (1.14.0)
+        - HDF5 (1.13.2)
+        - PHDF5 (1.13.2)
         - Parallel-NetCDF (1.12.3)
-        - NetCDF-C (4.9.2)
+        - NetCDF-C (4.9.0)
         - NetCDF-Fortran (4.6.0)
         - Miniconda
         - Intel-Basekit
@@ -90,7 +90,7 @@ Click here!
 - UCAR's Katelyn F., Jim B., Jordan P., Kevin M.,.
 ---
 #### Citation:
-#### Hatheway, W. (2023). WRF CHEM Tools Multi Operational System Install Toolkit (Version 1.4) [Computer software]
+#### Hatheway, W. (2023). WRF CHEM Tools Multi Operational System Install Toolkit (Version 1.1) [Computer software]
 
 ---
 #### References:
