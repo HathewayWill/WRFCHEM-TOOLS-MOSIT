@@ -6,7 +6,7 @@ START=$(date +"%s")
 ############################### Version Numbers ##########################
 # For Ease of updating
 ##########################################################################
-export HDF5_Version=1_14.2
+export HDF5_Version=1_14_2
 export Zlib_Version=1.2.13
 export Netcdf_C_Version=4.9.2
 export Netcdf_Fortran_Version=4.6.1
@@ -68,7 +68,7 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "CentOS" ]; then
 	echo "Intel compilers are not compatible with this script"
 	echo " "
 
-	if [ -v Centos_64bit_GNU ]; then
+	if [ -v $Centos_64bit_GNU ]; then
 		echo "The environment variable Centos_64bit_GNU is already set."
 	else
 		echo "The environment variable Centos_64bit_GNU is not set."
@@ -95,13 +95,12 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "Inte
 	echo "Intel compilers are not compatibile with this script"
 	echo " "
 
-	if [ -v macos_64bit_GNU ]; then
+	if [ -v $macos_64bit_GNU ]; then
 		echo "The environment variable macos_64bit_GNU is already set."
 	else
 		echo "The environment variable macos_64bit_GNU is not set."
 		echo "Setting compiler to GNU"
 		export macos_64bit_GNU=1
-	fi
 
 	echo " "
 	echo "Xcode Command Line Tools & Homebrew are required for this script."
@@ -118,6 +117,7 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "Inte
 	eval "$(/usr/local/bin/brew shellenv)"
 
 	chsh -s /bin/bash
+  fi
 fi
 
 if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "ARM" ]; then
@@ -127,7 +127,7 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "ARM"
 	echo " "
 	echo "Setting compiler to GNU"
 
-	if [ -v macos_64bit_GNU ]; then
+	if [ -v $macos_64bit_GNU ]; then
 		echo "The environment variable macos_64bit_GNU is already set."
 	else
 		echo "The environment variable macos_64bit_GNU is not set."
@@ -155,41 +155,40 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ]; then
 	echo "Your system is 64bit version of Debian Linux Kernal"
 	echo " "
 
-	if [ -v Ubuntu_64bit_Intel ]; then
+	if [ -n "$Ubuntu_64bit_Intel" ]; then
 		echo "The environment variable Ubuntu_64bit_Intel is already set."
-	else
-		echo "The environment variable Ubuntu_64bit_Intel is not set."
-		while read -r -p "Which compiler do you want to use?
-    -Intel
-     --Please note that Hurricane WRF (HWRF) is only compatibile with Intel Compilers.
+		else
+			echo "The environment variable Ubuntu_64bit_Intel is not set."
+			while read -r -p "Which compiler do you want to use?
+    	-Intel
+     	--Please note that Hurricane WRF (HWRF) is only compatibile with Intel Compilers.
 
-    -GNU
+    	-GNU
 
-    Please answer Intel or GNU and press enter (case sensative).
-    " yn; do
+    	Please answer Intel or GNU and press enter (case sensative).
+    	" yn; do
 
-			case $yn in
-			Intel)
-				echo "-------------------------------------------------- "
-				echo " "
-				echo "Intel is selected for installation"
-				export Ubuntu_64bit_Intel=1
-				break
-				;;
-			GNU)
-				echo "-------------------------------------------------- "
-				echo " "
-				echo "GNU is selected for installation"
-				export Ubuntu_64bit_GNU=1
-				break
-				;;
-			*)
-				echo " "
-				echo "Please answer Intel or GNU (case sensative)."
-				;;
+				case $yn in
+					Intel)
+					echo " "
+					echo "Intel is selected for installation"
+					export Ubuntu_64bit_Intel=1
+					break
+					;;
+					GNU)
+					echo "-------------------------------------------------- "
+					echo " "
+					echo "GNU is selected for installation"
+					export Ubuntu_64bit_GNU=1
+					break
+					;;
+					*)
+					echo " "
+					echo "Please answer Intel or GNU (case sensative)."
+					;;
 
-			esac
-		done
+				esac
+			done
 	fi
 fi
 
@@ -667,7 +666,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 
 	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
 
-	sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-$Mpich_Version.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
+	sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
 	sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf     #Changing HDF5 Location
 	sed -i '55s|-L/scratchin/grupos/catt-brams/shared/libs/gfortran/zlib-1.2.8/lib|-L${DIR}/grib2/lib|' include.mk.gfortran.wrf #Changing zlib Location
 	sed -i '69s|-frecord-marker=4|-frecord-marker=4 ${fallow_argument}|' include.mk.gfortran.wrf                                #Changing adding fallow argument mismatch to fix dummy error
@@ -1131,7 +1130,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 
 	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
 
-	sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-$Mpich_Version.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
+	sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
 	sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf     #Changing HDF5 Location
 	sed -i '55s|-L/scratchin/grupos/catt-brams/shared/libs/gfortran/zlib-1.2.8/lib|-L${DIR}/grib2/lib|' include.mk.gfortran.wrf #Changing zlib Location
 	sed -i '69s|-frecord-marker=4|-frecord-marker=4 ${fallow_argument}|' include.mk.gfortran.wrf                                #Changing adding fallow argument mismatch to fix dummy error
@@ -1582,7 +1581,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
 	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
 
-	sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-$Mpich_Version.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
+	sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
 	sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf     #Changing HDF5 Location
 	sed -i '55s|-L/scratchin/grupos/catt-brams/shared/libs/gfortran/zlib-1.2.8/lib|-L${DIR}/grib2/lib|' include.mk.gfortran.wrf #Changing zlib Location
 	sed -i '69s|-frecord-marker=4|-frecord-marker=4 ${fallow_argument}|' include.mk.gfortran.wrf                                #Changing adding fallow argument mismatch to fix dummy error
