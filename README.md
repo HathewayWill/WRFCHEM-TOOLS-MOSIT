@@ -55,7 +55,8 @@ This is a BASH script that provides options to install the following WRF CHEM To
 > /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
 ### Installation
-- (Make sure to download folder into your Home Directory): cd $HOME
+- (Make sure to download folder into your Home Directory):
+> cd $HOME
 
 
 > git clone https://github.com/HathewayWill/WRFCHEM-TOOLS-MOSIT.git
@@ -70,7 +71,7 @@ This is a BASH script that provides options to install the following WRF CHEM To
 
 --
 
-  ##### *** Tested on Ubuntu 20.04.5 LTS,  Ubuntu 22.04.1 LTS, MacOS Ventura, Windows Sub-Linux Ubuntu, CentOS***
+  ##### *** Tested on Ubuntu 20.04.6 LTS,  Ubuntu 22.04.3 LTS, MacOS Ventura, MacOS Sonoma, Centos7, Rocky Linux 9, Windows Sub-Linux Ubuntu***
 - Built 64-bit system.
 
 ---
