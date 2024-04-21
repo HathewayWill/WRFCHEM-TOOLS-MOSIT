@@ -172,7 +172,7 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ]; then
 	echo "Your system is 64bit version of Debian Linux Kernal"
 	echo " "
  
-	if [ -n "$Ubuntu_64bit_Intel" || -n "$Ubuntu_64bit_GNU" ]; then
+	if [ -n "$Ubuntu_64bit_Intel" ]  || [ -n "$Ubuntu_64bit_GNU" ]; then
 		echo "The environment variable Ubuntu_64bit_Intel is already set."
 		else
 			echo "The environment variable Ubuntu_64bit_Intel is not set."
