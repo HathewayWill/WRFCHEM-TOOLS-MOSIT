@@ -4,12 +4,12 @@
 if [ -n "$CONDA_DEFAULT_ENV" ]; then
     echo "CONDA_DEFAULT_ENV is active: $CONDA_DEFAULT_ENV"
     echo "Turning off $CONDA_DEFAULT_ENV"
-    conda deactivate 
+    conda deactivate
     conda deactivate
 else
     echo "CONDA_DEFAULT_ENV is not active."
     echo "Continuing script"
-    
+
 fi
 
 start=$(date)
@@ -18,14 +18,15 @@ START=$(date +"%s")
 ############################### Version Numbers ##########################
 # For Ease of updating
 ##########################################################################
-export HDF5_Version=1_14_2
-export Zlib_Version=1.2.13
-export Netcdf_C_Version=4.9.2
+export HDF5_Version=1.14.4
+export HDF5_Sub_Version=2
+export Zlib_Version=1.3.1
+export Netcdf_C_Version=4.9.0
 export Netcdf_Fortran_Version=4.6.1
-export Mpich_Version=4.1.2
+export Mpich_Version=4.2.1
 export Libpng_Version=1.6.39
 export Jasper_Version=1.900.1
-export Pnetcdf_Version=1.12.3
+export Pnetcdf_Version=1.13.0
 
 ############################### System Architecture Type #################
 # 32 or 64 bit
@@ -166,13 +167,13 @@ fi
 
 
 
-Intel_MESSAGE="\e[91m(Intel Compilers are NOT available do to Intel LLVM Upgrade.  Please Select GNU)\e[0m"
+Intel_MESSAGE="\e[91m(Intel Compilers are NOT available due to Intel LLVM Upgrade.  Please Select GNU)\e[0m"
 
 if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ]; then
 	echo "Your system is 64bit version of Debian Linux Kernal"
 	echo " "
- 
-	if [ -n "$Ubuntu_64bit_Intel" ]  || [ -n "$Ubuntu_64bit_GNU" ]; then
+
+	if [ -v "$Ubuntu_64bit_Intel" ]  || [ -v "$Ubuntu_64bit_GNU" ]; then
 		echo "The environment variable Ubuntu_64bit_Intel is already set."
 		else
 			echo "The environment variable Ubuntu_64bit_Intel is not set."
@@ -216,9 +217,10 @@ if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "Linux" ]; then
 fi
 
 ############################# Enter sudo users information #############################
-
+echo "-------------------------------------------------- "
 if [[ -n "$PASSWD" ]]; then
 	echo "Using existing password: $PASSWD"
+  echo "-------------------------------------------------- "
 else
 	echo -e "\nPassword is only saved locally and will not be visible when typing."
 	read -r -s -p "Please enter your sudo password: " PASSWD
@@ -274,27 +276,30 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	mkdir Libs
 	mkdir Libs/grib2
 	mkdir Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/grib2
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/grib2
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/NETCDF
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
 	##############################Downloading Libraries############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
-	wget -c https://github.com/madler/zlib/archive/refs/tags/v$Zlib_Version.tar.gz
-	wget -c https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-$HDF5_Version.tar.gz
+	wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
+	wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v$Netcdf_Fortran_Version.tar.gz
 	wget -c https://download.sourceforge.net/libpng/libpng-$Libpng_Version.tar.gz
@@ -320,7 +325,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	echo " "
 
 	#############################Compilers############################
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export CC=gcc
 	export CXX=g++
 	export FC=gfortran
@@ -358,8 +363,8 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	#Uncalling compilers due to comfigure issue with zlib$Zlib_Version
 	#With CC & CXX definied ./configure uses different compiler Flags
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf v$Zlib_Version.tar.gz
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf zlib-$Zlib_Version.tar.gz
 	cd zlib-$Zlib_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
@@ -369,7 +374,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	#make check
 
 	##############################MPICH############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf mpich-$Mpich_Version.tar.gz
 	cd mpich-$Mpich_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -390,7 +395,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	echo " "
 
 	#############################libpng############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	export LDFLAGS=-L$DIR/grib2/lib
 	export CPPFLAGS=-I$DIR/grib2/include
 	tar -xvzf libpng-$Libpng_Version.tar.gz
@@ -403,7 +408,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	#make check
 
 	#############################JasPer############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	unzip jasper-$Jasper_Version.zip
 	cd jasper-$Jasper_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -416,9 +421,9 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	export JASPERINC=$DIR/grib2/include
 
 	#############################hdf5 library for netcdf4 functionality############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf hdf5-$HDF5_Version.tar.gz
-	cd hdf5-hdf5-$HDF5_Version
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
+	cd hdf5-$HDF5_Version-$HDF5_Sub_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
@@ -436,7 +441,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	#Make file created with half of available cpu cores
 	#Hard path for MPI added
 	##################################################################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
 	cd pnetcdf-$Pnetcdf_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -449,7 +454,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	export PNETCDF=$DIR/grib2
 
 	##############################Install NETCDF C Library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xzvf v$Netcdf_C_Version.tar.gz
 	cd netcdf-c-$Netcdf_C_Version/
 	export CPPFLAGS=-I$DIR/grib2/include
@@ -466,7 +471,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	export NETCDF=$DIR/NETCDF
 
 	##############################NetCDF fortran library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf v$Netcdf_Fortran_Version.tar.gz
 	cd netcdf-fortran-$Netcdf_Fortran_Version/
 	export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
@@ -482,8 +487,136 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 
 	echo " "
 
+  #################################### System Environment Tests ##############
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
+	wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
+
+	tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+	tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+	export one="1"
+	echo " "
+	############## Testing Environment #####
+
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+
+	cp ${NETCDF}/include/netcdf.inc .
+
+	echo " "
+	echo " "
+	echo "Environment Testing "
+	echo "Test 1"
+	$FC TEST_1_fortran_only_fixed.f
+	./a.out | tee env_test1.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test1.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Enviroment Test 1 Passed"
+	else
+		echo "Environment Compiler Test 1 Failed"
+		exit
+	fi
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+	echo "Test 2"
+	$FC TEST_2_fortran_only_free.f90
+	./a.out | tee env_test2.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test2.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Enviroment Test 2 Passed"
+	else
+		echo "Environment Compiler Test 2 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+	echo "Test 3"
+	$CC TEST_3_c_only.c
+	./a.out | tee env_test3.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test3.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Enviroment Test 3 Passed"
+	else
+		echo "Environment Compiler Test 3 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+	echo "Test 4"
+	$CC -c -m64 TEST_4_fortran+c_c.c
+	$FC -c -m64 TEST_4_fortran+c_f.f90
+	$FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+	./a.out | tee env_test4.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Enviroment Test 4 Passed"
+	else
+		echo "Environment Compiler Test 4 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+	############## Testing Environment #####
+
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+	cp ${NETCDF}/include/netcdf.inc .
+
+	echo " "
+	echo " "
+	echo "Library Compatibility Tests "
+	echo "Test 1"
+	$FC -c 01_fortran+c+netcdf_f.f
+	$CC -c 01_fortran+c+netcdf_c.c
+	$FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
+		-L${NETCDF}/lib -lnetcdff -lnetcdf
+
+	./a.out | tee comp_test1.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Compatibility Test 1 Passed"
+	else
+		echo "Compatibility Compiler Test 1 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+
+	echo "Test 2"
+	$MPIFC -c 02_fortran+c+netcdf+mpi_f.f
+	$MPICC -c 02_fortran+c+netcdf+mpi_c.c
+	$MPIFC 02_fortran+c+netcdf+mpi_f.o \
+		02_fortran+c+netcdf+mpi_c.o \
+		-L${NETCDF}/lib -lnetcdff -lnetcdf
+
+	$DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Compatibility Test 2 Passed"
+	else
+		echo "Compatibility Compiler Test 2 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+	echo " "
+
+	echo " All tests completed and passed"
+	echo " "
+
+
 	# Downloading WRF-CHEM Tools and untarring files
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
 	wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
 	wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
@@ -504,49 +637,49 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 
 	echo ""
 	echo "Unpacking Mozbc."
-	tar -xvf mozbc.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	echo ""
 	echo "Unpacking MEGAN Bio Emission."
-	tar -xvf megan_bio_emiss.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	tar -xvf megan_bio_emiss.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	echo ""
 	echo "Unpacking MEGAN Bio Emission Data."
-	tar -xzvf megan.data.tar.gz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	tar -xzvf megan.data.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 	echo ""
 	echo "Unpacking Wes Coldens"
-	tar -xvf wes-coldens.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	tar -xvf wes-coldens.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	echo ""
 	echo "Unpacking Unpacking ANTHRO Emission."
-	tar -xvf ANTHRO.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
+	tar -xvf ANTHRO.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
 	echo ""
 	echo "Unpacking EDGAR-HTAP."
-	tar -xzvf EDGAR-HTAP.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
+	tar -xzvf EDGAR-HTAP.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
 	echo ""
 	echo "Unpacking EPA ANTHRO Emission."
-	tar -xzvf EPA_ANTHRO_EMIS.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	tar -xzvf EPA_ANTHRO_EMIS.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
 	echo ""
 	echo "Unpacking Upper Boundary Conditions."
-	tar -xvf UBC_inputs.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
+	tar -xvf UBC_inputs.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
 	echo ""
 	echo "Unpacking Aircraft Preprocessor Files."
 	echo ""
-	tar -xvf aircraft_preprocessor_files.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
+	tar -xvf aircraft_preprocessor_files.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
 	echo ""
 	echo "Unpacking Fire INventory from NCAR (FINN)"
-	tar -xzvf fire_emis.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	tar -xzvf fire_emis.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 	tar -xvf fire_emis_input.tar
-	tar -zxvf grass_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tempfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf shrub_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tropfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf grass_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	unzip TrashEmis.zip
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
 	gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
@@ -554,9 +687,9 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	############################Installation of Mozbc #############################
 	# Recalling variables from install script to make sure the path is right
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	chmod +x make_mozbc
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
@@ -566,16 +699,16 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 
 	################## Information on Upper Boundary Conditions ###################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC/
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
 	wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
 
 	########################## MEGAN Bio Emission #################################
 	# Data for MEGAN Bio Emission located in
-	# $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	# "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -587,9 +720,9 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 
 	############################# Anthroprogenic Emissions #########################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -605,9 +738,9 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	#  WRF chemical options (See read -rme in Folder
 
 	######################### EPA Anthroprogenic Emissions ########################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -616,9 +749,9 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	./make_anthro 2>&1 | tee make.log
 
 	######################### Weseley EXO Coldens ##################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -670,19 +803,19 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	#########################################################################################################
 
 	# Downloading PREP-CHEM-SRC-1.5 and untarring files
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
 	wget -4 -c http://ftp.cptec.inpe.br/pesquisa/bramsrd/BRAMS_5.4/PREP-CHEM/PREP-CHEM-SRC-1.5.tar.gz
 
-	tar -xzvf PREP-CHEM-SRC-1.5.tar.gz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+	tar -xzvf PREP-CHEM-SRC-1.5.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
 	# Installation of PREP-CHEM-SRC-1.5
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
 
 	sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
 	sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf     #Changing HDF5 Location
@@ -692,7 +825,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	make OPT=gfortran.wrf CHEM=RADM_WRF_FIM AER=SIMPLE 2>&1 | tee make.log # Compiling and making of PRE-CHEM-SRC-1.5
 
 	# IF statement to check that all files were created.
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin
 	n=$(ls ./*.exe | wc -l)
 	if (($n >= 2)); then
 		echo "All expected files created."
@@ -738,27 +871,30 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	mkdir Libs
 	mkdir Libs/grib2
 	mkdir Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/grib2
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/grib2
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/NETCDF
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
 	##############################Downloading Libraries############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
-	wget -c https://github.com/madler/zlib/archive/refs/tags/v$Zlib_Version.tar.gz
-	wget -c https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-$HDF5_Version.tar.gz
+	wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
+	wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v$Netcdf_Fortran_Version.tar.gz
 	wget -c https://download.sourceforge.net/libpng/libpng-$Libpng_Version.tar.gz
@@ -784,7 +920,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	echo " "
 
 	#############################Compilers############################
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export CC=gcc
 	export CXX=g++
 	export FC=gfortran
@@ -822,8 +958,8 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	#Uncalling compilers due to comfigure issue with zlib$Zlib_Version
 	#With CC & CXX definied ./configure uses different compiler Flags
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf v$Zlib_Version.tar.gz
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf zlib-$Zlib_Version.tar.gz
 	cd zlib-$Zlib_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
@@ -833,7 +969,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	#make check
 
 	##############################MPICH############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf mpich-$Mpich_Version.tar.gz
 	cd mpich-$Mpich_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -854,7 +990,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	echo " "
 
 	#############################libpng############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	export LDFLAGS=-L$DIR/grib2/lib
 	export CPPFLAGS=-I$DIR/grib2/include
 	tar -xvzf libpng-$Libpng_Version.tar.gz
@@ -867,7 +1003,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	#make check
 
 	#############################JasPer############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	unzip jasper-$Jasper_Version.zip
 	cd jasper-$Jasper_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -880,9 +1016,9 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	export JASPERINC=$DIR/grib2/include
 
 	#############################hdf5 library for netcdf4 functionality############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf hdf5-$HDF5_Version.tar.gz
-	cd hdf5-hdf5-$HDF5_Version
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
+	cd hdf5-$HDF5_Version-$HDF5_Sub_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
@@ -900,7 +1036,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	#Make file created with half of available cpu cores
 	#Hard path for MPI added
 	##################################################################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
 	cd pnetcdf-$Pnetcdf_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -913,7 +1049,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	export PNETCDF=$DIR/grib2
 
 	##############################Install NETCDF C Library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xzvf v$Netcdf_C_Version.tar.gz
 	cd netcdf-c-$Netcdf_C_Version/
 	export CPPFLAGS=-I$DIR/grib2/include
@@ -930,7 +1066,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	export NETCDF=$DIR/NETCDF
 
 	##############################NetCDF fortran library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf v$Netcdf_Fortran_Version.tar.gz
 	cd netcdf-fortran-$Netcdf_Fortran_Version/
 	export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
@@ -945,9 +1081,135 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	#make check
 
 	echo " "
+  #################################### System Environment Tests ##############
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
+	wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
+
+	tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+	tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+	export one="1"
+	echo " "
+	############## Testing Environment #####
+
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+
+	cp ${NETCDF}/include/netcdf.inc .
+
+	echo " "
+	echo " "
+	echo "Environment Testing "
+	echo "Test 1"
+	$FC TEST_1_fortran_only_fixed.f
+	./a.out | tee env_test1.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test1.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Enviroment Test 1 Passed"
+	else
+		echo "Environment Compiler Test 1 Failed"
+		exit
+	fi
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+	echo "Test 2"
+	$FC TEST_2_fortran_only_free.f90
+	./a.out | tee env_test2.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test2.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Enviroment Test 2 Passed"
+	else
+		echo "Environment Compiler Test 2 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+	echo "Test 3"
+	$CC TEST_3_c_only.c
+	./a.out | tee env_test3.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test3.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Enviroment Test 3 Passed"
+	else
+		echo "Environment Compiler Test 3 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+	echo "Test 4"
+	$CC -c -m64 TEST_4_fortran+c_c.c
+	$FC -c -m64 TEST_4_fortran+c_f.f90
+	$FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+	./a.out | tee env_test4.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Enviroment Test 4 Passed"
+	else
+		echo "Environment Compiler Test 4 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+	############## Testing Environment #####
+
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+	cp ${NETCDF}/include/netcdf.inc .
+
+	echo " "
+	echo " "
+	echo "Library Compatibility Tests "
+	echo "Test 1"
+	$FC -c 01_fortran+c+netcdf_f.f
+	$CC -c 01_fortran+c+netcdf_c.c
+	$FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
+		-L${NETCDF}/lib -lnetcdff -lnetcdf
+
+	./a.out | tee comp_test1.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Compatibility Test 1 Passed"
+	else
+		echo "Compatibility Compiler Test 1 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+	echo " "
+
+	echo "Test 2"
+	$MPIFC -c 02_fortran+c+netcdf+mpi_f.f
+	$MPICC -c 02_fortran+c+netcdf+mpi_c.c
+	$MPIFC 02_fortran+c+netcdf+mpi_f.o \
+		02_fortran+c+netcdf+mpi_c.o \
+		-L${NETCDF}/lib -lnetcdff -lnetcdf
+
+	$DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
+	export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
+	if [ $TEST_PASS -ge 1 ]; then
+		echo "Compatibility Test 2 Passed"
+	else
+		echo "Compatibility Compiler Test 2 Failed"
+		exit
+	fi
+	echo " "
+	read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+	echo " "
+
+	echo " All tests completed and passed"
+	echo " "
 
 	# Downloading WRF-CHEM Tools and untarring files
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
 	wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
 	wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
@@ -968,49 +1230,49 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 
 	echo ""
 	echo "Unpacking Mozbc."
-	tar -xvf mozbc.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	echo ""
 	echo "Unpacking MEGAN Bio Emission."
-	tar -xvf megan_bio_emiss.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	tar -xvf megan_bio_emiss.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	echo ""
 	echo "Unpacking MEGAN Bio Emission Data."
-	tar -xzvf megan.data.tar.gz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	tar -xzvf megan.data.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 	echo ""
 	echo "Unpacking Wes Coldens"
-	tar -xvf wes-coldens.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	tar -xvf wes-coldens.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	echo ""
 	echo "Unpacking Unpacking ANTHRO Emission."
-	tar -xvf ANTHRO.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
+	tar -xvf ANTHRO.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
 	echo ""
 	echo "Unpacking EDGAR-HTAP."
-	tar -xzvf EDGAR-HTAP.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
+	tar -xzvf EDGAR-HTAP.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
 	echo ""
 	echo "Unpacking EPA ANTHRO Emission."
-	tar -xzvf EPA_ANTHRO_EMIS.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	tar -xzvf EPA_ANTHRO_EMIS.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
 	echo ""
 	echo "Unpacking Upper Boundary Conditions."
-	tar -xvf UBC_inputs.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
+	tar -xvf UBC_inputs.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
 	echo ""
 	echo "Unpacking Aircraft Preprocessor Files."
 	echo ""
-	tar -xvf aircraft_preprocessor_files.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
+	tar -xvf aircraft_preprocessor_files.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
 	echo ""
 	echo "Unpacking Fire INventory from NCAR (FINN)"
-	tar -xzvf fire_emis.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	tar -xzvf fire_emis.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 	tar -xvf fire_emis_input.tar
-	tar -zxvf grass_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tempfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf shrub_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tropfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf grass_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	unzip TrashEmis.zip
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
 	gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
@@ -1018,9 +1280,9 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	############################Installation of Mozbc #############################
 	# Recalling variables from install script to make sure the path is right
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	chmod +x make_mozbc
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
@@ -1030,16 +1292,16 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 
 	################## Information on Upper Boundary Conditions ###################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC/
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
 	wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
 
 	########################## MEGAN Bio Emission #################################
 	# Data for MEGAN Bio Emission located in
-	# $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	# "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -1051,9 +1313,9 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 
 	############################# Anthroprogenic Emissions #########################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -1069,9 +1331,9 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	#  WRF chemical options (See read -rme in Folder
 
 	######################### EPA Anthroprogenic Emissions ########################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -1080,9 +1342,9 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	./make_anthro 2>&1 | tee make.log
 
 	######################### Weseley EXO Coldens ##################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -1134,19 +1396,19 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	#########################################################################################################
 
 	# Downloading PREP-CHEM-SRC-1.5 and untarring files
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
 	wget -4 -c http://ftp.cptec.inpe.br/pesquisa/bramsrd/BRAMS_5.4/PREP-CHEM/PREP-CHEM-SRC-1.5.tar.gz
 
-	tar -xzvf PREP-CHEM-SRC-1.5.tar.gz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+	tar -xzvf PREP-CHEM-SRC-1.5.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
 	# Installation of PREP-CHEM-SRC-1.5
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
 
 	sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
 	sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf     #Changing HDF5 Location
@@ -1156,7 +1418,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	make OPT=gfortran.wrf CHEM=RADM_WRF_FIM AER=SIMPLE 2>&1 | tee make.log # Compiling and making of PRE-CHEM-SRC-1.5
 
 	# IF statement to check that all files were created.
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin
 	n=$(ls ./*.exe | wc -l)
 	if (($n >= 2)); then
 		echo "All expected files created."
@@ -1189,27 +1451,30 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	mkdir Libs
 	mkdir Libs/grib2
 	mkdir Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/grib2
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/grib2
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/NETCDF
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
 	##############################Downloading Libraries############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
-	wget -c https://github.com/madler/zlib/archive/refs/tags/v$Zlib_Version.tar.gz
-	wget -c https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-$HDF5_Version.tar.gz
+	wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
+	wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v$Netcdf_Fortran_Version.tar.gz
 	wget -c https://download.sourceforge.net/libpng/libpng-$Libpng_Version.tar.gz
@@ -1235,7 +1500,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	echo " "
 
 	#############################Compilers############################
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export CC=gcc
 	export CXX=g++
 	export FC=gfortran
@@ -1273,8 +1538,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	#Uncalling compilers due to comfigure issue with zlib$Zlib_Version
 	#With CC & CXX definied ./configure uses different compiler Flags
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf v$Zlib_Version.tar.gz
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf zlib-$Zlib_Version.tar.gz
 	cd zlib-$Zlib_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
@@ -1284,7 +1549,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	#make check
 
 	##############################MPICH############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf mpich-$Mpich_Version.tar.gz
 	cd mpich-$Mpich_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -1305,7 +1570,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	echo " "
 
 	#############################libpng############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	export LDFLAGS=-L$DIR/grib2/lib
 	export CPPFLAGS=-I$DIR/grib2/include
 	tar -xvzf libpng-$Libpng_Version.tar.gz
@@ -1318,7 +1583,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	#make check
 
 	#############################JasPer############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	unzip jasper-$Jasper_Version.zip
 	cd jasper-$Jasper_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -1331,9 +1596,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	export JASPERINC=$DIR/grib2/include
 
 	#############################hdf5 library for netcdf4 functionality############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf hdf5-$HDF5_Version.tar.gz
-	cd hdf5-hdf5-$HDF5_Version
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
+	cd hdf5-$HDF5_Version-$HDF5_Sub_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
@@ -1351,7 +1616,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	#Make file created with half of available cpu cores
 	#Hard path for MPI added
 	##################################################################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
 	cd pnetcdf-$Pnetcdf_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -1364,7 +1629,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	export PNETCDF=$DIR/grib2
 
 	##############################Install NETCDF C Library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xzvf v$Netcdf_C_Version.tar.gz
 	cd netcdf-c-$Netcdf_C_Version/
 	export CPPFLAGS=-I$DIR/grib2/include
@@ -1381,7 +1646,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	export NETCDF=$DIR/NETCDF
 
 	##############################NetCDF fortran library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf v$Netcdf_Fortran_Version.tar.gz
 	cd netcdf-fortran-$Netcdf_Fortran_Version/
 	export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
@@ -1396,9 +1661,135 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	#make check
 
 	echo " "
+  #################################### System Environment Tests ##############
 
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+  wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
+  wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
+
+
+  tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+  export one="1"
+  echo " "
+  ############## Testing Environment #####
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+
+  cp ${NETCDF}/include/netcdf.inc .
+
+  echo " "
+  echo " "
+  echo "Environment Testing "
+  echo "Test 1"
+  $FC TEST_1_fortran_only_fixed.f
+  ./a.out | tee env_test1.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test1.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 1 Passed"
+  else
+    echo "Environment Compiler Test 1 Failed"
+    exit
+  fi
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 2"
+  $FC TEST_2_fortran_only_free.f90
+  ./a.out | tee env_test2.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test2.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 2 Passed"
+  else
+    echo "Environment Compiler Test 2 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 3"
+  $CC TEST_3_c_only.c
+  ./a.out | tee env_test3.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test3.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 3 Passed"
+  else
+    echo "Environment Compiler Test 3 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 4"
+  $CC -c -m64 TEST_4_fortran+c_c.c
+  $FC -c -m64 TEST_4_fortran+c_f.f90
+  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  ./a.out | tee env_test4.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 4 Passed"
+  else
+    echo "Environment Compiler Test 4 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  ############## Testing Environment #####
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+  cp ${NETCDF}/include/netcdf.inc .
+
+  echo " "
+  echo " "
+  echo "Library Compatibility Tests "
+  echo "Test 1"
+  $FC -c 01_fortran+c+netcdf_f.f
+  $CC -c 01_fortran+c+netcdf_c.c
+  $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
+    -L${NETCDF}/lib -lnetcdff -lnetcdf
+
+  ./a.out | tee comp_test1.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Compatibility Test 1 Passed"
+  else
+    echo "Compatibility Compiler Test 1 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+
+  echo "Test 2"
+  $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
+  $MPICC -c 02_fortran+c+netcdf+mpi_c.c
+  $MPIFC 02_fortran+c+netcdf+mpi_f.o \
+    02_fortran+c+netcdf+mpi_c.o \
+    -L${NETCDF}/lib -lnetcdff -lnetcdf
+
+  $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Compatibility Test 2 Passed"
+  else
+    echo "Compatibility Compiler Test 2 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+  echo " "
+
+  echo " All tests completed and passed"
+  echo " "
 	# Downloading WRF-CHEM Tools and untarring files
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
 	wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
 	wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
@@ -1419,49 +1810,49 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
 	echo ""
 	echo "Unpacking Mozbc."
-	tar -xvf mozbc.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	echo ""
 	echo "Unpacking MEGAN Bio Emission."
-	tar -xvf megan_bio_emiss.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	tar -xvf megan_bio_emiss.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	echo ""
 	echo "Unpacking MEGAN Bio Emission Data."
-	tar -xzvf megan.data.tar.gz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	tar -xzvf megan.data.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 	echo ""
 	echo "Unpacking Wes Coldens"
-	tar -xvf wes-coldens.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	tar -xvf wes-coldens.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	echo ""
 	echo "Unpacking Unpacking ANTHRO Emission."
-	tar -xvf ANTHRO.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
+	tar -xvf ANTHRO.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
 	echo ""
 	echo "Unpacking EDGAR-HTAP."
-	tar -xzvf EDGAR-HTAP.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
+	tar -xzvf EDGAR-HTAP.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
 	echo ""
 	echo "Unpacking EPA ANTHRO Emission."
-	tar -xzvf EPA_ANTHRO_EMIS.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	tar -xzvf EPA_ANTHRO_EMIS.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
 	echo ""
 	echo "Unpacking Upper Boundary Conditions."
-	tar -xvf UBC_inputs.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
+	tar -xvf UBC_inputs.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
 	echo ""
 	echo "Unpacking Aircraft Preprocessor Files."
 	echo ""
-	tar -xvf aircraft_preprocessor_files.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
+	tar -xvf aircraft_preprocessor_files.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
 	echo ""
 	echo "Unpacking Fire INventory from NCAR (FINN)"
-	tar -xzvf fire_emis.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	tar -xzvf fire_emis.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 	tar -xvf fire_emis_input.tar
-	tar -zxvf grass_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tempfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf shrub_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tropfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf grass_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	unzip TrashEmis.zip
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
 	gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
@@ -1469,9 +1860,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	############################Installation of Mozbc #############################
 	# Recalling variables from install script to make sure the path is right
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	chmod +x make_mozbc
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
@@ -1481,16 +1872,16 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
 	################## Information on Upper Boundary Conditions ###################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC/
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
 	wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
 
 	########################## MEGAN Bio Emission #################################
 	# Data for MEGAN Bio Emission located in
-	# $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	# "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -1502,9 +1893,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
 	############################# Anthroprogenic Emissions #########################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -1520,9 +1911,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	#  WRF chemical options (See read -rme in Folder
 
 	######################### EPA Anthroprogenic Emissions ########################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -1531,9 +1922,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	./make_anthro 2>&1 | tee make.log
 
 	######################### Weseley EXO Coldens ##################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -1585,19 +1976,19 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	#########################################################################################################
 
 	# Downloading PREP-CHEM-SRC-1.5 and untarring files
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
 	wget -4 -c http://ftp.cptec.inpe.br/pesquisa/bramsrd/BRAMS_5.4/PREP-CHEM/PREP-CHEM-SRC-1.5.tar.gz
 
-	tar -xzvf PREP-CHEM-SRC-1.5.tar.gz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+	tar -xzvf PREP-CHEM-SRC-1.5.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
 	# Installation of PREP-CHEM-SRC-1.5
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
 
 	sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
 	sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf     #Changing HDF5 Location
@@ -1607,7 +1998,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	make OPT=gfortran.wrf CHEM=RADM_WRF_FIM AER=SIMPLE 2>&1 | tee make.log # Compiling and making of PRE-CHEM-SRC-1.5
 
 	# IF statement to check that all files were created.
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin
 	n=$(ls ./*.exe | wc -l)
 	if (($n >= 2)); then
 		echo "All expected files created."
@@ -1689,29 +2080,33 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	mkdir Libs
 	mkdir Libs/grib2
 	mkdir Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/grib2
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/grib2
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/NETCDF
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 
 	##############################Downloading Libraries############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
-	wget -c https://github.com/madler/zlib/archive/refs/tags/v$Zlib_Version.tar.gz
-	wget -c https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-$HDF5_Version.tar.gz
+	wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
+	wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v$Netcdf_Fortran_Version.tar.gz
 	wget -c https://download.sourceforge.net/libpng/libpng-$Libpng_Version.tar.gz
@@ -1741,8 +2136,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	#Uncalling compilers due to comfigure issue with zlib$Zlib_Version
 	#With CC & CXX definied ./configure uses different compiler Flags
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf v$Zlib_Version.tar.gz
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf zlib-$Zlib_Version.tar.gz
 	cd zlib-$Zlib_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
@@ -1752,7 +2147,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	#make check
 
 	#############################libpng############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	export LDFLAGS=-L$DIR/grib2/lib
 	export CPPFLAGS=-I$DIR/grib2/include
 	tar -xvzf libpng-$Libpng_Version.tar.gz
@@ -1765,7 +2160,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	#make check
 
 	#############################JasPer############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	unzip jasper-$Jasper_Version.zip
 	cd jasper-$Jasper_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -1778,9 +2173,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	export JASPERINC=$DIR/grib2/include
 
 	#############################hdf5 library for netcdf4 functionality############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf hdf5-$HDF5_Version.tar.gz
-	cd hdf5-hdf5-$HDF5_Version
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
+	cd hdf5-$HDF5_Version-$HDF5_Sub_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
@@ -1798,7 +2193,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	#Make file created with half of available cpu cores
 	#Hard path for MPI added
 	##################################################################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
 	cd pnetcdf-$Pnetcdf_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -1811,7 +2206,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	export PNETCDF=$DIR/grib2
 
 	##############################Install NETCDF C Library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xzvf v$Netcdf_C_Version.tar.gz
 	cd netcdf-c-$Netcdf_C_Version/
 	export CPPFLAGS=-I$DIR/grib2/include
@@ -1828,7 +2223,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	export NETCDF=$DIR/NETCDF
 
 	##############################NetCDF fortran library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf v$Netcdf_Fortran_Version.tar.gz
 	cd netcdf-fortran-$Netcdf_Fortran_Version/
 	export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
@@ -1843,9 +2238,134 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	#make check
 
 	echo " "
+  #################################### System Environment Tests ##############
 
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+  wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
+  wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
+
+  tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+  export one="1"
+  echo " "
+  ############## Testing Environment #####
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+
+  cp ${NETCDF}/include/netcdf.inc .
+
+  echo " "
+  echo " "
+  echo "Environment Testing "
+  echo "Test 1"
+  $FC TEST_1_fortran_only_fixed.f
+  ./a.out | tee env_test1.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test1.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 1 Passed"
+  else
+    echo "Environment Compiler Test 1 Failed"
+    exit
+  fi
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 2"
+  $FC TEST_2_fortran_only_free.f90
+  ./a.out | tee env_test2.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test2.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 2 Passed"
+  else
+    echo "Environment Compiler Test 2 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 3"
+  $CC TEST_3_c_only.c
+  ./a.out | tee env_test3.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test3.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 3 Passed"
+  else
+    echo "Environment Compiler Test 3 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 4"
+  $CC -c -m64 TEST_4_fortran+c_c.c
+  $FC -c -m64 TEST_4_fortran+c_f.f90
+  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  ./a.out | tee env_test4.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 4 Passed"
+  else
+    echo "Environment Compiler Test 4 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  ############## Testing Environment #####
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+  cp ${NETCDF}/include/netcdf.inc .
+
+  echo " "
+  echo " "
+  echo "Library Compatibility Tests "
+  echo "Test 1"
+  $FC -c 01_fortran+c+netcdf_f.f
+  $CC -c 01_fortran+c+netcdf_c.c
+  $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
+    -L${NETCDF}/lib -lnetcdff -lnetcdf
+
+  ./a.out | tee comp_test1.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Compatibility Test 1 Passed"
+  else
+    echo "Compatibility Compiler Test 1 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+
+  echo "Test 2"
+  $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
+  $MPICC -c 02_fortran+c+netcdf+mpi_c.c
+  $MPIFC 02_fortran+c+netcdf+mpi_f.o \
+    02_fortran+c+netcdf+mpi_c.o \
+    -L${NETCDF}/lib -lnetcdff -lnetcdf
+
+  $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Compatibility Test 2 Passed"
+  else
+    echo "Compatibility Compiler Test 2 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+  echo " "
+
+  echo " All tests completed and passed"
+  echo " "
 	# Downloading WRF-CHEM Tools and untarring files
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
 	wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
 	wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
@@ -1866,49 +2386,49 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
 	echo ""
 	echo "Unpacking Mozbc."
-	tar -xvf mozbc.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	echo ""
 	echo "Unpacking MEGAN Bio Emission."
-	tar -xvf megan_bio_emiss.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	tar -xvf megan_bio_emiss.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	echo ""
 	echo "Unpacking MEGAN Bio Emission Data."
-	tar -xzvf megan.data.tar.gz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	tar -xzvf megan.data.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 	echo ""
 	echo "Unpacking Wes Coldens"
-	tar -xvf wes-coldens.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	tar -xvf wes-coldens.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	echo ""
 	echo "Unpacking Unpacking ANTHRO Emission."
-	tar -xvf ANTHRO.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
+	tar -xvf ANTHRO.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
 	echo ""
 	echo "Unpacking EDGAR-HTAP."
-	tar -xzvf EDGAR-HTAP.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
+	tar -xzvf EDGAR-HTAP.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
 	echo ""
 	echo "Unpacking EPA ANTHRO Emission."
-	tar -xzvf EPA_ANTHRO_EMIS.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	tar -xzvf EPA_ANTHRO_EMIS.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
 	echo ""
 	echo "Unpacking Upper Boundary Conditions."
-	tar -xvf UBC_inputs.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
+	tar -xvf UBC_inputs.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
 	echo ""
 	echo "Unpacking Aircraft Preprocessor Files."
 	echo ""
-	tar -xvf aircraft_preprocessor_files.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
+	tar -xvf aircraft_preprocessor_files.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
 	echo ""
 	echo "Unpacking Fire INventory from NCAR (FINN)"
-	tar -xzvf fire_emis.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	tar -xzvf fire_emis.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 	tar -xvf fire_emis_input.tar
-	tar -zxvf grass_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tempfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf shrub_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tropfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf grass_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	unzip TrashEmis.zip
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
 	gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
@@ -1916,9 +2436,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	############################Installation of Mozbc #############################
 	# Recalling variables from install script to make sure the path is right
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	chmod +x make_mozbc
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 
@@ -1926,16 +2446,16 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
 	################## Information on Upper Boundary Conditions ###################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC/
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
 	wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
 
 	########################## MEGAN Bio Emission #################################
 	# Data for MEGAN Bio Emission located in
-	# $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	# "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -1946,9 +2466,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
 	############################# Anthroprogenic Emissions #########################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -1963,9 +2483,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	#  WRF chemical options (See read -rme in Folder
 
 	######################### EPA Anthroprogenic Emissions ########################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -1973,9 +2493,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	./make_anthro 2>&1 | tee make.log
 
 	######################### Weseley EXO Coldens ##################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -2048,7 +2568,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	)
 	mkdir $HOME/WRFCHEM
 	export WRFCHEM_FOLDER=$HOME/WRFCHEM
-	cd $WRFCHEM_FOLDER/
+	cd "${WRFCHEM_FOLDER}"/
 	mkdir Downloads
 	mkdir WRFDA
 	mkdir Libs
@@ -2056,23 +2576,27 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	mkdir -p Libs/NETCDF
 	mkdir -p Tests/Environment
 	mkdir -p Tests/Compatibility
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/grib2
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/grib2
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/NETCDF
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 
 	#############################Core Management####################################
 	export CPU_CORE=$(sysctl -n hw.ncpu) # number of available threads on system
@@ -2095,9 +2619,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
 	##############################Downloading Libraries############################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	wget -c https://github.com/madler/zlib/archive/refs/tags/v$Zlib_Version.tar.gz
-	wget -c https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-$HDF5_Version.tar.gz
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
+	wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v$Netcdf_Fortran_Version.tar.gz
 	wget -c https://download.sourceforge.net/libpng/libpng-$Libpng_Version.tar.gz
@@ -2159,8 +2683,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	#Uncalling compilers due to comfigure issue with zlib1.2.12
 	#With CC & CXX definied ./configure uses different compiler Flags
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf v$Zlib_Version.tar.gz
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf zlib-$Zlib_Version.tar.gz
 	cd zlib-$Zlib_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
@@ -2172,7 +2696,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	echo " "
 
 	##############################MPICH############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf mpich-$Mpich_Version.tar.gz
 	cd mpich-$Mpich_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -2193,7 +2717,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	echo " "
 
 	#############################libpng############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	export LDFLAGS=-L$DIR/grib2/lib
 	export CPPFLAGS=-I$DIR/grib2/include
 	tar -xvzf libpng-$Libpng_Version.tar.gz
@@ -2209,7 +2733,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	echo " "
 	#############################JasPer############################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	unzip jasper-$Jasper_Version.zip
 	cd jasper-$Jasper_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -2223,9 +2747,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	echo " "
 	#############################hdf5 library for netcdf4 functionality############################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf hdf5-$HDF5_Version.tar.gz
-	cd hdf5-hdf5-$HDF5_Version
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
+	cd hdf5-$HDF5_Version-$HDF5_Sub_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
@@ -2243,7 +2767,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	#Make file created with half of available cpu cores
 	#Hard path for MPI added
 	##################################################################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
 	cd pnetcdf-$Pnetcdf_Version
 	export MPIFC=$DIR/MPICH/bin/mpifort
@@ -2261,7 +2785,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	export PNETCDF=$DIR/grib2
 
 	##############################Install NETCDF C Library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xzvf v$Netcdf_C_Version.tar.gz
 	cd netcdf-c-$Netcdf_C_Version/
 	export CPPFLAGS=-I$DIR/grib2/include
@@ -2279,7 +2803,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	echo " "
 
 	##############################NetCDF fortran library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf v$Netcdf_Fortran_Version.tar.gz
 	cd netcdf-fortran-$Netcdf_Fortran_Version/
 	export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
@@ -2294,9 +2818,134 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	#make check
 
 	echo " "
+  #################################### System Environment Tests ##############
 
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+  wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
+  wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
+
+  tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+  export one="1"
+  echo " "
+  ############## Testing Environment #####
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+
+  cp ${NETCDF}/include/netcdf.inc .
+
+  echo " "
+  echo " "
+  echo "Environment Testing "
+  echo "Test 1"
+  $FC TEST_1_fortran_only_fixed.f
+  ./a.out | tee env_test1.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test1.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 1 Passed"
+  else
+    echo "Environment Compiler Test 1 Failed"
+    exit
+  fi
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 2"
+  $FC TEST_2_fortran_only_free.f90
+  ./a.out | tee env_test2.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test2.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 2 Passed"
+  else
+    echo "Environment Compiler Test 2 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 3"
+  $CC TEST_3_c_only.c
+  ./a.out | tee env_test3.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test3.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 3 Passed"
+  else
+    echo "Environment Compiler Test 3 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 4"
+  $CC -c -m64 TEST_4_fortran+c_c.c
+  $FC -c -m64 TEST_4_fortran+c_f.f90
+  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  ./a.out | tee env_test4.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 4 Passed"
+  else
+    echo "Environment Compiler Test 4 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  ############## Testing Environment #####
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+  cp ${NETCDF}/include/netcdf.inc .
+
+  echo " "
+  echo " "
+  echo "Library Compatibility Tests "
+  echo "Test 1"
+  $FC -c 01_fortran+c+netcdf_f.f
+  $CC -c 01_fortran+c+netcdf_c.c
+  $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
+    -L${NETCDF}/lib -lnetcdff -lnetcdf
+
+  ./a.out | tee comp_test1.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Compatibility Test 1 Passed"
+  else
+    echo "Compatibility Compiler Test 1 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+
+  echo "Test 2"
+  $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
+  $MPICC -c 02_fortran+c+netcdf+mpi_c.c
+  $MPIFC 02_fortran+c+netcdf+mpi_f.o \
+    02_fortran+c+netcdf+mpi_c.o \
+    -L${NETCDF}/lib -lnetcdff -lnetcdf
+
+  $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Compatibility Test 2 Passed"
+  else
+    echo "Compatibility Compiler Test 2 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+  echo " "
+
+  echo " All tests completed and passed"
+  echo " "
 	# Downloading WRF-CHEM Tools and untarring files
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
 	wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
 	wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
@@ -2317,49 +2966,49 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
 	echo ""
 	echo "Unpacking Mozbc."
-	tar -xvf mozbc.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	echo ""
 	echo "Unpacking MEGAN Bio Emission."
-	tar -xvf megan_bio_emiss.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	tar -xvf megan_bio_emiss.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	echo ""
 	echo "Unpacking MEGAN Bio Emission Data."
-	tar -xzvf megan.data.tar.gz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	tar -xzvf megan.data.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 	echo ""
 	echo "Unpacking Wes Coldens"
-	tar -xvf wes-coldens.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	tar -xvf wes-coldens.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	echo ""
 	echo "Unpacking Unpacking ANTHRO Emission."
-	tar -xvf ANTHRO.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
+	tar -xvf ANTHRO.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
 	echo ""
 	echo "Unpacking EDGAR-HTAP."
-	tar -xzvf EDGAR-HTAP.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
+	tar -xzvf EDGAR-HTAP.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
 	echo ""
 	echo "Unpacking EPA ANTHRO Emission."
-	tar -xzvf EPA_ANTHRO_EMIS.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	tar -xzvf EPA_ANTHRO_EMIS.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
 	echo ""
 	echo "Unpacking Upper Boundary Conditions."
-	tar -xvf UBC_inputs.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
+	tar -xvf UBC_inputs.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
 	echo ""
 	echo "Unpacking Aircraft Preprocessor Files."
 	echo ""
-	tar -xvf aircraft_preprocessor_files.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
+	tar -xvf aircraft_preprocessor_files.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
 	echo ""
 	echo "Unpacking Fire INventory from NCAR (FINN)"
-	tar -xzvf fire_emis.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	tar -xzvf fire_emis.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 	tar -xvf fire_emis_input.tar
-	tar -zxvf grass_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tempfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf shrub_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tropfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf grass_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	unzip TrashEmis.zip
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
 	gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
@@ -2370,9 +3019,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
 	# Recalling variables from install script to make sure the path is right
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	chmod +x make_mozbc
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
@@ -2382,16 +3031,16 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
 	################## Information on Upper Boundary Conditions ###################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC/
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
 	wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
 
 	########################## MEGAN Bio Emission #################################
 	# Data for MEGAN Bio Emission located in
-	# $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	# "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -2403,9 +3052,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
 	############################# Anthroprogenic Emissions #########################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -2421,9 +3070,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	#  WRF chemical options (See read -rme in Folder
 
 	######################### EPA Anthroprogenic Emissions ########################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -2432,9 +3081,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	./make_anthro 2>&1 | tee make.log
 
 	######################### Weseley EXO Coldens ##################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -2507,7 +3156,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	)
 	mkdir $HOME/WRFCHEM
 	export WRFCHEM_FOLDER=$HOME/WRFCHEM
-	cd $WRFCHEM_FOLDER/
+	cd "${WRFCHEM_FOLDER}"/
 	mkdir Downloads
 	mkdir WRFDA
 	mkdir Libs
@@ -2515,23 +3164,26 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	mkdir -p Libs/NETCDF
 	mkdir -p Tests/Environment
 	mkdir -p Tests/Compatibility
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/grib2
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs/NETCDF
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
-	mkdir $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/grib2
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs/NETCDF
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
+	mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 
 	#############################Core Management####################################
 	export CPU_CORE=$(sysctl -n hw.ncpu) # number of available threads on system
@@ -2554,9 +3206,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
 	##############################Downloading Libraries############################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	wget -c https://github.com/madler/zlib/archive/refs/tags/v$Zlib_Version.tar.gz
-	wget -c https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-$HDF5_Version.tar.gz
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
+	wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
 	wget -c https://github.com/Unidata/netcdf-fortran/archive/refs/tags/v$Netcdf_Fortran_Version.tar.gz
 	wget -c https://download.sourceforge.net/libpng/libpng-$Libpng_Version.tar.gz
@@ -2633,8 +3285,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	#Uncalling compilers due to comfigure issue with zlib1.2.12
 	#With CC & CXX definied ./configure uses different compiler Flags
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf v$Zlib_Version.tar.gz
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf zlib-$Zlib_Version.tar.gz
 	cd zlib-$Zlib_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
@@ -2646,9 +3298,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	echo " "
 
 	##############################MPICH############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf mpich-$Mpich_Version.tar.gz
-	cd mpich-$Mpich_Version/
+	cd mpich-$Mpich_Version/"${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64" 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
@@ -2667,7 +3319,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	echo " "
 
 	#############################libpng############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	export LDFLAGS=-L$DIR/grib2/lib
 	export CPPFLAGS=-I$DIR/grib2/include
 	tar -xvzf libpng-$Libpng_Version.tar.gz
@@ -2683,7 +3335,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	echo " "
 	#############################JasPer############################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	unzip jasper-$Jasper_Version.zip
 	cd jasper-$Jasper_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
@@ -2697,9 +3349,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	echo " "
 	#############################hdf5 library for netcdf4 functionality############################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
-	tar -xvzf hdf5-$HDF5_Version.tar.gz
-	cd hdf5-hdf5-$HDF5_Version
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+	tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
+	cd hdf5-$HDF5_Version-$HDF5_Sub_Version
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
@@ -2717,7 +3369,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	#Make file created with half of available cpu cores
 	#Hard path for MPI added
 	##################################################################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
 	cd pnetcdf-$Pnetcdf_Version
 	export MPIFC=$DIR/MPICH/bin/mpifort
@@ -2735,7 +3387,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	export PNETCDF=$DIR/grib2
 
 	##############################Install NETCDF C Library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xzvf v$Netcdf_C_Version.tar.gz
 	cd netcdf-c-$Netcdf_C_Version/
 	export CPPFLAGS=-I$DIR/grib2/include
@@ -2753,7 +3405,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	echo " "
 
 	##############################NetCDF fortran library############################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 	tar -xvzf v$Netcdf_Fortran_Version.tar.gz
 	cd netcdf-fortran-$Netcdf_Fortran_Version/
 	export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
@@ -2768,9 +3420,134 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	#make check
 
 	echo " "
+  #################################### System Environment Tests ##############
 
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
+  wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
+  wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
+
+  tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+  export one="1"
+  echo " "
+  ############## Testing Environment #####
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+
+  cp ${NETCDF}/include/netcdf.inc .
+
+  echo " "
+  echo " "
+  echo "Environment Testing "
+  echo "Test 1"
+  $FC TEST_1_fortran_only_fixed.f
+  ./a.out | tee env_test1.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test1.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 1 Passed"
+  else
+    echo "Environment Compiler Test 1 Failed"
+    exit
+  fi
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 2"
+  $FC TEST_2_fortran_only_free.f90
+  ./a.out | tee env_test2.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test2.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 2 Passed"
+  else
+    echo "Environment Compiler Test 2 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 3"
+  $CC TEST_3_c_only.c
+  ./a.out | tee env_test3.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test3.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 3 Passed"
+  else
+    echo "Environment Compiler Test 3 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  echo "Test 4"
+  $CC -c -m64 TEST_4_fortran+c_c.c
+  $FC -c -m64 TEST_4_fortran+c_f.f90
+  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  ./a.out | tee env_test4.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Enviroment Test 4 Passed"
+  else
+    echo "Environment Compiler Test 4 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+  ############## Testing Environment #####
+
+  cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+
+  cp ${NETCDF}/include/netcdf.inc .
+
+  echo " "
+  echo " "
+  echo "Library Compatibility Tests "
+  echo "Test 1"
+  $FC -c 01_fortran+c+netcdf_f.f
+  $CC -c 01_fortran+c+netcdf_c.c
+  $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
+    -L${NETCDF}/lib -lnetcdff -lnetcdf
+
+  ./a.out | tee comp_test1.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Compatibility Test 1 Passed"
+  else
+    echo "Compatibility Compiler Test 1 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+
+  echo " "
+
+  echo "Test 2"
+  $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
+  $MPICC -c 02_fortran+c+netcdf+mpi_c.c
+  $MPIFC 02_fortran+c+netcdf+mpi_f.o \
+    02_fortran+c+netcdf+mpi_c.o \
+    -L${NETCDF}/lib -lnetcdff -lnetcdf
+
+  $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
+  export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
+  if [ $TEST_PASS -ge 1 ]; then
+    echo "Compatibility Test 2 Passed"
+  else
+    echo "Compatibility Compiler Test 2 Failed"
+    exit
+  fi
+  echo " "
+  read -r -t 3 -p "I am going to wait for 3 seconds only ..."
+  echo " "
+
+  echo " All tests completed and passed"
+  echo " "
 	# Downloading WRF-CHEM Tools and untarring files
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
 
 	wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
 	wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
@@ -2791,49 +3568,49 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
 	echo ""
 	echo "Unpacking Mozbc."
-	tar -xvf mozbc.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	echo ""
 	echo "Unpacking MEGAN Bio Emission."
-	tar -xvf megan_bio_emiss.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	tar -xvf megan_bio_emiss.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	echo ""
 	echo "Unpacking MEGAN Bio Emission Data."
-	tar -xzvf megan.data.tar.gz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	tar -xzvf megan.data.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 	echo ""
 	echo "Unpacking Wes Coldens"
-	tar -xvf wes-coldens.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	tar -xvf wes-coldens.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	echo ""
 	echo "Unpacking Unpacking ANTHRO Emission."
-	tar -xvf ANTHRO.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS
+	tar -xvf ANTHRO.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
 	echo ""
 	echo "Unpacking EDGAR-HTAP."
-	tar -xzvf EDGAR-HTAP.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EDGAR_HTAP
+	tar -xzvf EDGAR-HTAP.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
 	echo ""
 	echo "Unpacking EPA ANTHRO Emission."
-	tar -xzvf EPA_ANTHRO_EMIS.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+	tar -xzvf EPA_ANTHRO_EMIS.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
 	echo ""
 	echo "Unpacking Upper Boundary Conditions."
-	tar -xvf UBC_inputs.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC
+	tar -xvf UBC_inputs.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC
 	echo ""
 	echo "Unpacking Aircraft Preprocessor Files."
 	echo ""
-	tar -xvf aircraft_preprocessor_files.tar -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/Aircraft
+	tar -xvf aircraft_preprocessor_files.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Aircraft
 	echo ""
 	echo "Unpacking Fire INventory from NCAR (FINN)"
-	tar -xzvf fire_emis.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	tar -xzvf fire_emis.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 	tar -xvf fire_emis_input.tar
-	tar -zxvf grass_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tempfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf shrub_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-	tar -zxvf tropfor_from_img.nc.tgz -C $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf grass_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	unzip TrashEmis.zip
-	mv $WRFCHEM_FOLDER/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+	mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/FINN
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
 
 	gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
 	gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
@@ -2844,9 +3621,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
 	# Recalling variables from install script to make sure the path is right
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/mozbc
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
 	chmod +x make_mozbc
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
@@ -2856,16 +3633,16 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
 	################## Information on Upper Boundary Conditions ###################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/UBC/
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
 	wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
 
 	########################## MEGAN Bio Emission #################################
 	# Data for MEGAN Bio Emission located in
-	# $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_data
+	# "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/megan_bio_emiss
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
@@ -2877,9 +3654,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
 	############################# Anthroprogenic Emissions #########################
 
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -2895,9 +3672,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	#  WRF chemical options (See read -rme in Folder
 
 	######################### EPA Anthroprogenic Emissions ########################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
 	chmod +x make_anthro
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
@@ -2906,9 +3683,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	./make_anthro 2>&1 | tee make.log
 
 	######################### Weseley EXO Coldens ##################################
-	cd $WRFCHEM_FOLDER/WRF_CHEM_Tools/wes_coldens
+	cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
 	chmod +x make_util
-	export DIR=$WRFCHEM_FOLDER/WRF_CHEM_Tools/Libs
+	export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
 	export FC=gfortran
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
