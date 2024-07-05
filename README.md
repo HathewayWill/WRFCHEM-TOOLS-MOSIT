@@ -25,29 +25,28 @@ This is a BASH script that provides options to install the following WRF CHEM To
 - Libraries are manually installed in sub-folders utilizing either Intel or GNU Compilers.
     - Libraries installed with GNU compilers
         - zlib (1.3.1)
-        - MPICH (4.2.1)
+        - MPICH (4.2.2)
         - libpng (1.6.39)
         - JasPer (1.900.1)
-        - HDF5 (1.14.4.2)
-        - PHDF5 (1.14.4.2)
+        - HDF5 (1.14.4.3)
+        - PHDF5 (1.14.4.3)
         - Parallel-NetCDF (1.13.0)
-        - NetCDF-C (4.9.0)
+        - NetCDF-C (4.9.2)
         - NetCDF-Fortran (4.6.1)
         - Miniconda
     - Libraries installed with Intel compilers
         - zlib (1.3.1)
         - libpng (1.6.39)
         - JasPer (1.900.1)
-        - HDF5 (1.14.4.2)
-        - PHDF5 (1.14.4.2)
+        - HDF5 (1.14.4.3)
+        - PHDF5 (1.14.4.3)
         - Parallel-NetCDF (1.13.0)
-        - NetCDF-C (4.9.0)
+        - NetCDF-C (4.9.2)
         - NetCDF-Fortran (4.6.1)
         - Miniconda
         - Intel-Basekit
         - Intel-HPCKIT
         - Intel-AIKIT
-
 
 ---
 ### MacOS Installation
@@ -97,12 +96,10 @@ This is a BASH script that provides options to install the following WRF CHEM To
 - Script will check for System Architecture Type.
 
 
-  ##### *** Tested on Ubuntu 20.04.6 LTS,  Ubuntu 22.04.3 LTS, MacOS Ventura, MacOS Sonoma, Centos7, Rocky Linux 9, Windows Sub-Linux Ubuntu***
+  ##### *** Tested on Ubuntu 22.04.4 LTS, Ubuntu 24.04.1 LTS, MacOS Ventura, MacOS Sonoma, Centos7, Rocky Linux 9, Windows Sub-Linux Ubuntu***
 - Built 64-bit system.
 
 ---
-
-
 #### Estimated Run Time ~ 10 to 30 Minutes @ 10mbps download speed.
 
 ---
@@ -117,7 +114,7 @@ This is a BASH script that provides options to install the following WRF CHEM To
 - UCAR's Katelyn F., Jim B., Jordan P., Kevin M.,.
 ---
 #### Citation:
-#### Hatheway, W. (2023). WRF CHEM Tools Multi Operational System Install Toolkit (Version 1.1) [Computer software]
+#### Hatheway, W. (2024). WRF CHEM Tools Multi Operational System Install Toolkit (Version 1.2) [Computer software]
 
 ---
 #### References:

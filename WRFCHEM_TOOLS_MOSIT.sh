@@ -19,9 +19,9 @@ START=$(date +"%s")
 # For Ease of updating
 ##########################################################################
 export HDF5_Version=1.14.4
-export HDF5_Sub_Version=2
+export HDF5_Sub_Version=3
 export Zlib_Version=1.3.1
-export Netcdf_C_Version=4.9.0
+export Netcdf_C_Version=4.9.2
 export Netcdf_Fortran_Version=4.6.1
 export Mpich_Version=4.2.1
 export Libpng_Version=1.6.39
@@ -180,7 +180,7 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ]; then
                         echo -e "$Intel_MESSAGE"
 			while read -r -p "Which compiler do you want to use?
     	-Intel
-     	--Please note that Hurricane WRF (HWRF) is only compatibile with Intel Compilers.
+	      --Please note that WRF_CMAQ i sonly compatibile with GNU Compilers
 
     	-GNU
 
@@ -308,7 +308,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
 
 	#############################Core Management####################################
-	export CPU_CORE=$(nproc) # number of available thread -rs on system
+	export CPU_CORE=$(nproc) # number of available threads on system
 	export CPU_6CORE="6"
 	export CPU_HALF=$(($CPU_CORE / 2))                    #half of availble cores on system
 	export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2))) #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
@@ -320,7 +320,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	fi
 
 	echo "##########################################"
-	echo "Number of thread -rs being used $CPU_HALF_EVEN"
+	echo "Number of threads being used $CPU_HALF_EVEN"
 	echo "##########################################"
 	echo " "
 
@@ -903,7 +903,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
 
 	#############################Core Management####################################
-	export CPU_CORE=$(nproc) # number of available thread -rs on system
+	export CPU_CORE=$(nproc) # number of available threads on system
 	export CPU_6CORE="6"
 	export CPU_HALF=$(($CPU_CORE / 2))                    #half of availble cores on system
 	export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2))) #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
@@ -915,7 +915,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	fi
 
 	echo "##########################################"
-	echo "Number of thread -rs being used $CPU_HALF_EVEN"
+	echo "Number of threads being used $CPU_HALF_EVEN"
 	echo "##########################################"
 	echo " "
 
@@ -1483,7 +1483,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
 
 	#############################Core Management####################################
-	export CPU_CORE=$(nproc) # number of available thread -rs on system
+	export CPU_CORE=$(nproc) # number of available threads on system
 	export CPU_6CORE="6"
 	export CPU_HALF=$(($CPU_CORE / 2))                    #half of availble cores on system
 	export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2))) #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
@@ -1495,7 +1495,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	fi
 
 	echo "##########################################"
-	echo "Number of thread -rs being used $CPU_HALF_EVEN"
+	echo "Number of threads being used $CPU_HALF_EVEN"
 	echo "##########################################"
 	echo " "
 
@@ -1545,6 +1545,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -1556,6 +1557,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64" 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -1579,6 +1581,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -1590,6 +1593,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 
 	export JASPERLIB=$DIR/grib2/lib
@@ -1603,6 +1607,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -1623,6 +1628,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -1639,6 +1645,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -1657,6 +1664,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2055,18 +2063,21 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	# add the Intel compiler file paths to various environment variables
 	source /opt/intel/oneapi/setvars.sh
 
+  # some of the libraries we install below need one or more of these variables
 	# some of the libraries we install below need one or more of these variables
-	export CC=icc
-	export CXX=icpc
-	export FC=ifort
-	export F77=ifort
-	export F90=ifort
-	export MPIFC=mpiifort
-	export MPIF77=mpiifort
-	export MPIF90=mpiifort
-	export MPICC=mpiicc
+	export CC=icx
+	export CXX=icpx
+	export FC=ifx
+	export F77=ifx
+	export F90=ifx
+	export MPIFC=mpiifx
+	export MPIF77=mpiifx
+	export MPIF90=mpiifx
+	export MPICC=mpiicx
 	export MPICXX=mpiicpc
-	export CFLAGS="-fPIC -fPIE -diag-disable=10441"
+	export CFLAGS="-fPIC -fPIE -O3 -Wno-implicit-function-declaration -Wno-incompatible-function-pointer-types -Wno-unused-command-line-argument"
+	export FFLAGS="-m64"
+	export FCFLAGS="-m64"
 
 	#Directory Listings
 	export HOME=$(
@@ -2114,7 +2125,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
 
 	#############################Core Management####################################
-	export CPU_CORE=$(nproc) #number of available thread -rs on system
+	export CPU_CORE=$(nproc) #number of available threads on system
 	export CPU_6CORE="6"
 	export CPU_HALF=$(($CPU_CORE / 2))                    #half of availble cores on system
 	export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2))) #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
@@ -2126,7 +2137,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	fi
 
 	echo "##########################################"
-	echo "Number of thread -rs being used $CPU_HALF_EVEN"
+	echo "Number of threads being used $CPU_HALF_EVEN"
 	echo "##########################################"
 	echo " "
 
@@ -2143,6 +2154,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2156,6 +2168,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2167,6 +2180,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 
 	export JASPERLIB=$DIR/grib2/lib
@@ -2180,6 +2194,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+  make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2200,6 +2215,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2211,11 +2227,12 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	cd netcdf-c-$Netcdf_C_Version/
 	export CPPFLAGS=-I$DIR/grib2/include
 	export LDFLAGS=-L$DIR/grib2/lib
-	export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
+	export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgcc -lm -ldl -lpnetcdf"
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2229,11 +2246,12 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
 	export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
 	export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
-	export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
+	export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc"
 	autoreconf -i -f 2>&1 | tee autoreconf.log
 	CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2350,7 +2368,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     02_fortran+c+netcdf+mpi_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
 
-  $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
+  mpirun ./a.out | tee comp_test2.txt
   export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
   if [ $TEST_PASS -ge 1 ]; then
     echo "Compatibility Test 2 Passed"
@@ -2690,6 +2708,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2703,6 +2722,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64" 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2726,6 +2746,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 	#make check
@@ -2740,6 +2761,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	export JASPERLIB=$DIR/grib2/lib
 	export JASPERINC=$DIR/grib2/include
@@ -2754,6 +2776,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2779,6 +2802,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -2814,6 +2838,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -3292,6 +3317,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -3328,6 +3354,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 	#make check
@@ -3342,6 +3369,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	export JASPERLIB=$DIR/grib2/lib
 	export JASPERINC=$DIR/grib2/include
@@ -3356,6 +3384,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -3381,6 +3410,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -3397,6 +3427,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
@@ -3416,6 +3447,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
+	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
 	#make check
 
