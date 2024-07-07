@@ -1437,7 +1437,31 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
 	echo $PASSWD | sudo -S apt -y update
 	echo $PASSWD | sudo -S apt -y upgrade
-	echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre emacs flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses5 libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make mlocate ncview okular openbox pipenv pkg-config python2 python2-dev python3 python3-dev python3-pip tsch unzip xauth xorg time
+  # Basic Package Management for WRF-CHEM Tools and Processors
+
+	echo $PASSWD | sudo -S apt -y update
+	echo $PASSWD | sudo -S apt -y upgrade
+  release_version=$(lsb_release -r -s)
+
+  # Compare the release version
+  if [ "$release_version" = "24.04" ]; then
+      # Install Emacs without recommended packages
+      echo $PASSWD | sudo -S apt install emacs --no-install-recommends -y
+  else
+      # Attempt to install Emacs if the release version is not 24.04
+      echo "The release version is not 24.04, attempting to install Emacs."
+      echo $PASSWD | sudo -S apt install emacs -y
+  fi
+
+  echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make  ncview okular openbox pipenv pkg-config  python3 python3-dev python3-pip python3-dateutil tcsh unzip xauth xorg time
+
+  #Fix any broken installations
+	echo $PASSWD | sudo -S apt --fix-broken install
+
+
+	# make sure some critical packages have been installed
+	which cmake pkg-config make gcc g++ gfortran
+
 
 	#Directory Listings
 	export HOME=$(
@@ -2047,7 +2071,19 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
 	echo $PASSWD | sudo -S apt -y update
 	echo $PASSWD | sudo -S apt -y upgrade
-	echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre emacs flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses5 libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make mlocate ncview okular openbox pipenv pkg-config python2 python2-dev python3 python3-dev python3-pip tcsh unzip xauth xorg time
+  release_version=$(lsb_release -r -s)
+
+  # Compare the release version
+  if [ "$release_version" = "24.04" ]; then
+      # Install Emacs without recommended packages
+      echo $PASSWD | sudo -S apt install emacs --no-install-recommends -y
+  else
+      # Attempt to install Emacs if the release version is not 24.04
+      echo "The release version is not 24.04, attempting to install Emacs."
+      echo $PASSWD | sudo -S apt install emacs -y
+  fi
+
+  echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make  ncview okular openbox pipenv pkg-config  python3 python3-dev python3-pip python3-dateutil tcsh unzip xauth xorg time
 
 	# install the Intel compilers
 	echo $PASSWD | sudo -S apt -y install intel-basekit
@@ -2057,8 +2093,12 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	echo $PASSWD | sudo -S apt -y update
 	echo $PASSWD | sudo -S apt -y upgrade
 
+  #Fix any broken installations
+	echo $PASSWD | sudo -S apt --fix-broken install
+
+
 	# make sure some critical packages have been installed
-	which cmake pkg-config make gcc g++
+	which cmake pkg-config make gcc g++ gfortran
 
 	# add the Intel compiler file paths to various environment variables
 	source /opt/intel/oneapi/setvars.sh
