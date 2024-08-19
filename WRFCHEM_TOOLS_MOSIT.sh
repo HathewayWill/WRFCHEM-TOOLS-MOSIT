@@ -258,7 +258,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	echo $PASSWD | sudo -S dnf -y update
 	echo $PASSWD | sudo -S dnf -y upgrade
 	echo $PASSWD | sudo -S dnf -y install gcc gcc-gfortran gcc-c++ cpp automake autoconf unzip java-11-openjdk java-11-openjdk-devel bzip2 time nfs-utils perl tcsh ksh git python3 mlocate wget git m4 pkgconfig mlocate libX11-devel libxml2 unzip bzip2 time nfs-utils perl tcsh wget m4 mlocate libX11-devel.x86_64 libXext-devel libXrender-devel fontconfig-devel libXext-devel libXrender-devel fontconfig-devel curl-devel cmake cairo-devel pixman-devel bzip2-devel byacc flex libXmu-devel libXt-devel libXaw libXaw-devel python3 python3-devel libXmu-devel curl-devel m4 bzip2 time nfs-utils perl tcsh mlocate libX11-devel libxml2
-	echo $PASSWD | sudo -S apt -y install python3-dateutil
+	echo $PASSWD | sudo -S dnf -y install python3-dateutil
 	echo $PASSWD | sudo -S dnf -y groupinstall "Development Tools"
 	echo $PASSWD | sudo -S dnf -y update
 	echo $PASSWD | sudo -S dnf -y upgrade
@@ -853,7 +853,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	echo $PASSWD | sudo -S dnf -y update
 	echo $PASSWD | sudo -S dnf -y upgrade
 	echo $PASSWD | sudo -S dnf -y install gcc gcc-gfortran gcc-c++ cpp automake autoconf unzip java-11-openjdk java-11-openjdk-devel bzip2 time nfs-utils perl tcsh ksh git python3 mlocate wget git m4 pkgconfig mlocate libX11-devel libxml2 unzip bzip2 time nfs-utils perl tcsh wget m4 mlocate libX11-devel.x86_64 libXext-devel libXrender-devel fontconfig-devel libXext-devel libXrender-devel fontconfig-devel curl-devel cmake cairo-devel pixman-devel bzip2-devel byacc flex libXmu-devel libXt-devel libXaw libXaw-devel python3 python3-devel libXmu-devel curl-devel m4 bzip2 time nfs-utils perl tcsh mlocate libX11-devel libxml2
-	echo $PASSWD | sudo -S apt -y install python3-dateutil
+	echo $PASSWD | sudo -S dnf -y install python3-dateutil
 
 	echo $PASSWD | sudo -S dnf -y groupinstall "Development Tools"
 	echo $PASSWD | sudo -S dnf -y update
