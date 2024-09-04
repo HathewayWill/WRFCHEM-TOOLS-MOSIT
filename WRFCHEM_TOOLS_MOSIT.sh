@@ -167,49 +167,46 @@ fi
 
 
 
-Intel_MESSAGE="\e[91m(Intel Compilers are NOT available due to Intel LLVM Upgrade.  Please Select GNU)\e[0m"
-
 if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ]; then
-	echo "Your system is 64bit version of Debian Linux Kernal"
-	echo " "
+    echo "Your system is 64-bit version of Debian Linux Kernel"
+    echo " "
 
-	if [ -v "$Ubuntu_64bit_Intel" ]  || [ -v "$Ubuntu_64bit_GNU" ]; then
-		echo "The environment variable Ubuntu_64bit_Intel is already set."
-		else
-			echo "The environment variable Ubuntu_64bit_Intel is not set."
-                        echo -e "$Intel_MESSAGE"
-			while read -r -p "Which compiler do you want to use?
-    	-Intel
-	      --Please note that WRF_CMAQ i sonly compatibile with GNU Compilers
+    if [ -v Ubuntu_64bit_Intel ] || [ -v Ubuntu_64bit_GNU ]; then
+        echo "The environment variable Ubuntu_64bit_Intel is already set."
+    else
+        echo "The environment variable Ubuntu_64bit_Intel is not set."
+        
+        while read -r -p "Which compiler do you want to use?
+    - Intel
+      -- Please note that WRF_CMAQ is only compatible with GNU Compilers
 
-    	-GNU
+    - GNU
 
-    	Please answer Intel or GNU and press enter (case sensative).
-    	" yn; do
-
-				case $yn in
-					Intel)
-					echo " "
-					echo "Intel is selected for installation"
-					export Ubuntu_64bit_Intel=1
-					break
-					;;
-					GNU)
-					echo "-------------------------------------------------- "
-					echo " "
-					echo "GNU is selected for installation"
-					export Ubuntu_64bit_GNU=1
-					break
-					;;
-					*)
-					echo " "
-					echo "Please answer Intel or GNU (case sensative)."
-					;;
-
-				esac
-			done
-	fi
+    Please answer Intel or GNU and press enter (case sensitive):
+    " yn; do
+            case $yn in
+                Intel)
+                    echo " "
+                    echo "Intel is selected for installation"
+                    export Ubuntu_64bit_Intel=1
+                    break
+                    ;;
+                GNU)
+                    echo "-------------------------------------------------- "
+                    echo " "
+                    echo "GNU is selected for installation"
+                    export Ubuntu_64bit_GNU=1
+                    break
+                    ;;
+                *)
+                    echo " "
+                    echo "Please answer Intel or GNU (case sensitive)."
+                    ;;
+            esac
+        done
+    fi
 fi
+
 
 if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "Linux" ]; then
 	echo "Your system is not compatibile with this script."
