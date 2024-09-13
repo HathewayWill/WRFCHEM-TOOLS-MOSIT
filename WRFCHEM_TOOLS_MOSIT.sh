@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Conda environment test
+# Conda environment test
 if [ -n "$CONDA_DEFAULT_ENV" ]; then
     echo "CONDA_DEFAULT_ENV is active: $CONDA_DEFAULT_ENV"
     echo "Turning off $CONDA_DEFAULT_ENV"
@@ -9,7 +9,6 @@ if [ -n "$CONDA_DEFAULT_ENV" ]; then
 else
     echo "CONDA_DEFAULT_ENV is not active."
     echo "Continuing script"
-
 fi
 
 start=$(date)
@@ -29,7 +28,7 @@ export Jasper_Version=1.900.1
 export Pnetcdf_Version=1.13.0
 
 ############################### System Architecture Type #################
-# 32 or 64 bit
+# Determine if the system is 32 or 64-bit based on the architecture
 ##########################################################################
 export SYS_ARCH=$(uname -m)
 
@@ -39,6 +38,7 @@ else
     export SYSTEMBIT="32"
 fi
 
+# Determine the chip type if on macOS (ARM or Intel)
 if [ "$SYS_ARCH" = "arm64" ]; then
     export MAC_CHIP="ARM"
 else
@@ -46,173 +46,189 @@ else
 fi
 
 ############################# System OS Version #############################
-# Macos or Linux
-# Make note that this script only works for Debian Linux kernels
+# Detect if the OS is macOS or Linux
 #############################################################################
 export SYS_OS=$(uname -s)
 
 if [ "$SYS_OS" = "Darwin" ]; then
     export SYSTEMOS="MacOS"
+    # Get the macOS version using sw_vers
+    export MACOS_VERSION=$(sw_vers -productVersion)
+    echo "Operating system detected: MacOS, Version: $MACOS_VERSION"
 elif [ "$SYS_OS" = "Linux" ]; then
     export SYSTEMOS="Linux"
 fi
 
-########## CentOS Test #############
+########## CentOS and Linux Distribution Detection #############
+# More accurate Linux distribution detection using /etc/os-release
+#################################################################
 if [ "$SYSTEMOS" = "Linux" ]; then
-    export YUM=$(command -v yum)
-    if [ "$YUM" != "" ]; then
-        echo "yum found"
-        echo "Your system is a CentOS based system"
-        export SYSTEMOS="CentOS"
+    if [ -f /etc/os-release ]; then
+        # Extract the distribution name and version from /etc/os-release
+        export DISTRO_NAME=$(grep -w "NAME" /etc/os-release | cut -d'=' -f2 | tr -d '"')
+        export DISTRO_VERSION=$(grep -w "VERSION_ID" /etc/os-release | cut -d'=' -f2 | tr -d '"')
+        
+        echo "Operating system detected: $DISTRO_NAME, Version: $DISTRO_VERSION"
+
+        # Check if the system is CentOS
+        if grep -q "CentOS" /etc/os-release; then
+            export SYSTEMOS="CentOS"
+        fi
+    else
+        echo "Unable to detect the Linux distribution version."
     fi
 fi
 
+# Print the final detected OS
+echo "Final operating system detected: $SYSTEMOS"
 ############################### Intel or GNU Compiler Option #############
 
-if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "CentOS" ]; then
-    echo "Your system is not compatible with this script."
-    exit
-fi
+# Only proceed with CentOS-specific logic if the system is CentOS
+if [ "$SYSTEMOS" = "CentOS" ]; then
+    # Check for 32-bit CentOS system
+    if [ "$SYSTEMBIT" = "32" ]; then
+        echo "Your system is not compatible with this script."
+        exit
+    fi
 
-if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "CentOS" ]; then
-    echo "Your system is a 64-bit version of CentOS Linux Kernel"
-    echo " "
-    echo "Intel compilers are not compatible with this script"
-    echo " "
+    # Check for 64-bit CentOS system
+    if [ "$SYSTEMBIT" = "64" ]; then
+        echo "Your system is a 64-bit version of CentOS Linux Kernel."
+        echo "Intel compilers are not compatible with this script."
+        echo ""
 
-    if [ -v Centos_64bit_GNU ]; then
-        echo "The environment variable Centos_64bit_GNU is already set."
-    else
-        echo "The environment variable Centos_64bit_GNU is not set."
-        echo "Setting compiler to GNU"
-        export Centos_64bit_GNU=1
+        # Check if Centos_64bit_GNU environment variable is set
+        if [ -v Centos_64bit_GNU ]; then
+            echo "The environment variable Centos_64bit_GNU is already set."
+        else
+            echo "Setting environment variable Centos_64bit_GNU to GNU."
+            export Centos_64bit_GNU=1
 
-        if [ "$(gcc -dumpversion 2>&1 | awk '{print $1}')" -lt 9 ]; then
-            export Centos_64bit_GNU=2
-            echo "OLD GNU FILES FOUND"
+            # Check GNU version
+            if [ "$(gcc -dumpversion 2>&1 | awk '{print $1}')" -lt 9 ]; then
+                export Centos_64bit_GNU=2
+                echo "OLD GNU FILES FOUND."
+            fi
         fi
     fi
-else
-    echo "The environment variable Centos_64bit_GNU is not set."
 fi
 
-if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "MacOS" ]; then
-    echo "Your system is not compatible with this script."
-    exit
-fi
-
-if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "Intel" ]; then
-    echo "Your system is a 64-bit version of MacOS"
-    echo " "
-    echo "Intel compilers are not compatible with this script"
-    echo " "
-
-    if [ -v macos_64bit_GNU ]; then
-        echo "The environment variable macos_64bit_GNU is already set."
-    else
-        echo "The environment variable macos_64bit_GNU is not set."
-        echo "Setting compiler to GNU"
-        export macos_64bit_GNU=1
-
-        echo " "
-        echo "Xcode Command Line Tools & Homebrew are required for this script."
-        echo " "
-        echo "Installing Homebrew and Xcode Command Line Tools now"
-        echo " "
-        echo "Please enter password when prompted"
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-
-        (
-            echo
-            echo 'eval "$(/usr/local/bin/brew shellenv)"'
-        ) >>~/.profile
-        eval "$(/usr/local/bin/brew shellenv)"
-
-        chsh -s /bin/bash
-    fi
-fi
-
-if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "ARM" ]; then
-    echo "Your system is a 64-bit version of MacOS with arm64"
-    echo " "
-    echo "Intel compilers are not compatible with this script"
-    echo " "
-    echo "Setting compiler to GNU"
-
-    if [ -v macos_64bit_GNU ]; then
-        echo "The environment variable macos_64bit_GNU is already set."
-    else
-        echo "The environment variable macos_64bit_GNU is not set."
-        export macos_64bit_GNU=1
-    fi
-
-    echo " "
-    echo "Xcode Command Line Tools & Homebrew are required for this script."
-    echo " "
-    echo "Installing Homebrew and Xcode Command Line Tools now"
-    echo " "
-    echo "Please enter password when prompted"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-
-    (
-        echo
-        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"'
-    ) >>~/.profile
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-
-    chsh -s /bin/bash
-fi
-
+# Check for 64-bit Linux system (Debian/Ubuntu)
 if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ]; then
-    echo "Your system is 64-bit version of Debian Linux Kernel"
-    echo " "
+    echo "Your system is a 64-bit version of Debian Linux Kernel."
+    echo ""
 
-    if [ -v Ubuntu_64bit_Intel ] || [ -v Ubuntu_64bit_GNU ]; then
-        echo "The environment variable Ubuntu_64bit_Intel is already set."
+    # Check if Ubuntu_64bit_Intel or Ubuntu_64bit_GNU environment variables are set
+    if [ -v "$Ubuntu_64bit_Intel" ] || [ -v "$Ubuntu_64bit_GNU" ]; then
+        echo "The environment variable Ubuntu_64bit_Intel/GNU is already set."
     else
-        echo "The environment variable Ubuntu_64bit_Intel is not set."
-        
+        echo "The environment variable Ubuntu_64bit_Intel/GNU is not set."
+
+        # Prompt user to select a compiler (Intel or GNU)
         while read -r -p "Which compiler do you want to use?
     - Intel
       -- Please note that WRF_CMAQ is only compatible with GNU Compilers
 
     - GNU
 
-    Please answer Intel or GNU and press enter (case sensitive):
-    " yn; do
+    Please answer Intel or GNU and press enter (case-sensitive): " yn; do
             case $yn in
                 Intel)
-                    echo " "
-                    echo "Intel is selected for installation"
+                    echo "Intel is selected for installation."
                     export Ubuntu_64bit_Intel=1
                     break
                     ;;
                 GNU)
-                    echo "-------------------------------------------------- "
-                    echo " "
-                    echo "GNU is selected for installation"
+                    echo "GNU is selected for installation."
                     export Ubuntu_64bit_GNU=1
                     break
                     ;;
                 *)
-                    echo " "
-                    echo "Please answer Intel or GNU (case sensitive)."
+                    echo "Please answer Intel or GNU (case-sensitive)."
                     ;;
             esac
         done
     fi
 fi
 
+# Check for 32-bit Linux system
 if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "Linux" ]; then
     echo "Your system is not compatible with this script."
     exit
 fi
 
+############################# macOS Handling ##############################
+
+# Check for 32-bit MacOS system
+if [ "$SYSTEMBIT" = "32" ] && [ "$SYSTEMOS" = "MacOS" ]; then
+    echo "Your system is not compatible with this script."
+    exit
+fi
+
+# Check for 64-bit Intel-based MacOS system
+if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "Intel" ]; then
+    echo "Your system is a 64-bit version of macOS with an Intel chip."
+    echo "Intel compilers are not compatible with this script."
+    echo "Setting compiler to GNU..."
+
+    # Check if macos_64bit_GNU environment variable is set
+    if [ -v macos_64bit_GNU ]; then
+        echo "The environment variable macos_64bit_GNU is already set."
+    else
+        echo "Setting environment variable macos_64bit_GNU."
+        export macos_64bit_GNU=1
+
+        # Ensure Xcode Command Line Tools are installed
+        if ! xcode-select --print-path &>/dev/null; then
+            echo "Installing Xcode Command Line Tools..."
+            xcode-select --install
+        fi
+
+        # Install Homebrew for Intel Macs in /usr/local
+        echo "Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+        echo 'eval "$(/usr/local/bin/brew shellenv)"' >>~/.profile
+        eval "$(/usr/local/bin/brew shellenv)"
+
+        chsh -s /bin/bash
+    fi
+fi
+
+# Check for 64-bit ARM-based MacOS system (M1, M2 chips)
+if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "ARM" ]; then
+    echo "Your system is a 64-bit version of macOS with an ARM chip (M1/M2)."
+    echo "Intel compilers are not compatible with this script."
+    echo "Setting compiler to GNU..."
+
+    # Check if macos_64bit_GNU environment variable is set
+    if [ -v macos_64bit_GNU ]; then
+        echo "The environment variable macos_64bit_GNU is already set."
+    else
+        echo "Setting environment variable macos_64bit_GNU."
+        export macos_64bit_GNU=1
+
+        # Ensure Xcode Command Line Tools are installed
+        if ! xcode-select --print-path &>/dev/null; then
+            echo "Installing Xcode Command Line Tools..."
+            xcode-select --install
+        fi
+
+        # Install Homebrew for ARM Macs in /opt/homebrew
+        echo "Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>~/.profile
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+
+        chsh -s /bin/bash
+    fi
+fi
 
 ############################# Enter sudo users information #############################
 echo "--------------------------------------------------"
 if [[ -n "$PASSWD" ]]; then
-    echo "Using existing password"
+    echo "Using existing password."
     echo "--------------------------------------------------"
 else
     while true; do
