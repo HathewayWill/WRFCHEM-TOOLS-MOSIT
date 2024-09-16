@@ -429,7 +429,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     tar -xvzf libpng-$Libpng_Version.tar.gz
     cd libpng-$Libpng_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -440,7 +440,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     unzip jasper-$Jasper_Version.zip
     cd jasper-$Jasper_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -453,7 +453,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     cd hdf5-$HDF5_Version-$HDF5_Sub_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -473,7 +473,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
     cd pnetcdf-$Pnetcdf_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -489,7 +489,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     export LDFLAGS=-L$DIR/grib2/lib
     export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -1025,7 +1025,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     tar -xvzf libpng-$Libpng_Version.tar.gz
     cd libpng-$Libpng_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -1036,7 +1036,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     unzip jasper-$Jasper_Version.zip
     cd jasper-$Jasper_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -1049,7 +1049,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     cd hdf5-$HDF5_Version-$HDF5_Sub_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -1069,7 +1069,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
     cd pnetcdf-$Pnetcdf_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -1085,7 +1085,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     export LDFLAGS=-L$DIR/grib2/lib
     export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -1631,7 +1631,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     tar -xvzf libpng-$Libpng_Version.tar.gz
     cd libpng-$Libpng_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -1643,7 +1643,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     unzip jasper-$Jasper_Version.zip
     cd jasper-$Jasper_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -1657,7 +1657,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     cd hdf5-$HDF5_Version-$HDF5_Sub_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -1678,7 +1678,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
     cd pnetcdf-$Pnetcdf_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -1695,7 +1695,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     export LDFLAGS=-L$DIR/grib2/lib
     export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2234,7 +2234,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     tar -xvzf libpng-$Libpng_Version.tar.gz
     autoreconf -i -f 2>&1 | tee autoreconf.log
     cd libpng-$Libpng_Version/
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2246,7 +2246,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     unzip jasper-$Jasper_Version.zip
     cd jasper-$Jasper_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2260,7 +2260,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     cd hdf5-$HDF5_Version-$HDF5_Sub_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2281,7 +2281,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
     cd pnetcdf-$Pnetcdf_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2298,7 +2298,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     export LDFLAGS=-L$DIR/grib2/lib
     export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgcc -lm -ldl -lpnetcdf"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2812,7 +2812,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     tar -xvzf libpng-$Libpng_Version.tar.gz
     cd libpng-$Libpng_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2827,7 +2827,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     unzip jasper-$Jasper_Version.zip
     cd jasper-$Jasper_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2842,7 +2842,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     cd hdf5-$HDF5_Version-$HDF5_Sub_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -3420,7 +3420,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     tar -xvzf libpng-$Libpng_Version.tar.gz
     cd libpng-$Libpng_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -3435,7 +3435,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     unzip jasper-$Jasper_Version.zip
     cd jasper-$Jasper_Version/
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -3450,7 +3450,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     cd hdf5-$HDF5_Version-$HDF5_Sub_Version
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
