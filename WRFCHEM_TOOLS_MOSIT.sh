@@ -507,7 +507,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
     export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -1103,7 +1103,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
     export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -1714,7 +1714,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
     export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2317,7 +2317,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
     export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2885,7 +2885,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     export LDFLAGS=-L$DIR/grib2/lib
     export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -2904,7 +2904,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
     export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc -lgfortran"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -3493,7 +3493,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     export LDFLAGS=-L$DIR/grib2/lib
     export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -3513,7 +3513,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
     export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc -lgfortran"
     autoreconf -i -f 2>&1 | tee autoreconf.log
-    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
+    CC=$MPICC FC=$MPIFC CXX=$MPICXX F90=$MPIF90 F77=$MPIF77 CFLAGS=$CFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static--enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
