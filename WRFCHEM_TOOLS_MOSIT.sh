@@ -67,9 +67,9 @@ if [ "$SYSTEMOS" = "Linux" ]; then
         # Extract the distribution name and version from /etc/os-release
         export DISTRO_NAME=$(grep -w "NAME" /etc/os-release | cut -d'=' -f2 | tr -d '"')
         export DISTRO_VERSION=$(grep -w "VERSION_ID" /etc/os-release | cut -d'=' -f2 | tr -d '"')
-        
+
         echo "Operating system detected: $DISTRO_NAME, Version: $DISTRO_VERSION"
-        
+
         # Check if the system is CentOS
         if grep -q "CentOS" /etc/os-release; then
             export SYSTEMOS="CentOS"
@@ -90,20 +90,20 @@ if [ "$SYSTEMOS" = "CentOS" ]; then
         echo "Your system is not compatible with this script."
         exit
     fi
-    
+
     # Check for 64-bit CentOS system
     if [ "$SYSTEMBIT" = "64" ]; then
         echo "Your system is a 64-bit version of CentOS Linux Kernel."
         echo "Intel compilers are not compatible with this script."
         echo ""
-        
+
         # Check if Centos_64bit_GNU environment variable is set
         if [ -v Centos_64bit_GNU ]; then
             echo "The environment variable Centos_64bit_GNU is already set."
             else
             echo "Setting environment variable Centos_64bit_GNU to GNU."
             export Centos_64bit_GNU=1
-            
+
             # Check GNU version
             if [ "$(gcc -dumpversion 2>&1 | awk '{print $1}')" -lt 9 ]; then
                 export Centos_64bit_GNU=2
@@ -117,20 +117,20 @@ fi
 if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ]; then
     echo "Your system is a 64-bit version of Debian Linux Kernel."
     echo ""
-    
+
     # Check if Ubuntu_64bit_Intel or Ubuntu_64bit_GNU environment variables are set
     if [ -n "$Ubuntu_64bit_Intel" ] || [ -n "$Ubuntu_64bit_GNU" ]; then
         echo "The environment variable Ubuntu_64bit_Intel/GNU is already set."
         else
         echo "The environment variable Ubuntu_64bit_Intel/GNU is not set."
-        
+
         # Prompt user to select a compiler (Intel or GNU)
         while read -r -p "Which compiler do you want to use?
             - Intel
             -- Please note that WRF_CMAQ is only compatible with GNU Compilers
-            
+
             - GNU
-            
+
             Please answer Intel or GNU and press enter (case-sensitive): " yn; do
             case $yn in
                 Intel)
@@ -170,27 +170,27 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "Inte
     echo "Your system is a 64-bit version of macOS with an Intel chip."
     echo "Intel compilers are not compatible with this script."
     echo "Setting compiler to GNU..."
-    
+
     # Check if macos_64bit_GNU environment variable is set
     if [ -v macos_64bit_GNU ]; then
         echo "The environment variable macos_64bit_GNU is already set."
         else
         echo "Setting environment variable macos_64bit_GNU."
         export macos_64bit_GNU=1
-        
+
         # Ensure Xcode Command Line Tools are installed
         if ! xcode-select --print-path &>/dev/null; then
             echo "Installing Xcode Command Line Tools..."
             xcode-select --install
         fi
-        
+
         # Install Homebrew for Intel Macs in /usr/local
         echo "Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        
+
         echo 'eval "$(/usr/local/bin/brew shellenv)"' >>~/.profile
         eval "$(/usr/local/bin/brew shellenv)"
-        
+
         chsh -s /bin/bash
     fi
 fi
@@ -200,27 +200,27 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "ARM"
     echo "Your system is a 64-bit version of macOS with an ARM chip (M1/M2)."
     echo "Intel compilers are not compatible with this script."
     echo "Setting compiler to GNU..."
-    
+
     # Check if macos_64bit_GNU environment variable is set
     if [ -v macos_64bit_GNU ]; then
         echo "The environment variable macos_64bit_GNU is already set."
         else
         echo "Setting environment variable macos_64bit_GNU."
         export macos_64bit_GNU=1
-        
+
         # Ensure Xcode Command Line Tools are installed
         if ! xcode-select --print-path &>/dev/null; then
             echo "Installing Xcode Command Line Tools..."
             xcode-select --install
         fi
-        
+
         # Install Homebrew for ARM Macs in /opt/homebrew
         echo "Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        
+
         echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>~/.profile
         eval "$(/opt/homebrew/bin/brew shellenv)"
-        
+
         chsh -s /bin/bash
     fi
 fi
@@ -238,7 +238,7 @@ if [[ -n "$PASSWD" ]]; then
         echo -e "\nPlease re-enter your password to verify:"
         # Prompt for password verification
         read -r -s password2
-        
+
         # Check if the passwords match
         if [[ "$password1" == "$password2" ]]; then
             export PASSWD=$password1
@@ -253,8 +253,6 @@ if [[ -n "$PASSWD" ]]; then
     done
     echo -e "\nBeginning Installation\n"
 fi
-
-
 
 ##################################### WRFCHEM Tools ###############################################
 # This script will install the WRFCHEM pre-processor tools.
@@ -272,13 +270,13 @@ fi
 ####################################################################################################
 
 if [ "$Centos_64bit_GNU" = "1" ]; then
-    
+
     # Basic Package Management for WRF-CHEM Tools and Processors
     export HOME=$(
     cd
     pwd
     )
-    
+
     #Basic Package Management for Model Evaluation Tools (MET)
     echo $PASSWD | sudo -S yum install epel-release -y
     echo $PASSWD | sudo -S yum install dnf -y
@@ -291,7 +289,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     echo $PASSWD | sudo -S dnf -y update
     echo $PASSWD | sudo -S dnf -y upgrade
     echo " "
-    
+
     #Directory Listings
     export HOME=$(
     cd
@@ -322,10 +320,10 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     ##############################Downloading Libraries############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
     wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
@@ -334,24 +332,24 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     wget -c https://www.ece.uvic.ca/~frodo/jasper/software/jasper-$Jasper_Version.zip
     wget -c https://github.com/pmodels/mpich/releases/download/v$Mpich_Version/mpich-$Mpich_Version.tar.gz
     wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
-    
+
     #############################Core Management####################################
     export CPU_CORE=$(nproc) # number of available threads on system
     export CPU_6CORE="6"
     export CPU_HALF=$(($CPU_CORE / 2))                    #half of availble cores on system
     export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2))) #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
-    
+
     if [ $CPU_CORE -le $CPU_6CORE ]; then #If statement for low core systems.  Forces computers to only use 1 core if there are 4 cores or less on the system. then
         export CPU_HALF_EVEN="2"
         else
         export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2)))
     fi
-    
+
     echo "##########################################"
     echo "Number of threads being used $CPU_HALF_EVEN"
     echo "##########################################"
     echo " "
-    
+
     #############################Compilers############################
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
     export CC=gcc
@@ -359,18 +357,18 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     export FC=gfortran
     export F77=gfortran
     export CFLAGS="-fPIC -fPIE"
-    
+
     #IF statement for GNU compiler issue
     export GCC_VERSION=$(/usr/bin/gcc -dumpfullversion | awk '{print$1}')
     export GFORTRAN_VERSION=$(/usr/bin/gfortran -dumpfullversion | awk '{print$1}')
     export GPLUSPLUS_VERSION=$(/usr/bin/g++ -dumpfullversion | awk '{print$1}')
-    
+
     export GCC_VERSION_MAJOR_VERSION=$(echo $GCC_VERSION | awk -F. '{print $1}')
     export GFORTRAN_VERSION_MAJOR_VERSION=$(echo $GFORTRAN_VERSION | awk -F. '{print $1}')
     export GPLUSPLUS_VERSION_MAJOR_VERSION=$(echo $GPLUSPLUS_VERSION | awk -F. '{print $1}')
-    
+
     export version_10="10"
-    
+
     if [ $GCC_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GFORTRAN_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GPLUSPLUS_VERSION_MAJOR_VERSION -ge $version_10 ]; then
         export fallow_argument=-fallow-argument-mismatch
         export boz_argument=-fallow-invalid-boz
@@ -378,19 +376,19 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
         export fallow_argument=
         export boz_argument=
     fi
-    
+
     export FFLAGS="$fallow_argument -m64"
     export FCFLAGS="$fallow_argument -m64"
-    
+
     echo "##########################################"
     echo "FFLAGS = $FFLAGS"
     echo "FCFLAGS = $FCFLAGS"
     echo "##########################################"
-    
+
     #############################zlib############################
     #Uncalling compilers due to comfigure issue with zlib$Zlib_Version
     #With CC & CXX definied ./configure uses different compiler Flags
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf zlib-$Zlib_Version.tar.gz
     cd zlib-$Zlib_Version/
@@ -400,7 +398,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     ##############################MPICH############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf mpich-$Mpich_Version.tar.gz
@@ -411,17 +409,17 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export PATH=$DIR/MPICH/bin:$PATH
-    
+
     export MPIFC=$DIR/MPICH/bin/mpifort
     export MPIF77=$DIR/MPICH/bin/mpifort
     export MPIF90=$DIR/MPICH/bin/mpifort
     export MPICC=$DIR/MPICH/bin/mpicc
     export MPICXX=$DIR/MPICH/bin/mpicxx
-    
+
     echo " "
-    
+
     #############################libpng############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     export LDFLAGS=-L$DIR/grib2/lib
@@ -434,7 +432,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     #############################JasPer############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     unzip jasper-$Jasper_Version.zip
@@ -444,10 +442,10 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
-    
+
     export JASPERLIB=$DIR/grib2/lib
     export JASPERINC=$DIR/grib2/include
-    
+
     #############################hdf5 library for netcdf4 functionality############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
@@ -458,13 +456,13 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export HDF5=$DIR/grib2
     export PHDF5=$DIR/grib2
     export LD_LIBRARY_PATH=$DIR/grib2/lib:$LD_LIBRARY_PATH
-    
+
     echo " "
-    
+
     #############################Install Parallel-netCDF##############################
     #Make file created with half of available cpu cores
     #Hard path for MPI added
@@ -478,9 +476,9 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export PNETCDF=$DIR/grib2
-    
+
     ##############################Install NETCDF C Library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xzvf v$Netcdf_C_Version.tar.gz
@@ -494,10 +492,10 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export PATH=$DIR/NETCDF/bin:$PATH
     export NETCDF=$DIR/NETCDF
-    
+
     ##############################NetCDF fortran library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf v$Netcdf_Fortran_Version.tar.gz
@@ -512,26 +510,26 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     echo " "
-    
+
     #################################### System Environment Tests ##############
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
-    
+
     tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     export one="1"
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Environment Testing "
@@ -546,7 +544,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
         exit
     fi
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 2"
     $FC TEST_2_fortran_only_free.f90
@@ -560,7 +558,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 3"
     $CC TEST_3_c_only.c
@@ -574,7 +572,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 4"
     $CC -c -m64 TEST_4_fortran+c_c.c
@@ -590,14 +588,14 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Library Compatibility Tests "
@@ -606,7 +604,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     $CC -c 01_fortran+c+netcdf_c.c
     $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     ./a.out | tee comp_test1.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -617,16 +615,16 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
-    
+
     echo "Test 2"
     $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
     $MPICC -c 02_fortran+c+netcdf+mpi_c.c
     $MPIFC 02_fortran+c+netcdf+mpi_f.o \
     02_fortran+c+netcdf+mpi_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -638,14 +636,13 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
     echo " "
-    
+
     echo " All tests completed and passed"
     echo " "
-    
-    
+
     # Downloading WRF-CHEM Tools and untarring files
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
     wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
     wget -c https://www.acom.ucar.edu//wrf-chem/megan_bio_emiss.tar
@@ -662,7 +659,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis.tgz
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis_input.tar
     wget -c https://www.acom.ucar.edu/Data/fire/data/TrashEmis.zip
-    
+
     echo ""
     echo "Unpacking Mozbc."
     tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
@@ -699,22 +696,22 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     unzip TrashEmis.zip
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
     gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
     gunzip FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz
     ############################Installation of Mozbc #############################
     # Recalling variables from install script to make sure the path is right
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
     chmod +x make_mozbc
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -724,16 +721,16 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_mozbc 2>&1 | tee make.log
-    
+
     ################## Information on Upper Boundary Conditions ###################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
     wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
-    
+
     ########################## MEGAN Bio Emission #################################
     # Data for MEGAN Bio Emission located in
     # "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
     chmod +x make_util
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -745,9 +742,9 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
     ./make_util megan_xform 2>&1 | tee make.xform.log
     ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
-    
+
     ############################# Anthroprogenic Emissions #########################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
     chmod +x make_anthro
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -757,14 +754,14 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ############################# EDGAR HTAP ######################################
     #  This directory contains EDGAR-HTAP anthropogenic emission files for the
     #  year 2010.  The files are in the MOZCART and MOZART-MOSAIC sub-directories.
     #  The MOZCART files are intended to be used for the WRF MOZCART_KPP chemical
     #  option.  The MOZART-MOSAIC files are intended to be used with the following
     #  WRF chemical options (See read -rme in Folder
-    
+
     ######################### EPA Anthroprogenic Emissions ########################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
     chmod +x make_anthro
@@ -775,7 +772,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ######################### Weseley EXO Coldens ##################################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
     chmod +x make_util
@@ -787,7 +784,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_util wesely 2>&1 | tee make.wesely.log
     ./make_util exo_coldens 2>&1 | tee make.exo.log
-    
+
     ########################## Aircraft Emissions Preprocessor #####################
     # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
     # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the read -rME file
@@ -798,7 +795,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     echo " Please see script for details about Aircraft Emissions Preprocessor"
     echo "######################################################################"
     echo " "
-    
+
     ######################## Fire INventory from NCAR (FINN) ###########################
     # Fire INventory from NCAR (FINN): A daily fire emissions product for atmospheric chemistry models
     # https://www2.acom.ucar.edu/modeling/finn-fire-inventory-ncar
@@ -807,7 +804,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     echo " Please see folder for details about FINN."
     echo "###########################################"
     echo " "
-    
+
     ######################################### PREP-CHEM-SRC ##############################################
     # PREP-CHEM-SRC is a pollutant emissions numerical too developed at CPTEC/INPE
     # whose function is to create data of atmospheric pollutant emissions from biomass burning,
@@ -829,29 +826,29 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
     # http:// meioambiente.cptec.inpe.br
     # Prep-Chem-Src v1.5.0 (note v1.8.3 is in Beta still)
     #########################################################################################################
-    
+
     # Downloading PREP-CHEM-SRC-1.5 and untarring files
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -4 -c http://ftp.cptec.inpe.br/pesquisa/bramsrd/BRAMS_5.4/PREP-CHEM/PREP-CHEM-SRC-1.5.tar.gz
-    
+
     tar -xzvf PREP-CHEM-SRC-1.5.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
-    
+
     # Installation of PREP-CHEM-SRC-1.5
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
-    
+
     sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
     sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf     #Changing HDF5 Location
     sed -i '55s|-L/scratchin/grupos/catt-brams/shared/libs/gfortran/zlib-1.2.8/lib|-L${DIR}/grib2/lib|' include.mk.gfortran.wrf #Changing zlib Location
     sed -i '69s|-frecord-marker=4|-frecord-marker=4 ${fallow_argument}|' include.mk.gfortran.wrf                                #Changing adding fallow argument mismatch to fix dummy error
-    
+
     make OPT=gfortran.wrf CHEM=RADM_WRF_FIM AER=SIMPLE 2>&1 | tee make.log # Compiling and making of PRE-CHEM-SRC-1.5
-    
+
     # IF statement to check that all files were created.
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin
     n=$(ls ./*.exe | wc -l)
@@ -867,13 +864,13 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 fi
 
 if [ "$Centos_64bit_GNU" = "2" ]; then
-    
+
     # Basic Package Management for WRF-CHEM Tools and Processors
     export HOME=$(
     cd
     pwd
     )
-    
+
     #Basic Package Management for Model Evaluation Tools (MET)
     echo $PASSWD | sudo -S yum install epel-release -y
     echo $PASSWD | sudo -S yum install dnf -y
@@ -882,12 +879,12 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     echo $PASSWD | sudo -S dnf -y upgrade
     echo $PASSWD | sudo -S dnf -y install gcc gcc-gfortran gcc-c++ cpp automake autoconf unzip java-11-openjdk java-11-openjdk-devel bzip2 time nfs-utils perl tcsh ksh git python3 mlocate wget git m4 pkgconfig mlocate libX11-devel libxml2 unzip bzip2 time nfs-utils perl tcsh wget m4 mlocate libX11-devel.x86_64 libXext-devel libXrender-devel fontconfig-devel libXext-devel libXrender-devel fontconfig-devel curl-devel cmake cairo-devel pixman-devel bzip2-devel byacc flex libXmu-devel libXt-devel libXaw libXaw-devel python3 python3-devel libXmu-devel curl-devel m4 bzip2 time nfs-utils perl tcsh mlocate libX11-devel libxml2
     echo $PASSWD | sudo -S dnf -y install python3-dateutil
-    
+
     echo $PASSWD | sudo -S dnf -y groupinstall "Development Tools"
     echo $PASSWD | sudo -S dnf -y update
     echo $PASSWD | sudo -S dnf -y upgrade
     echo " "
-    
+
     #Directory Listings
     export HOME=$(
     cd
@@ -918,10 +915,10 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     ##############################Downloading Libraries############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
     wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
@@ -930,24 +927,24 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     wget -c https://www.ece.uvic.ca/~frodo/jasper/software/jasper-$Jasper_Version.zip
     wget -c https://github.com/pmodels/mpich/releases/download/v$Mpich_Version/mpich-$Mpich_Version.tar.gz
     wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
-    
+
     #############################Core Management####################################
     export CPU_CORE=$(nproc) # number of available threads on system
     export CPU_6CORE="6"
     export CPU_HALF=$(($CPU_CORE / 2))                    #half of availble cores on system
     export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2))) #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
-    
+
     if [ $CPU_CORE -le $CPU_6CORE ]; then #If statement for low core systems.  Forces computers to only use 1 core if there are 4 cores or less on the system. then
         export CPU_HALF_EVEN="2"
         else
         export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2)))
     fi
-    
+
     echo "##########################################"
     echo "Number of threads being used $CPU_HALF_EVEN"
     echo "##########################################"
     echo " "
-    
+
     #############################Compilers############################
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
     export CC=gcc
@@ -955,18 +952,18 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     export FC=gfortran
     export F77=gfortran
     export CFLAGS="-fPIC -fPIE"
-    
+
     #IF statement for GNU compiler issue
     export GCC_VERSION=$(/usr/bin/gcc -dumpfullversion | awk '{print$1}')
     export GFORTRAN_VERSION=$(/usr/bin/gfortran -dumpfullversion | awk '{print$1}')
     export GPLUSPLUS_VERSION=$(/usr/bin/g++ -dumpfullversion | awk '{print$1}')
-    
+
     export GCC_VERSION_MAJOR_VERSION=$(echo $GCC_VERSION | awk -F. '{print $1}')
     export GFORTRAN_VERSION_MAJOR_VERSION=$(echo $GFORTRAN_VERSION | awk -F. '{print $1}')
     export GPLUSPLUS_VERSION_MAJOR_VERSION=$(echo $GPLUSPLUS_VERSION | awk -F. '{print $1}')
-    
+
     export version_10="10"
-    
+
     if [ $GCC_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GFORTRAN_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GPLUSPLUS_VERSION_MAJOR_VERSION -ge $version_10 ]; then
         export fallow_argument=-fallow-argument-mismatch
         export boz_argument=-fallow-invalid-boz
@@ -974,19 +971,19 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
         export fallow_argument=
         export boz_argument=
     fi
-    
+
     export FFLAGS="$fallow_argument -m64"
     export FCFLAGS="$fallow_argument -m64"
-    
+
     echo "##########################################"
     echo "FFLAGS = $FFLAGS"
     echo "FCFLAGS = $FCFLAGS"
     echo "##########################################"
-    
+
     #############################zlib############################
     #Uncalling compilers due to comfigure issue with zlib$Zlib_Version
     #With CC & CXX definied ./configure uses different compiler Flags
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf zlib-$Zlib_Version.tar.gz
     cd zlib-$Zlib_Version/
@@ -996,7 +993,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     ##############################MPICH############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf mpich-$Mpich_Version.tar.gz
@@ -1007,17 +1004,17 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export PATH=$DIR/MPICH/bin:$PATH
-    
+
     export MPIFC=$DIR/MPICH/bin/mpifort
     export MPIF77=$DIR/MPICH/bin/mpifort
     export MPIF90=$DIR/MPICH/bin/mpifort
     export MPICC=$DIR/MPICH/bin/mpicc
     export MPICXX=$DIR/MPICH/bin/mpicxx
-    
+
     echo " "
-    
+
     #############################libpng############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     export LDFLAGS=-L$DIR/grib2/lib
@@ -1030,7 +1027,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     #############################JasPer############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     unzip jasper-$Jasper_Version.zip
@@ -1040,10 +1037,10 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     automake -a -f 2>&1 | tee automake.log
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
-    
+
     export JASPERLIB=$DIR/grib2/lib
     export JASPERINC=$DIR/grib2/include
-    
+
     #############################hdf5 library for netcdf4 functionality############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
@@ -1054,13 +1051,13 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export HDF5=$DIR/grib2
     export PHDF5=$DIR/grib2
     export LD_LIBRARY_PATH=$DIR/grib2/lib:$LD_LIBRARY_PATH
-    
+
     echo " "
-    
+
     #############################Install Parallel-netCDF##############################
     #Make file created with half of available cpu cores
     #Hard path for MPI added
@@ -1074,9 +1071,9 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export PNETCDF=$DIR/grib2
-    
+
     ##############################Install NETCDF C Library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xzvf v$Netcdf_C_Version.tar.gz
@@ -1090,10 +1087,10 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export PATH=$DIR/NETCDF/bin:$PATH
     export NETCDF=$DIR/NETCDF
-    
+
     ##############################NetCDF fortran library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf v$Netcdf_Fortran_Version.tar.gz
@@ -1108,25 +1105,25 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     echo " "
     #################################### System Environment Tests ##############
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
-    
+
     tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     export one="1"
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Environment Testing "
@@ -1141,7 +1138,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
         exit
     fi
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 2"
     $FC TEST_2_fortran_only_free.f90
@@ -1155,7 +1152,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 3"
     $CC TEST_3_c_only.c
@@ -1169,7 +1166,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 4"
     $CC -c -m64 TEST_4_fortran+c_c.c
@@ -1185,14 +1182,14 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Library Compatibility Tests "
@@ -1201,7 +1198,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     $CC -c 01_fortran+c+netcdf_c.c
     $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     ./a.out | tee comp_test1.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -1212,16 +1209,16 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
-    
+
     echo "Test 2"
     $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
     $MPICC -c 02_fortran+c+netcdf+mpi_c.c
     $MPIFC 02_fortran+c+netcdf+mpi_f.o \
     02_fortran+c+netcdf+mpi_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -1233,13 +1230,13 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
     echo " "
-    
+
     echo " All tests completed and passed"
     echo " "
-    
+
     # Downloading WRF-CHEM Tools and untarring files
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
     wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
     wget -c https://www.acom.ucar.edu//wrf-chem/megan_bio_emiss.tar
@@ -1256,7 +1253,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis.tgz
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis_input.tar
     wget -c https://www.acom.ucar.edu/Data/fire/data/TrashEmis.zip
-    
+
     echo ""
     echo "Unpacking Mozbc."
     tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
@@ -1293,22 +1290,22 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     unzip TrashEmis.zip
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
     gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
     gunzip FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz
     ############################Installation of Mozbc #############################
     # Recalling variables from install script to make sure the path is right
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
     chmod +x make_mozbc
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -1318,16 +1315,16 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_mozbc 2>&1 | tee make.log
-    
+
     ################## Information on Upper Boundary Conditions ###################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
     wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
-    
+
     ########################## MEGAN Bio Emission #################################
     # Data for MEGAN Bio Emission located in
     # "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
     chmod +x make_util
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -1339,9 +1336,9 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
     ./make_util megan_xform 2>&1 | tee make.xform.log
     ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
-    
+
     ############################# Anthroprogenic Emissions #########################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
     chmod +x make_anthro
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -1351,14 +1348,14 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ############################# EDGAR HTAP ######################################
     #  This directory contains EDGAR-HTAP anthropogenic emission files for the
     #  year 2010.  The files are in the MOZCART and MOZART-MOSAIC sub-directories.
     #  The MOZCART files are intended to be used for the WRF MOZCART_KPP chemical
     #  option.  The MOZART-MOSAIC files are intended to be used with the following
     #  WRF chemical options (See read -rme in Folder
-    
+
     ######################### EPA Anthroprogenic Emissions ########################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
     chmod +x make_anthro
@@ -1369,7 +1366,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ######################### Weseley EXO Coldens ##################################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
     chmod +x make_util
@@ -1381,7 +1378,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_util wesely 2>&1 | tee make.wesely.log
     ./make_util exo_coldens 2>&1 | tee make.exo.log
-    
+
     ########################## Aircraft Emissions Preprocessor #####################
     # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
     # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the read -rME file
@@ -1392,7 +1389,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     echo " Please see script for details about Aircraft Emissions Preprocessor"
     echo "######################################################################"
     echo " "
-    
+
     ######################## Fire INventory from NCAR (FINN) ###########################
     # Fire INventory from NCAR (FINN): A daily fire emissions product for atmospheric chemistry models
     # https://www2.acom.ucar.edu/modeling/finn-fire-inventory-ncar
@@ -1401,7 +1398,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     echo " Please see folder for details about FINN."
     echo "###########################################"
     echo " "
-    
+
     ######################################### PREP-CHEM-SRC ##############################################
     # PREP-CHEM-SRC is a pollutant emissions numerical too developed at CPTEC/INPE
     # whose function is to create data of atmospheric pollutant emissions from biomass burning,
@@ -1423,29 +1420,29 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
     # http:// meioambiente.cptec.inpe.br
     # Prep-Chem-Src v1.5.0 (note v1.8.3 is in Beta still)
     #########################################################################################################
-    
+
     # Downloading PREP-CHEM-SRC-1.5 and untarring files
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -4 -c http://ftp.cptec.inpe.br/pesquisa/bramsrd/BRAMS_5.4/PREP-CHEM/PREP-CHEM-SRC-1.5.tar.gz
-    
+
     tar -xzvf PREP-CHEM-SRC-1.5.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
-    
+
     # Installation of PREP-CHEM-SRC-1.5
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
-    
+
     sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
     sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf     #Changing HDF5 Location
     sed -i '55s|-L/scratchin/grupos/catt-brams/shared/libs/gfortran/zlib-1.2.8/lib|-L${DIR}/grib2/lib|' include.mk.gfortran.wrf #Changing zlib Location
     sed -i '69s|-frecord-marker=4|-frecord-marker=4 ${fallow_argument}|' include.mk.gfortran.wrf                                #Changing adding fallow argument mismatch to fix dummy error
-    
+
     make OPT=gfortran.wrf CHEM=RADM_WRF_FIM AER=SIMPLE 2>&1 | tee make.log # Compiling and making of PRE-CHEM-SRC-1.5
-    
+
     # IF statement to check that all files were created.
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin
     n=$(ls ./*.exe | wc -l)
@@ -1461,17 +1458,17 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 fi
 
 if [ "$Ubuntu_64bit_GNU" = "1" ]; then
-    
+
     # Basic Package Management for WRF-CHEM Tools and Processors
-    
+
     echo $PASSWD | sudo -S apt -y update
     echo $PASSWD | sudo -S apt -y upgrade
     # Basic Package Management for WRF-CHEM Tools and Processors
-    
+
     echo $PASSWD | sudo -S apt -y update
     echo $PASSWD | sudo -S apt -y upgrade
     release_version=$(lsb_release -r -s)
-    
+
     # Compare the release version
     if [ "$release_version" = "24.04" ]; then
         # Install Emacs without recommended packages
@@ -1481,17 +1478,15 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
         echo "The release version is not 24.04, attempting to install Emacs."
         echo $PASSWD | sudo -S apt install emacs -y
     fi
-    
+
     echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make  ncview okular openbox pipenv pkg-config  python3 python3-dev python3-pip python3-dateutil tcsh unzip xauth xorg time
-    
+
     #Fix any broken installations
     echo $PASSWD | sudo -S apt --fix-broken install
-    
-    
+
     # make sure some critical packages have been installed
     which cmake pkg-config make gcc g++ gfortran
-    
-    
+
     #Directory Listings
     export HOME=$(
     cd
@@ -1522,10 +1517,10 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     ##############################Downloading Libraries############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
     wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
@@ -1534,24 +1529,24 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     wget -c https://www.ece.uvic.ca/~frodo/jasper/software/jasper-$Jasper_Version.zip
     wget -c https://github.com/pmodels/mpich/releases/download/v$Mpich_Version/mpich-$Mpich_Version.tar.gz
     wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
-    
+
     #############################Core Management####################################
     export CPU_CORE=$(nproc) # number of available threads on system
     export CPU_6CORE="6"
     export CPU_HALF=$(($CPU_CORE / 2))                    #half of availble cores on system
     export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2))) #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
-    
+
     if [ $CPU_CORE -le $CPU_6CORE ]; then #If statement for low core systems.  Forces computers to only use 1 core if there are 4 cores or less on the system. then
         export CPU_HALF_EVEN="2"
         else
         export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2)))
     fi
-    
+
     echo "##########################################"
     echo "Number of threads being used $CPU_HALF_EVEN"
     echo "##########################################"
     echo " "
-    
+
     #############################Compilers############################
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
     export CC=gcc
@@ -1559,18 +1554,18 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     export FC=gfortran
     export F77=gfortran
     export CFLAGS="-fPIC -fPIE"
-    
+
     #IF statement for GNU compiler issue
     export GCC_VERSION=$(/usr/bin/gcc -dumpfullversion | awk '{print$1}')
     export GFORTRAN_VERSION=$(/usr/bin/gfortran -dumpfullversion | awk '{print$1}')
     export GPLUSPLUS_VERSION=$(/usr/bin/g++ -dumpfullversion | awk '{print$1}')
-    
+
     export GCC_VERSION_MAJOR_VERSION=$(echo $GCC_VERSION | awk -F. '{print $1}')
     export GFORTRAN_VERSION_MAJOR_VERSION=$(echo $GFORTRAN_VERSION | awk -F. '{print $1}')
     export GPLUSPLUS_VERSION_MAJOR_VERSION=$(echo $GPLUSPLUS_VERSION | awk -F. '{print $1}')
-    
+
     export version_10="10"
-    
+
     if [ $GCC_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GFORTRAN_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GPLUSPLUS_VERSION_MAJOR_VERSION -ge $version_10 ]; then
         export fallow_argument=-fallow-argument-mismatch
         export boz_argument=-fallow-invalid-boz
@@ -1578,19 +1573,19 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
         export fallow_argument=
         export boz_argument=
     fi
-    
+
     export FFLAGS="$fallow_argument -m64"
     export FCFLAGS="$fallow_argument -m64"
-    
+
     echo "##########################################"
     echo "FFLAGS = $FFLAGS"
     echo "FCFLAGS = $FCFLAGS"
     echo "##########################################"
-    
+
     #############################zlib############################
     #Uncalling compilers due to comfigure issue with zlib$Zlib_Version
     #With CC & CXX definied ./configure uses different compiler Flags
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf zlib-$Zlib_Version.tar.gz
     cd zlib-$Zlib_Version/
@@ -1601,7 +1596,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     ##############################MPICH############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf mpich-$Mpich_Version.tar.gz
@@ -1613,17 +1608,17 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export PATH=$DIR/MPICH/bin:$PATH
-    
+
     export MPIFC=$DIR/MPICH/bin/mpifort
     export MPIF77=$DIR/MPICH/bin/mpifort
     export MPIF90=$DIR/MPICH/bin/mpifort
     export MPICC=$DIR/MPICH/bin/mpicc
     export MPICXX=$DIR/MPICH/bin/mpicxx
-    
+
     echo " "
-    
+
     #############################libpng############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     export LDFLAGS=-L$DIR/grib2/lib
@@ -1637,7 +1632,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     #############################JasPer############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     unzip jasper-$Jasper_Version.zip
@@ -1648,10 +1643,10 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
-    
+
     export JASPERLIB=$DIR/grib2/lib
     export JASPERINC=$DIR/grib2/include
-    
+
     #############################hdf5 library for netcdf4 functionality############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
@@ -1663,13 +1658,13 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export HDF5=$DIR/grib2
     export PHDF5=$DIR/grib2
     export LD_LIBRARY_PATH=$DIR/grib2/lib:$LD_LIBRARY_PATH
-    
+
     echo " "
-    
+
     #############################Install Parallel-netCDF##############################
     #Make file created with half of available cpu cores
     #Hard path for MPI added
@@ -1684,9 +1679,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export PNETCDF=$DIR/grib2
-    
+
     ##############################Install NETCDF C Library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xzvf v$Netcdf_C_Version.tar.gz
@@ -1701,10 +1696,10 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export PATH=$DIR/NETCDF/bin:$PATH
     export NETCDF=$DIR/NETCDF
-    
+
     ##############################NetCDF fortran library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf v$Netcdf_Fortran_Version.tar.gz
@@ -1720,26 +1715,25 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     echo " "
     #################################### System Environment Tests ##############
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
-    
-    
+
     tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     export one="1"
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Environment Testing "
@@ -1754,7 +1748,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
         exit
     fi
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 2"
     $FC TEST_2_fortran_only_free.f90
@@ -1768,7 +1762,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 3"
     $CC TEST_3_c_only.c
@@ -1782,7 +1776,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 4"
     $CC -c -m64 TEST_4_fortran+c_c.c
@@ -1798,14 +1792,14 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Library Compatibility Tests "
@@ -1814,7 +1808,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     $CC -c 01_fortran+c+netcdf_c.c
     $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     ./a.out | tee comp_test1.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -1825,16 +1819,16 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
-    
+
     echo "Test 2"
     $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
     $MPICC -c 02_fortran+c+netcdf+mpi_c.c
     $MPIFC 02_fortran+c+netcdf+mpi_f.o \
     02_fortran+c+netcdf+mpi_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -1846,12 +1840,12 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
     echo " "
-    
+
     echo " All tests completed and passed"
     echo " "
     # Downloading WRF-CHEM Tools and untarring files
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
     wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
     wget -c https://www.acom.ucar.edu//wrf-chem/megan_bio_emiss.tar
@@ -1868,7 +1862,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis.tgz
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis_input.tar
     wget -c https://www.acom.ucar.edu/Data/fire/data/TrashEmis.zip
-    
+
     echo ""
     echo "Unpacking Mozbc."
     tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
@@ -1905,22 +1899,22 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     unzip TrashEmis.zip
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
     gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
     gunzip FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz
     ############################Installation of Mozbc #############################
     # Recalling variables from install script to make sure the path is right
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
     chmod +x make_mozbc
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -1930,16 +1924,16 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_mozbc 2>&1 | tee make.log
-    
+
     ################## Information on Upper Boundary Conditions ###################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
     wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
-    
+
     ########################## MEGAN Bio Emission #################################
     # Data for MEGAN Bio Emission located in
     # "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
     chmod +x make_util
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -1951,9 +1945,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
     ./make_util megan_xform 2>&1 | tee make.xform.log
     ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
-    
+
     ############################# Anthroprogenic Emissions #########################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
     chmod +x make_anthro
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -1963,14 +1957,14 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ############################# EDGAR HTAP ######################################
     #  This directory contains EDGAR-HTAP anthropogenic emission files for the
     #  year 2010.  The files are in the MOZCART and MOZART-MOSAIC sub-directories.
     #  The MOZCART files are intended to be used for the WRF MOZCART_KPP chemical
     #  option.  The MOZART-MOSAIC files are intended to be used with the following
     #  WRF chemical options (See read -rme in Folder
-    
+
     ######################### EPA Anthroprogenic Emissions ########################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
     chmod +x make_anthro
@@ -1981,7 +1975,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ######################### Weseley EXO Coldens ##################################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
     chmod +x make_util
@@ -1993,7 +1987,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_util wesely 2>&1 | tee make.wesely.log
     ./make_util exo_coldens 2>&1 | tee make.exo.log
-    
+
     ########################## Aircraft Emissions Preprocessor #####################
     # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
     # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the read -rME file
@@ -2004,7 +1998,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     echo " Please see script for details about Aircraft Emissions Preprocessor"
     echo "######################################################################"
     echo " "
-    
+
     ######################## Fire INventory from NCAR (FINN) ###########################
     # Fire INventory from NCAR (FINN): A daily fire emissions product for atmospheric chemistry models
     # https://www2.acom.ucar.edu/modeling/finn-fire-inventory-ncar
@@ -2013,7 +2007,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     echo " Please see folder for details about FINN."
     echo "###########################################"
     echo " "
-    
+
     ######################################### PREP-CHEM-SRC ##############################################
     # PREP-CHEM-SRC is a pollutant emissions numerical too developed at CPTEC/INPE
     # whose function is to create data of atmospheric pollutant emissions from biomass burning,
@@ -2035,29 +2029,29 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     # http:// meioambiente.cptec.inpe.br
     # Prep-Chem-Src v1.5.0 (note v1.8.3 is in Beta still)
     #########################################################################################################
-    
+
     # Downloading PREP-CHEM-SRC-1.5 and untarring files
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -4 -c http://ftp.cptec.inpe.br/pesquisa/bramsrd/BRAMS_5.4/PREP-CHEM/PREP-CHEM-SRC-1.5.tar.gz
-    
+
     tar -xzvf PREP-CHEM-SRC-1.5.tar.gz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
-    
+
     # Installation of PREP-CHEM-SRC-1.5
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin/build
-    
+
     sed -i '47s|/scratchin/grupos/catt-brams/shared/libs/gfortran/netcdf-4.1.3|${DIR}/NETCDF|' include.mk.gfortran.wrf        #Changing NETDCF Location
     sed -i '53s|/scratchin/grupos/catt-brams/shared/libs/gfortran/hdf5-1.8.13-serial|${DIR}/grib2|' include.mk.gfortran.wrf     #Changing HDF5 Location
     sed -i '55s|-L/scratchin/grupos/catt-brams/shared/libs/gfortran/zlib-1.2.8/lib|-L${DIR}/grib2/lib|' include.mk.gfortran.wrf #Changing zlib Location
     sed -i '69s|-frecord-marker=4|-frecord-marker=4 ${fallow_argument}|' include.mk.gfortran.wrf                                #Changing adding fallow argument mismatch to fix dummy error
-    
+
     make OPT=gfortran.wrf CHEM=RADM_WRF_FIM AER=SIMPLE 2>&1 | tee make.log # Compiling and making of PRE-CHEM-SRC-1.5
-    
+
     # IF statement to check that all files were created.
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5/bin
     n=$(ls ./*.exe | wc -l)
@@ -2070,38 +2064,38 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
         exit
     fi
     echo " "
-    
+
     #####################################BASH Script Finished##############################
     echo " "
     echo "WRF CHEM Tools & PREP_CHEM_SRC compiled with latest version of NETCDF files available on 01/01/2023"
     echo "If error occurs using WRFCHEM tools please update your NETCDF libraries or reconfigure with older libraries"
     echo "This is a WRC Chem Community tool made by a private user and is not supported by UCAR/NCAR"
     read -r -t 5 -p "BASH Script Finished"
-    
+
 fi
 
 if [ "$Ubuntu_64bit_Intel" = "1" ]; then
-    
+
     echo $PASSWD | sudo -S apt -y update
     echo $PASSWD | sudo -S apt -y upgrade
-    
+
     # download the key to system keyring; this and the following echo command are
     # needed in order to install the Intel compilers
     wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB |
     gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg >/dev/null
-    
+
     # add signed entry to apt sources and configure the APT client to use Intel repository:
     echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-    
+
     # this update should get the Intel package info from the Intel repository
     echo $PASSWD | sudo -S apt -y update
-    
+
     # Basic Package Management for WRF-CHEM Tools and Processors
-    
+
     echo $PASSWD | sudo -S apt -y update
     echo $PASSWD | sudo -S apt -y upgrade
     release_version=$(lsb_release -r -s)
-    
+
     # Compare the release version
     if [ "$release_version" = "24.04" ]; then
         # Install Emacs without recommended packages
@@ -2111,27 +2105,26 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
         echo "The release version is not 24.04, attempting to install Emacs."
         echo $PASSWD | sudo -S apt install emacs -y
     fi
-    
+
     echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make  ncview okular openbox pipenv pkg-config  python3 python3-dev python3-pip python3-dateutil tcsh unzip xauth xorg time
-    
+
     # install the Intel compilers
     echo $PASSWD | sudo -S apt -y install intel-basekit
     echo $PASSWD | sudo -S apt -y install intel-hpckit
     echo $PASSWD | sudo -S apt -y install intel-oneapi-python
-    
+
     echo $PASSWD | sudo -S apt -y update
     echo $PASSWD | sudo -S apt -y upgrade
-    
+
     #Fix any broken installations
     echo $PASSWD | sudo -S apt --fix-broken install
-    
-    
+
     # make sure some critical packages have been installed
     which cmake pkg-config make gcc g++ gfortran
-    
+
     # add the Intel compiler file paths to various environment variables
     source /opt/intel/oneapi/setvars.sh
-    
+
     # some of the libraries we install below need one or more of these variables
     # some of the libraries we install below need one or more of these variables
     export CC=icx
@@ -2147,7 +2140,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     export CFLAGS="-fPIC -fPIE -O3 -Wno-implicit-function-declaration -Wno-incompatible-function-pointer-types -Wno-unused-command-line-argument"
     export FFLAGS="-m64"
     export FCFLAGS="-m64"
-    
+
     #Directory Listings
     export HOME=$(
     cd
@@ -2178,13 +2171,12 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
-    
+
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
-    
+
     ##############################Downloading Libraries############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
     wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     wget -c https://github.com/Unidata/netcdf-c/archive/refs/tags/v$Netcdf_C_Version.tar.gz
@@ -2192,30 +2184,30 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     wget -c https://download.sourceforge.net/libpng/libpng-$Libpng_Version.tar.gz
     wget -c https://www.ece.uvic.ca/~frodo/jasper/software/jasper-$Jasper_Version.zip
     wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
-    
+
     #############################Core Management####################################
     export CPU_CORE=$(nproc) #number of available threads on system
     export CPU_6CORE="6"
     export CPU_HALF=$(($CPU_CORE / 2))                    #half of availble cores on system
     export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2))) #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
-    
+
     if [ $CPU_CORE -le $CPU_6CORE ]; then #If statement for low core systems.  Forces computers to only use 1 core if there are 4 cores or less on the system. then
         export CPU_HALF_EVEN="2"
         else
         export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2)))
     fi
-    
+
     echo "##########################################"
     echo "Number of threads being used $CPU_HALF_EVEN"
     echo "##########################################"
     echo " "
-    
+
     #############################Compilers############################
-    
+
     #############################zlib############################
     #Uncalling compilers due to comfigure issue with zlib$Zlib_Version
     #With CC & CXX definied ./configure uses different compiler Flags
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf zlib-$Zlib_Version.tar.gz
     cd zlib-$Zlib_Version/
@@ -2226,7 +2218,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     #############################libpng############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     export LDFLAGS=-L$DIR/grib2/lib
@@ -2240,7 +2232,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     #############################JasPer############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     unzip jasper-$Jasper_Version.zip
@@ -2251,10 +2243,10 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
-    
+
     export JASPERLIB=$DIR/grib2/lib
     export JASPERINC=$DIR/grib2/include
-    
+
     #############################hdf5 library for netcdf4 functionality############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
@@ -2266,13 +2258,13 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export HDF5=$DIR/grib2
     export PHDF5=$DIR/grib2
     export LD_LIBRARY_PATH=$DIR/grib2/lib:$LD_LIBRARY_PATH
-    
+
     echo " "
-    
+
     #############################Install Parallel-netCDF##############################
     #Make file created with half of available cpu cores
     #Hard path for MPI added
@@ -2287,9 +2279,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export PNETCDF=$DIR/grib2
-    
+
     ##############################Install NETCDF C Library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xzvf v$Netcdf_C_Version.tar.gz
@@ -2304,10 +2296,10 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export PATH=$DIR/NETCDF/bin:$PATH
     export NETCDF=$DIR/NETCDF
-    
+
     ##############################NetCDF fortran library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf v$Netcdf_Fortran_Version.tar.gz
@@ -2323,25 +2315,25 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     echo " "
     #################################### System Environment Tests ##############
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
-    
+
     tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     export one="1"
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Environment Testing "
@@ -2356,7 +2348,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
         exit
     fi
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 2"
     $FC TEST_2_fortran_only_free.f90
@@ -2370,7 +2362,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 3"
     $CC TEST_3_c_only.c
@@ -2384,7 +2376,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 4"
     $CC -c -m64 TEST_4_fortran+c_c.c
@@ -2400,14 +2392,14 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Library Compatibility Tests "
@@ -2416,7 +2408,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     $CC -c 01_fortran+c+netcdf_c.c
     $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     ./a.out | tee comp_test1.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -2427,16 +2419,16 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
-    
+
     echo "Test 2"
     $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
     $MPICC -c 02_fortran+c+netcdf+mpi_c.c
     $MPIFC 02_fortran+c+netcdf+mpi_f.o \
     02_fortran+c+netcdf+mpi_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     mpirun ./a.out | tee comp_test2.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -2448,12 +2440,12 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
     echo " "
-    
+
     echo " All tests completed and passed"
     echo " "
     # Downloading WRF-CHEM Tools and untarring files
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
     wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
     wget -c https://www.acom.ucar.edu//wrf-chem/megan_bio_emiss.tar
@@ -2470,7 +2462,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis.tgz
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis_input.tar
     wget -c https://www.acom.ucar.edu/Data/fire/data/TrashEmis.zip
-    
+
     echo ""
     echo "Unpacking Mozbc."
     tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
@@ -2507,89 +2499,89 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     unzip TrashEmis.zip
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
     gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
     gunzip FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz
     ############################Installation of Mozbc #############################
     # Recalling variables from install script to make sure the path is right
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
     chmod +x make_mozbc
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
     export NETCDF_DIR=$DIR/NETCDF
     sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
-    
+
     ./make_mozbc 2>&1 | tee make.log
-    
+
     ################## Information on Upper Boundary Conditions ###################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
     wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
-    
+
     ########################## MEGAN Bio Emission #################################
     # Data for MEGAN Bio Emission located in
     # "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
     chmod +x make_util
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
-    
+
     export NETCDF_DIR=$DIR/NETCDF
     sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
-    
+
     ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
     ./make_util megan_xform 2>&1 | tee make.xform.log
     ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
-    
+
     ############################# Anthroprogenic Emissions #########################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
     chmod +x make_anthro
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
-    
+
     export NETCDF_DIR=$DIR/NETCDF
     sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
-    
+
     ./make_anthro 2>&1 | tee make.log
-    
+
     ############################# EDGAR HTAP ######################################
     #  This directory contains EDGAR-HTAP anthropogenic emission files for the
     #  year 2010.  The files are in the MOZCART and MOZART-MOSAIC sub-directories.
     #  The MOZCART files are intended to be used for the WRF MOZCART_KPP chemical
     #  option.  The MOZART-MOSAIC files are intended to be used with the following
     #  WRF chemical options (See read -rme in Folder
-    
+
     ######################### EPA Anthroprogenic Emissions ########################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
     chmod +x make_anthro
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
-    
+
     export NETCDF_DIR=$DIR/NETCDF
     sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
-    
+
     ./make_anthro 2>&1 | tee make.log
-    
+
     ######################### Weseley EXO Coldens ##################################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
     chmod +x make_util
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
-    
+
     export NETCDF_DIR=$DIR/NETCDF
     sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
-    
+
     ./make_util wesely 2>&1 | tee make.wesely.log
     ./make_util exo_coldens 2>&1 | tee make.exo.log
-    
+
     ########################## Aircraft Emissions Preprocessor #####################
     # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
     # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the read -rME file
@@ -2600,7 +2592,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     echo " Please see script for details about Aircraft Emissions Preprocessor"
     echo "######################################################################"
     echo " "
-    
+
     ######################## Fire INventory from NCAR (FINN) ###########################
     # Fire INventory from NCAR (FINN): A daily fire emissions product for atmospheric chemistry models
     # https://www2.acom.ucar.edu/modeling/finn-fire-inventory-ncar
@@ -2609,18 +2601,18 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
     echo " Please see folder for details about FINN."
     echo "###########################################"
     echo " "
-    
+
     #####################################BASH Script Finished##############################
     echo " "
     echo "WRF CHEM Tools & PREP-CHEM-SRC compiled with latest version of NETCDF files available on 03/01/2023"
     echo "If error occurs using WRFCHEM tools please update your NETCDF libraries or reconfigure with older libraries"
     echo "This is a WRC Chem Community tool made by a private user and is not supported by UCAR/NCAR"
     read -r -t 5 -p "BASH Script Finished"
-    
+
 fi
 
 if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
-    
+
     #############################basic package managment############################
     brew install wget
     brew install git
@@ -2646,9 +2638,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     brew install byacc
     brew install bison
     brew install gnu-sed
-    
+
     ##############################Directory Listing############################
-    
+
     export HOME=$(
     cd
     pwd
@@ -2681,10 +2673,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
-    
+
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
-    
+
     #############################Core Management####################################
     export CPU_CORE=$(sysctl -n hw.ncpu) # number of available threads on system
     export CPU_6CORE="6"
@@ -2692,20 +2683,20 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     #1/2 of availble cores on system
     export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2)))
     #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
-    
+
     if [ $CPU_CORE -le $CPU_6CORE ]; then #If statement for low core systems.  Forces computers to only use 1 core if there are 4 cores or less on the system. then
         export CPU_HALF_EVEN="2"
         else
         export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2)))
     fi
-    
+
     echo "##########################################"
     echo "Number of Threads being used $CPU_HALF_EVEN"
     echo "##########################################"
     echo " "
-    
+
     ##############################Downloading Libraries############################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
     wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
@@ -2715,39 +2706,39 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     wget -c https://www.ece.uvic.ca/~frodo/jasper/software/jasper-$Jasper_Version.zip
     wget -c https://github.com/pmodels/mpich/releases/download/v$Mpich_Version/mpich-$Mpich_Version.tar.gz
     wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
-    
+
     echo " "
-    
+
     #############################Compilers############################
-    
+
     #Symlink to avoid clang conflicts with compilers
     #default gcc path /usr/bin/gcc
     #default homebrew path /usr/local/bin
-    
+
     echo $PASSWD | sudo -S ln -sf /usr/local/bin/gcc-12 /usr/local/bin/gcc
     echo $PASSWD | sudo -S ln -sf /usr/local/bin/g++-12 /usr/local/bin/g++
     echo $PASSWD | sudo -S ln -sf /usr/local/bin/gfortran-12 /usr/local/bin/gfortran
     echo $PASSWD | sudo -S ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
-    
+
     export CC=gcc
     export CXX=g++
     export FC=gfortran
     export F77=gfortran
     export CFLAGS="-fPIC -fPIE -Wno-implicit-function-declaration -Wall"
-    
+
     echo " "
-    
+
     #IF statement for GNU compiler issue
     export GCC_VERSION=$(gcc -dumpfullversion | awk '{print$1}')
     export GFORTRAN_VERSION=$(gfortran -dumpfullversion | awk '{print$1}')
     export GPLUSPLUS_VERSION=$(g++ -dumpfullversion | awk '{print$1}')
-    
+
     export GCC_VERSION_MAJOR_VERSION=$(echo $GCC_VERSION | awk -F. '{print $1}')
     export GFORTRAN_VERSION_MAJOR_VERSION=$(echo $GFORTRAN_VERSION | awk -F. '{print $1}')
     export GPLUSPLUS_VERSION_MAJOR_VERSION=$(echo $GPLUSPLUS_VERSION | awk -F. '{print $1}')
-    
+
     export version_10="10"
-    
+
     if [ $GCC_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GFORTRAN_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GPLUSPLUS_VERSION_MAJOR_VERSION -ge $version_10 ]; then
         export fallow_argument=-fallow-argument-mismatch
         export boz_argument=-fallow-invalid-boz
@@ -2755,21 +2746,21 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
         export fallow_argument=
         export boz_argument=
     fi
-    
+
     export FFLAGS="$fallow_argument -m64"
     export FCFLAGS="$fallow_argument -m64"
-    
+
     echo "##########################################"
     echo "FFLAGS = $FFLAGS"
     echo "FCFLAGS = $FCFLAGS"
     echo "##########################################"
-    
+
     echo " "
-    
+
     #############################zlib############################
     #Uncalling compilers due to comfigure issue with zlib1.2.12
     #With CC & CXX definied ./configure uses different compiler Flags
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf zlib-$Zlib_Version.tar.gz
     cd zlib-$Zlib_Version/
@@ -2780,9 +2771,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     echo " "
-    
+
     ##############################MPICH############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf mpich-$Mpich_Version.tar.gz
@@ -2794,17 +2785,17 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export PATH=$DIR/MPICH/bin:$PATH
-    
+
     export MPIFC=$DIR/MPICH/bin/mpifort
     export MPIF77=$DIR/MPICH/bin/mpifort
     export MPIF90=$DIR/MPICH/bin/mpifort
     export MPICC=$DIR/MPICH/bin/mpicc
     export MPICXX=$DIR/MPICH/bin/mpicxx
-    
+
     echo " "
-    
+
     #############################libpng############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     export LDFLAGS=-L$DIR/grib2/lib
@@ -2819,10 +2810,10 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
     #make check
-    
+
     echo " "
     #############################JasPer############################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     unzip jasper-$Jasper_Version.zip
     cd jasper-$Jasper_Version/
@@ -2834,10 +2825,10 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     export JASPERLIB=$DIR/grib2/lib
     export JASPERINC=$DIR/grib2/include
-    
+
     echo " "
     #############################hdf5 library for netcdf4 functionality############################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     cd hdf5-$HDF5_Version-$HDF5_Sub_Version
@@ -2848,13 +2839,13 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export HDF5=$DIR/grib2
     export PHDF5=$DIR/grib2
     export LD_LIBRARY_PATH=$DIR/grib2/lib:$LD_LIBRARY_PATH
-    
+
     echo " "
-    
+
     #############################Install Parallel-netCDF##############################
     #Make file created with half of available cpu cores
     #Hard path for MPI added
@@ -2874,9 +2865,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export PNETCDF=$DIR/grib2
-    
+
     ##############################Install NETCDF C Library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xzvf v$Netcdf_C_Version.tar.gz
@@ -2890,11 +2881,11 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export PATH=$DIR/NETCDF/bin:$PATH
     export NETCDF=$DIR/NETCDF
     echo " "
-    
+
     ##############################NetCDF fortran library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf v$Netcdf_Fortran_Version.tar.gz
@@ -2910,25 +2901,25 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     echo " "
     #################################### System Environment Tests ##############
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
-    
+
     tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     export one="1"
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Environment Testing "
@@ -2943,7 +2934,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
         exit
     fi
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 2"
     $FC TEST_2_fortran_only_free.f90
@@ -2957,7 +2948,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 3"
     $CC TEST_3_c_only.c
@@ -2971,7 +2962,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 4"
     $CC -c -m64 TEST_4_fortran+c_c.c
@@ -2987,14 +2978,14 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Library Compatibility Tests "
@@ -3003,7 +2994,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     $CC -c 01_fortran+c+netcdf_c.c
     $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     ./a.out | tee comp_test1.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -3014,16 +3005,16 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
-    
+
     echo "Test 2"
     $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
     $MPICC -c 02_fortran+c+netcdf+mpi_c.c
     $MPIFC 02_fortran+c+netcdf+mpi_f.o \
     02_fortran+c+netcdf+mpi_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -3035,12 +3026,12 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
     echo " "
-    
+
     echo " All tests completed and passed"
     echo " "
     # Downloading WRF-CHEM Tools and untarring files
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
     wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
     wget -c https://www.acom.ucar.edu//wrf-chem/megan_bio_emiss.tar
@@ -3057,7 +3048,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis.tgz
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis_input.tar
     wget -c https://www.acom.ucar.edu/Data/fire/data/TrashEmis.zip
-    
+
     echo ""
     echo "Unpacking Mozbc."
     tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
@@ -3094,25 +3085,25 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     unzip TrashEmis.zip
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
     gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
     gunzip FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz
     ############################Installation of Mozbc #############################
     export fallow_argument=-fallow-argument-mismatch
     export boz_argument=-fallow-invalid-boz
-    
+
     # Recalling variables from install script to make sure the path is right
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
     chmod +x make_mozbc
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -3122,16 +3113,16 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_mozbc 2>&1 | tee make.log
-    
+
     ################## Information on Upper Boundary Conditions ###################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
     wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
-    
+
     ########################## MEGAN Bio Emission #################################
     # Data for MEGAN Bio Emission located in
     # "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
     chmod +x make_util
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -3143,9 +3134,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
     ./make_util megan_xform 2>&1 | tee make.xform.log
     ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
-    
+
     ############################# Anthroprogenic Emissions #########################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
     chmod +x make_anthro
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -3155,14 +3146,14 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ############################# EDGAR HTAP ######################################
     #  This directory contains EDGAR-HTAP anthropogenic emission files for the
     #  year 2010.  The files are in the MOZCART and MOZART-MOSAIC sub-directories.
     #  The MOZCART files are intended to be used for the WRF MOZCART_KPP chemical
     #  option.  The MOZART-MOSAIC files are intended to be used with the following
     #  WRF chemical options (See read -rme in Folder
-    
+
     ######################### EPA Anthroprogenic Emissions ########################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
     chmod +x make_anthro
@@ -3173,7 +3164,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ######################### Weseley EXO Coldens ##################################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
     chmod +x make_util
@@ -3185,7 +3176,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_util wesely 2>&1 | tee make.wesley.log
     ./make_util exo_coldens 2>&1 | tee make.exo.log
-    
+
     ########################## Aircraft Emissions Preprocessor #####################
     # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
     # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the read -rME file
@@ -3196,7 +3187,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     echo " Please see script for details about Aircraft Emissions Preprocessor"
     echo "######################################################################"
     echo " "
-    
+
     ######################## Fire INventory from NCAR (FINN) ###########################
     # Fire INventory from NCAR (FINN): A daily fire emissions product for atmospheric chemistry models
     # https://www2.acom.ucar.edu/modeling/finn-fire-inventory-ncar
@@ -3211,11 +3202,11 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     echo "If error occurs using WRFCHEM tools please update your NETCDF libraries or reconfigure with older libraries"
     echo "This is a WRC Chem Community tool made by a private user and is not supported by UCAR/NCAR"
     echo "BASH Script Finished"
-    
+
 fi
 
 if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
-    
+
     #############################basic package managment############################
     brew install wget
     brew install git
@@ -3241,9 +3232,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     brew install byacc
     brew install bison
     brew install gnu-sed
-    
+
     ##############################Directory Listing############################
-    
+
     export HOME=$(
     cd
     pwd
@@ -3276,9 +3267,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     mkdir "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
-    
+
     #############################Core Management####################################
     export CPU_CORE=$(sysctl -n hw.ncpu) # number of available threads on system
     export CPU_6CORE="6"
@@ -3286,20 +3277,20 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     #1/2 of availble cores on system
     export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2)))
     #Forces CPU cores to even number to avoid partial core export. ie 7 cores would be 3.5 cores.
-    
+
     if [ $CPU_CORE -le $CPU_6CORE ]; then #If statement for low core systems.  Forces computers to only use 1 core if there are 4 cores or less on the system. then
         export CPU_HALF_EVEN="2"
         else
         export CPU_HALF_EVEN=$(($CPU_HALF - ($CPU_HALF % 2)))
     fi
-    
+
     echo "##########################################"
     echo "Number of Threads being used $CPU_HALF_EVEN"
     echo "##########################################"
     echo " "
-    
+
     ##############################Downloading Libraries############################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     wget -c https://github.com/madler/zlib/releases/download/v$Zlib_Version/zlib-$Zlib_Version.tar.gz
     wget -c https://github.com/HDFGroup/hdf5/releases/download/hdf5_$HDF5_Version.$HDF5_Sub_Version/hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
@@ -3309,9 +3300,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     wget -c https://www.ece.uvic.ca/~frodo/jasper/software/jasper-$Jasper_Version.zip
     wget -c https://github.com/pmodels/mpich/releases/download/v$Mpich_Version/mpich-$Mpich_Version.tar.gz
     wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
-    
+
     echo " "
-    
+
     #############################Compilers############################
     #Symlink to avoid clang conflicts with compilers
     #default gcc path /usr/bin/gcc
@@ -3319,44 +3310,44 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     echo $PASSWD | sudo -S unlink /opt/homebrew/bin/gfortran
     echo $PASSWD | sudo -S unlink /opt/homebrew/bin/gcc
     echo $PASSWD | sudo -S unlink /opt/homebrew/bin/g++
-    
+
     source ~./bashrc
     gcc --version
     g++ --version
     gfortran --version
-    
+
     cd /opt/homebrew/bin
-    
+
     echo $PASSWD | sudo -S ln -sf gcc-12 gcc
     echo $PASSWD | sudo -S ln -sf g++-12 g++
     echo $PASSWD | sudo -S ln -sf gfortran-12 gfortran
-    
+
     source ~/.bashrc
     source ~/.bash_profile
-    
+
     gcc --version
     g++ --version
     gfortran --version
-    
+
     export CC=gcc
     export CXX=g++
     export FC=gfortran
     export F77=gfortran
     export CFLAGS="-fPIC -fPIE -Wno-implicit-function-declaration -Wall"
-    
+
     echo " "
-    
+
     #IF statement for GNU compiler issue
     export GCC_VERSION=$(gcc -dumpfullversion | awk '{print$1}')
     export GFORTRAN_VERSION=$(gfortran -dumpfullversion | awk '{print$1}')
     export GPLUSPLUS_VERSION=$(g++ -dumpfullversion | awk '{print$1}')
-    
+
     export GCC_VERSION_MAJOR_VERSION=$(echo $GCC_VERSION | awk -F. '{print $1}')
     export GFORTRAN_VERSION_MAJOR_VERSION=$(echo $GFORTRAN_VERSION | awk -F. '{print $1}')
     export GPLUSPLUS_VERSION_MAJOR_VERSION=$(echo $GPLUSPLUS_VERSION | awk -F. '{print $1}')
-    
+
     export version_10="10"
-    
+
     if [ $GCC_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GFORTRAN_VERSION_MAJOR_VERSION -ge $version_10 ] || [ $GPLUSPLUS_VERSION_MAJOR_VERSION -ge $version_10 ]; then
         export fallow_argument=-fallow-argument-mismatch
         export boz_argument=-fallow-invalid-boz
@@ -3364,21 +3355,21 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
         export fallow_argument=
         export boz_argument=
     fi
-    
+
     export FFLAGS="$fallow_argument -m64"
     export FCFLAGS="$fallow_argument -m64"
-    
+
     echo "##########################################"
     echo "FFLAGS = $FFLAGS"
     echo "FCFLAGS = $FCFLAGS"
     echo "##########################################"
-    
+
     echo " "
-    
+
     #############################zlib############################
     #Uncalling compilers due to comfigure issue with zlib1.2.12
     #With CC & CXX definied ./configure uses different compiler Flags
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf zlib-$Zlib_Version.tar.gz
     cd zlib-$Zlib_Version/
@@ -3389,9 +3380,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     echo " "
-    
+
     ##############################MPICH############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf mpich-$Mpich_Version.tar.gz
@@ -3402,17 +3393,17 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     make -j $CPU_HALF_EVEN 2>&1 | tee make.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
     #make check
-    
+
     export PATH=$DIR/MPICH/bin:$PATH
-    
+
     export MPIFC=$DIR/MPICH/bin/mpifort
     export MPIF77=$DIR/MPICH/bin/mpifort
     export MPIF90=$DIR/MPICH/bin/mpifort
     export MPICC=$DIR/MPICH/bin/mpicc
     export MPICXX=$DIR/MPICH/bin/mpicxx
-    
+
     echo " "
-    
+
     #############################libpng############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     export LDFLAGS=-L$DIR/grib2/lib
@@ -3427,10 +3418,10 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
     #make check
-    
+
     echo " "
     #############################JasPer############################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     unzip jasper-$Jasper_Version.zip
     cd jasper-$Jasper_Version/
@@ -3442,10 +3433,10 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     export JASPERLIB=$DIR/grib2/lib
     export JASPERINC=$DIR/grib2/include
-    
+
     echo " "
     #############################hdf5 library for netcdf4 functionality############################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf hdf5-$HDF5_Version-$HDF5_Sub_Version.tar.gz
     cd hdf5-$HDF5_Version-$HDF5_Sub_Version
@@ -3456,13 +3447,13 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export HDF5=$DIR/grib2
     export PHDF5=$DIR/grib2
     export LD_LIBRARY_PATH=$DIR/grib2/lib:$LD_LIBRARY_PATH
-    
+
     echo " "
-    
+
     #############################Install Parallel-netCDF##############################
     #Make file created with half of available cpu cores
     #Hard path for MPI added
@@ -3482,9 +3473,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export PNETCDF=$DIR/grib2
-    
+
     ##############################Install NETCDF C Library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xzvf v$Netcdf_C_Version.tar.gz
@@ -3499,11 +3490,11 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     export PATH=$DIR/NETCDF/bin:$PATH
     export NETCDF=$DIR/NETCDF
     echo " "
-    
+
     ##############################NetCDF fortran library############################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     tar -xvzf v$Netcdf_Fortran_Version.tar.gz
@@ -3519,25 +3510,25 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
     make -j $CPU_HALF_EVEN install 2>&1 | tee make.install.log
     #make check
-    
+
     echo " "
     #################################### System Environment Tests ##############
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
     wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
-    
+
     tar -xvf Fortran_C_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
     tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     export one="1"
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Environment Testing "
@@ -3552,7 +3543,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
         exit
     fi
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 2"
     $FC TEST_2_fortran_only_free.f90
@@ -3566,7 +3557,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 3"
     $CC TEST_3_c_only.c
@@ -3580,7 +3571,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     echo "Test 4"
     $CC -c -m64 TEST_4_fortran+c_c.c
@@ -3596,14 +3587,14 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
     ############## Testing Environment #####
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
-    
+
     cp ${NETCDF}/include/netcdf.inc .
-    
+
     echo " "
     echo " "
     echo "Library Compatibility Tests "
@@ -3612,7 +3603,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     $CC -c 01_fortran+c+netcdf_c.c
     $FC 01_fortran+c+netcdf_f.o 01_fortran+c+netcdf_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     ./a.out | tee comp_test1.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test1.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -3623,16 +3614,16 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     fi
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
-    
+
     echo " "
-    
+
     echo "Test 2"
     $MPIFC -c 02_fortran+c+netcdf+mpi_f.f
     $MPICC -c 02_fortran+c+netcdf+mpi_c.c
     $MPIFC 02_fortran+c+netcdf+mpi_f.o \
     02_fortran+c+netcdf+mpi_c.o \
     -L${NETCDF}/lib -lnetcdff -lnetcdf
-    
+
     $DIR/MPICH/bin/mpirun ./a.out | tee comp_test2.txt
     export TEST_PASS=$(grep -w -o -c "SUCCESS" comp_test2.txt | awk '{print$1}')
     if [ $TEST_PASS -ge 1 ]; then
@@ -3644,12 +3635,12 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     echo " "
     read -r -t 3 -p "I am going to wait for 3 seconds only ..."
     echo " "
-    
+
     echo " All tests completed and passed"
     echo " "
     # Downloading WRF-CHEM Tools and untarring files
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads
-    
+
     wget -c https://www.acom.ucar.edu/wrf-chem/mozbc.tar
     wget -c https://www.acom.ucar.edu/wrf-chem/UBC_inputs.tar
     wget -c https://www.acom.ucar.edu//wrf-chem/megan_bio_emiss.tar
@@ -3666,7 +3657,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis.tgz
     wget -c https://www.acom.ucar.edu/Data/fire/data/fire_emis_input.tar
     wget -c https://www.acom.ucar.edu/Data/fire/data/TrashEmis.zip
-    
+
     echo ""
     echo "Unpacking Mozbc."
     tar -xvf mozbc.tar -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
@@ -3703,25 +3694,25 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     tar -zxvf tempfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf shrub_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
     tar -zxvf tropfor_from_img.nc.tgz -C "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     unzip TrashEmis.zip
     mv "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Downloads/ALL_Emiss_04282014.nc "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/FINN
-    
+
     gunzip FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz
     gunzip FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz
     gunzip FINNv2.4_MODVRS_MOZART_2019_c20210615.txt.gz
     ############################Installation of Mozbc #############################
     export fallow_argument=-fallow-argument-mismatch
     export boz_argument=-fallow-invalid-boz
-    
+
     # Recalling variables from install script to make sure the path is right
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/mozbc
     chmod +x make_mozbc
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -3731,16 +3722,16 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_mozbc 2>&1 | tee make.log
-    
+
     ################## Information on Upper Boundary Conditions ###################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/UBC/
     wget -c https://www2.acom.ucar.edu/sites/default/files/documents/8A_2_Barth_WRFWorkshop_11.pdf
-    
+
     ########################## MEGAN Bio Emission #################################
     # Data for MEGAN Bio Emission located in
     # "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
     chmod +x make_util
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -3752,9 +3743,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
     ./make_util megan_xform 2>&1 | tee make.xform.log
     ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
-    
+
     ############################# Anthroprogenic Emissions #########################
-    
+
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS/ANTHRO/src
     chmod +x make_anthro
     export DIR="${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/Libs
@@ -3764,14 +3755,14 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ############################# EDGAR HTAP ######################################
     #  This directory contains EDGAR-HTAP anthropogenic emission files for the
     #  year 2010.  The files are in the MOZCART and MOZART-MOSAIC sub-directories.
     #  The MOZCART files are intended to be used for the WRF MOZCART_KPP chemical
     #  option.  The MOZART-MOSAIC files are intended to be used with the following
     #  WRF chemical options (See read -rme in Folder
-    
+
     ######################### EPA Anthroprogenic Emissions ########################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS/src
     chmod +x make_anthro
@@ -3782,7 +3773,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_anthro 2>&1 | tee make.log
-    
+
     ######################### Weseley EXO Coldens ##################################
     cd "${WRFCHEM_FOLDER}"/WRF_CHEM_Tools/wes_coldens
     chmod +x make_util
@@ -3794,7 +3785,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
     ./make_util wesely 2>&1 | tee make.wesley.log
     ./make_util exo_coldens 2>&1 | tee make.exo.log
-    
+
     ########################## Aircraft Emissions Preprocessor #####################
     # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
     # (wrfchemaircraft_) from a global inventory in netcdf format. Please consult the read -rME file
@@ -3805,7 +3796,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     echo " Please see script for details about Aircraft Emissions Preprocessor"
     echo "######################################################################"
     echo " "
-    
+
     ######################## Fire INventory from NCAR (FINN) ###########################
     # Fire INventory from NCAR (FINN): A daily fire emissions product for atmospheric chemistry models
     # https://www2.acom.ucar.edu/modeling/finn-fire-inventory-ncar
@@ -3820,7 +3811,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     echo "If error occurs using WRFCHEM tools please update your NETCDF libraries or reconfigure with older libraries"
     echo "This is a WRC Chem Community tool made by a private user and is not supported by UCAR/NCAR"
     echo "BASH Script Finished"
-    
+
 fi
 
 #####################################BASH Script Finished##############################
