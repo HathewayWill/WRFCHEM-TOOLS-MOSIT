@@ -2614,30 +2614,30 @@ fi
 if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
 	#############################basic package managment############################
-	brew install wget
-	brew install git
-	brew install gcc@12
-	brew install libtool
-	brew install automake
-	brew install autoconf
-	brew install make
-	brew install m4
-	brew install java
-	brew install ksh
-	brew install grads
-	brew install ksh
-	brew install tcsh
-	brew install snapcraft
-	brew install python@3.10
-	brew install cmake
-	brew install xorgproto
-	brew install xorgrgb
-	brew install xauth
-	brew install curl
-	brew install flex
-	brew install byacc
-	brew install bison
-	brew install gnu-sed
+	brew update
+	outdated_packages=$(brew outdated --quiet)
+
+	# List of packages to check/install
+	packages=(
+		"autoconf" "automake" "bison" "byacc" "cmake" "curl" "flex" "gcc"
+		"gdal" "gedit" "git" "gnu-sed" "grads" "imagemagick" "java" "ksh"
+		"libtool" "m4" "make" "python@3.10" "snapcraft" "tcsh" "wget"
+		"xauth" "xorgproto" "xorgrgb" "xquartz"
+	)
+
+	for pkg in "${packages[@]}"; do
+		if brew list "$pkg" &>/dev/null; then
+			echo "$pkg is already installed."
+			if [[ $outdated_packages == *"$pkg"* ]]; then
+				echo "$pkg has a newer version available. Upgrading..."
+				brew upgrade "$pkg"
+			fi
+		else
+			echo "$pkg is not installed. Installing..."
+			brew install "$pkg"
+		fi
+		sleep 1
+	done
 
 	##############################Directory Listing############################
 
@@ -3226,30 +3226,30 @@ fi
 if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
 	#############################basic package managment############################
-	brew install wget
-	brew install git
-	brew install gcc@12
-	brew install libtool
-	brew install automake
-	brew install autoconf
-	brew install make
-	brew install m4
-	brew install java
-	brew install ksh
-	brew install grads
-	brew install ksh
-	brew install tcsh
-	brew install snapcraft
-	brew install python@3.10
-	brew install cmake
-	brew install xorgproto
-	brew install xorgrgb
-	brew install xauth
-	brew install curl
-	brew install flex
-	brew install byacc
-	brew install bison
-	brew install gnu-sed
+	brew update
+	outdated_packages=$(brew outdated --quiet)
+
+	# List of packages to check/install
+	packages=(
+		"autoconf" "automake" "bison" "byacc" "cmake" "curl" "flex" "gcc"
+		"gdal" "gedit" "git" "gnu-sed" "grads" "imagemagick" "java" "ksh"
+		"libtool" "m4" "make" "python@3.10" "snapcraft" "tcsh" "wget"
+		"xauth" "xorgproto" "xorgrgb" "xquartz"
+	)
+
+	for pkg in "${packages[@]}"; do
+		if brew list "$pkg" &>/dev/null; then
+			echo "$pkg is already installed."
+			if [[ $outdated_packages == *"$pkg"* ]]; then
+				echo "$pkg has a newer version available. Upgrading..."
+				brew upgrade "$pkg"
+			fi
+		else
+			echo "$pkg is not installed. Installing..."
+			brew install "$pkg"
+		fi
+		sleep 1
+	done
 
 	##############################Directory Listing############################
 
