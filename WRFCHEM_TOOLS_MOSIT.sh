@@ -356,7 +356,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	export CXX=g++
 	export FC=gfortran
 	export F77=gfortran
-	export CFLAGS="-fPIC -fPIE"
+	export CFLAGS="-fPIC -fPIE -m64"
 
 	#IF statement for GNU compiler issue
 	export GCC_VERSION=$(/usr/bin/gcc -dumpfullversion | awk '{print$1}')
@@ -383,6 +383,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
 	echo "FCFLAGS = $FCFLAGS"
+	echo "CFLAGS = $CFLAGS"
 	echo "##########################################"
 
 	#############################zlib############################
@@ -404,7 +405,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	tar -xvzf mpich-$Mpich_Version.tar.gz
 	cd mpich-$Mpich_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
-	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64" 2>&1 | tee configure.log
+	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -951,7 +952,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	export CXX=g++
 	export FC=gfortran
 	export F77=gfortran
-	export CFLAGS="-fPIC -fPIE"
+	export CFLAGS="-fPIC -fPIE -m64"
 
 	#IF statement for GNU compiler issue
 	export GCC_VERSION=$(/usr/bin/gcc -dumpfullversion | awk '{print$1}')
@@ -978,6 +979,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
 	echo "FCFLAGS = $FCFLAGS"
+	echo "CFLAGS = $CFLAGS"
 	echo "##########################################"
 
 	#############################zlib############################
@@ -999,7 +1001,7 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 	tar -xvzf mpich-$Mpich_Version.tar.gz
 	cd mpich-$Mpich_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
-	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64" 2>&1 | tee configure.log
+	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
@@ -1553,7 +1555,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	export CXX=g++
 	export FC=gfortran
 	export F77=gfortran
-	export CFLAGS="-fPIC -fPIE"
+	export CFLAGS="-fPIC -fPIE -m64"
 
 	#IF statement for GNU compiler issue
 	export GCC_VERSION=$(/usr/bin/gcc -dumpfullversion | awk '{print$1}')
@@ -1580,6 +1582,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
 	echo "FCFLAGS = $FCFLAGS"
+	echo "CFLAGS = $CFLAGS"
 	echo "##########################################"
 
 	#############################zlib############################
@@ -1602,7 +1605,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	tar -xvzf mpich-$Mpich_Version.tar.gz
 	cd mpich-$Mpich_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
-	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64" 2>&1 | tee configure.log
+	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
 	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -2771,6 +2774,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
 	echo "FCFLAGS = $FCFLAGS"
+	echo "CFLAGS = $CFLAGS"
 	echo "##########################################"
 
 	echo " "
@@ -2797,7 +2801,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	tar -xvzf mpich-$Mpich_Version.tar.gz
 	cd mpich-$Mpich_Version/
 	autoreconf -i -f 2>&1 | tee autoreconf.log
-	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64" 2>&1 | tee configure.log
+	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
 	make -j $CPU_HALF_EVEN check 2>&1 | tee make.check.log
@@ -3409,6 +3413,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
 	echo "FCFLAGS = $FCFLAGS"
+	echo "CFLAGS = $CFLAGS"
 	echo "##########################################"
 
 	echo " "
@@ -3435,7 +3440,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	tar -xvzf mpich-$Mpich_Version.tar.gz
 	cd mpich-$Mpich_Version/"${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 	autoreconf -i -f 2>&1 | tee autoreconf.log
-	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS="$fallow_argument -m64" FCFLAGS="$fallow_argument -m64" 2>&1 | tee configure.log
+	F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
 	automake -a -f 2>&1 | tee automake.log
 	make -j $CPU_HALF_EVEN 2>&1 | tee make.log
 	make -j $CPU_HALF_EVEN install 2>&1 | tee make.make.log
