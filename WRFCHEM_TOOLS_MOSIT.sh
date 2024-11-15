@@ -377,8 +377,8 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 		export boz_argument=
 	fi
 
-	export FFLAGS="$fallow_argument -m64"
-	export FCFLAGS="$fallow_argument -m64"
+	export FFLAGS="$fallow_argumen"
+	export FCFLAGS="$fallow_argumen"
 
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
@@ -973,8 +973,8 @@ if [ "$Centos_64bit_GNU" = "2" ]; then
 		export boz_argument=
 	fi
 
-	export FFLAGS="$fallow_argument -m64"
-	export FCFLAGS="$fallow_argument -m64"
+	export FFLAGS="$fallow_argumen"
+	export FCFLAGS="$fallow_argumen"
 
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
@@ -1576,8 +1576,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 		export boz_argument=
 	fi
 
-	export FFLAGS="$fallow_argument -m64"
-	export FCFLAGS="$fallow_argument -m64"
+	export FFLAGS="$fallow_argumen"
+	export FCFLAGS="$fallow_argumen"
 
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
@@ -2768,8 +2768,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 		export boz_argument=
 	fi
 
-	export FFLAGS="$fallow_argument -m64"
-	export FCFLAGS="$fallow_argument -m64"
+	export FFLAGS="$fallow_argumen"
+	export FCFLAGS="$fallow_argumen"
 
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
@@ -3407,8 +3407,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 		export boz_argument=
 	fi
 
-	export FFLAGS="$fallow_argument -m64"
-	export FCFLAGS="$fallow_argument -m64"
+	export FFLAGS="$fallow_argumen"
+	export FCFLAGS="$fallow_argumen"
 
 	echo "##########################################"
 	echo "FFLAGS = $FFLAGS"
