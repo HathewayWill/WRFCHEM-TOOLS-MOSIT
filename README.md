@@ -114,6 +114,7 @@ This is a BASH script that provides options to install the following WRF CHEM To
 - UCAR's Katelyn F., Jim B., Jordan P., Kevin M.,.
 ---
 #### Citation:
+
 Hatheway, W., Snoun, H., ur Rehman, H. et al. WRF-MOSIT: a modular and cross-platform tool for configuring and installing the WRF model. Earth Sci Inform (2023). https://doi.org/10.1007/s12145-023-01136-y
 ---
 #### References:
