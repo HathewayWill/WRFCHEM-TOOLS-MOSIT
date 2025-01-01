@@ -114,8 +114,7 @@ This is a BASH script that provides options to install the following WRF CHEM To
 - UCAR's Katelyn F., Jim B., Jordan P., Kevin M.,.
 ---
 #### Citation:
-#### Hatheway, W. (2024). WRF CHEM Tools Multi Operational System Install Toolkit (Version 1.2) [Computer software]
-
+Hatheway, W., Snoun, H., ur Rehman, H. et al. WRF-MOSIT: a modular and cross-platform tool for configuring and installing the WRF model. Earth Sci Inform (2023). https://doi.org/10.1007/s12145-023-01136-y
 ---
 #### References:
 - "We acknowledge use of the WRF-Chem preprocessor tool {name of tool} provided by the Atmospheric Chemistry Observations and Modeling Lab (ACOM) of NCAR."
