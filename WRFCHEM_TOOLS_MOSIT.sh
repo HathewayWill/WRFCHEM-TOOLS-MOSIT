@@ -59,7 +59,7 @@ elif [ "$SYS_OS" = "Linux" ]; then
 	export SYSTEMOS="Linux"
 fi
 
-########## CentOS and Linux Distribution Detection #############
+########## RHL and Linux Distribution Detection #############
 # More accurate Linux distribution detection using /etc/os-release
 #################################################################
 if [ "$SYSTEMOS" = "Linux" ]; then
@@ -70,10 +70,16 @@ if [ "$SYSTEMOS" = "Linux" ]; then
 
 		echo "Operating system detected: $DISTRO_NAME, Version: $DISTRO_VERSION"
 
-		# Check if the system is CentOS
-		if grep -q "CentOS" /etc/os-release; then
-			export SYSTEMOS="CentOS"
-		fi
+	 # Check if dnf or yum is installed (dnf is used on newer systems, yum on older ones)
+        if command -v dnf >/dev/null 2>&1; then
+            echo "dnf is installed."
+            export SYSTEMOS="RHL"  # Set SYSTEMOS to RHL if dnf is detected
+        elif command -v yum >/dev/null 2>&1; then
+            echo "yum is installed."
+            export SYSTEMOS="RHL"  # Set SYSTEMOS to RHL if yum is detected
+        else
+            echo "No package manager (dnf or yum) found."
+        fi
 	else
 		echo "Unable to detect the Linux distribution version."
 	fi
@@ -83,36 +89,34 @@ fi
 echo "Final operating system detected: $SYSTEMOS"
 ############################### Intel or GNU Compiler Option #############
 
-# Only proceed with CentOS-specific logic if the system is CentOS
-if [ "$SYSTEMOS" = "CentOS" ]; then
-	# Check for 32-bit CentOS system
-	if [ "$SYSTEMBIT" = "32" ]; then
-		echo "Your system is not compatible with this script."
-		exit
-	fi
+# Only proceed with RHL-specific logic if the system is RHL
+if [ "$SYSTEMOS" = "RHL" ]; then
+    # Check for 32-bit RHL system
+    if [ "$SYSTEMBIT" = "32" ]; then
+        echo "Your system is not compatible with this script."
+        exit
+    fi
 
-	# Check for 64-bit CentOS system
-	if [ "$SYSTEMBIT" = "64" ]; then
-		echo "Your system is a 64-bit version of CentOS Linux Kernel."
-		echo "Intel compilers are not compatible with this script."
-		echo ""
+    # Check for 64-bit RHL system
+    if [ "$SYSTEMBIT" = "64" ]; then
+        echo "Your system is a 64-bit version of RHL Based Linux Kernel."
+        echo "Intel compilers are not compatible with this script."
+        echo "Setting compiler to GNU."
+        export RHL_64bit_GNU=1
+        echo "RHL_64bit_GNU=$RHL_64bit_GNU"
 
-		# Check if Centos_64bit_GNU environment variable is set
-		if [ -v Centos_64bit_GNU ]; then
-			echo "The environment variable Centos_64bit_GNU is already set."
-		else
-			echo "Setting environment variable Centos_64bit_GNU to GNU."
-			export Centos_64bit_GNU=1
+        # Check for the version of the GNU compiler (gcc)
+        export gcc_test_version=$(gcc -dumpversion 2>&1 | awk '{print $1}')
+        export gcc_test_version_major=$(echo $gcc_test_version | awk -F. '{print $1}')
+        export gcc_version_9="9"
 
-			# Check GNU version
-			if [ "$(gcc -dumpversion 2>&1 | awk '{print $1}')" -lt 9 ]; then
-				export Centos_64bit_GNU=2
-				echo "OLD GNU FILES FOUND."
-			fi
-		fi
-	fi
+        if [[ $gcc_test_version_major -lt $gcc_version_9 ]]; then
+            export RHL_64bit_GNU=2
+            echo "OLD GNU FILES FOUND."
+            echo "RHL_64bit_GNU=$RHL_64bit_GNU"
+        fi
+    fi
 fi
-
 # Check for 64-bit Linux system (Debian/Ubuntu)
 if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "Linux" ]; then
 	echo "Your system is a 64-bit version of Debian Linux Kernel."
@@ -269,7 +273,7 @@ fi
 # This script installs the WRFCHEM Tools with gnu or intel compilers.
 ####################################################################################################
 
-if [ "$Centos_64bit_GNU" = "1" ]; then
+if [ "$RHL_64bit_GNU" = "1" ]; then
 
 	# Basic Package Management for WRF-CHEM Tools and Processors
 	export HOME=$(
@@ -864,7 +868,7 @@ if [ "$Centos_64bit_GNU" = "1" ]; then
 	echo " "
 fi
 
-if [ "$Centos_64bit_GNU" = "2" ]; then
+if [ "$RHL_64bit_GNU" = "2" ]; then
 
 	# Basic Package Management for WRF-CHEM Tools and Processors
 	export HOME=$(
