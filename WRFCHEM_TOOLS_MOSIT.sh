@@ -19,7 +19,7 @@ START=$(date +"%s")
 ##########################################################################
 export Zlib_Version=1.3.1
 export Mpich_Version=4.3.2
-export Libpng_Version=1.6.39
+export Libpng_Version=1.6.51
 export Jasper_Version=1.900.1
 export HDF5_Version=1.14.6
 export Pnetcdf_Version=1.14.1
