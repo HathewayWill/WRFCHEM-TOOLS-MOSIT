@@ -355,7 +355,10 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
 	echo $PASSWD | sudo -S dnf install epel-release -y
 	echo $PASSWD | sudo -S dnf -y update
 	echo $PASSWD | sudo -S dnf -y upgrade
-	echo $PASSWD | sudo -S dnf -y install gcc gcc-gfortran gcc-c++ cpp automake autoconf unzip java-11-openjdk java-11-openjdk-devel bzip2 time nfs-utils perl tcsh ksh git python3 mlocate wget git m4 pkgconfig mlocate libX11-devel libxml2 unzip bzip2 time nfs-utils perl tcsh wget m4 mlocate libX11-devel.x86_64 libXext-devel libXrender-devel fontconfig-devel libXext-devel libXrender-devel fontconfig-devel curl-devel cmake cairo-devel pixman-devel bzip2-devel byacc flex libXmu-devel libXt-devel libXaw libXaw-devel python3 python3-devel libXmu-devel curl-devel m4 bzip2 time nfs-utils perl tcsh mlocate libX11-devel libxml2
+	echo $PASSWD | sudo -S dnf -y install byacc bzip2 bzip2-devel cairo-devel cmake cpp curl curl-devel flex fontconfig fontconfig-devel gcc gcc-c++ gcc-gfortran git ksh libjpeg libjpeg-devel libstdc++ libstdc++-devel libX11 libX11-devel libXaw libXaw-devel libXext-devel libXmu libXmu-devel libXrender libXrender-devel libXt libXt-devel libxml2 libxml2-devel libgeotiff libgeotiff-devel libtiff libtiff-devel m4 nfs-utils perl 'perl(XML::LibXML)' pkgconfig pixman pixman-devel python3 python3-devel tcsh time unzip wget
+	echo $PASSWD | sudo -S dnf -y java-devel java
+	echo $PASSWD | sudo -S dnf -y java-17-openjdk-devel java-17-openjdk
+	echo $PASSWD | sudo -S dnf -y java-21-openjdk-devel java-21-openjdk
 	echo $PASSWD | sudo -S dnf -y install python3-dateutil
 	echo $PASSWD | sudo -S dnf -y groupinstall "Development Tools"
 	echo $PASSWD | sudo -S dnf -y update
@@ -772,7 +775,7 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 	sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
 	sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-	LD_LIBRARY_PATH=  ./make_mozbc 2>&1 | tee make.log
+	LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
 
 	################## Information on Upper Boundary Conditions ###################
 
@@ -929,7 +932,10 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
 	echo $PASSWD | sudo -S dnf install epel-release -y
 	echo $PASSWD | sudo -S dnf -y update
 	echo $PASSWD | sudo -S dnf -y upgrade
-	echo $PASSWD | sudo -S dnf -y install gcc gcc-gfortran gcc-c++ cpp automake autoconf unzip java-11-openjdk java-11-openjdk-devel bzip2 time nfs-utils perl tcsh ksh git python3 mlocate wget git m4 pkgconfig mlocate libX11-devel libxml2 unzip bzip2 time nfs-utils perl tcsh wget m4 mlocate libX11-devel.x86_64 libXext-devel libXrender-devel fontconfig-devel libXext-devel libXrender-devel fontconfig-devel curl-devel cmake cairo-devel pixman-devel bzip2-devel byacc flex libXmu-devel libXt-devel libXaw libXaw-devel python3 python3-devel libXmu-devel curl-devel m4 bzip2 time nfs-utils perl tcsh mlocate libX11-devel libxml2
+	echo $PASSWD | sudo -S dnf -y install byacc bzip2 bzip2-devel cairo-devel cmake cpp curl curl-devel flex fontconfig fontconfig-devel gcc gcc-c++ gcc-gfortran git ksh libjpeg libjpeg-devel libstdc++ libstdc++-devel libX11 libX11-devel libXaw libXaw-devel libXext-devel libXmu libXmu-devel libXrender libXrender-devel libXt libXt-devel libxml2 libxml2-devel libgeotiff libgeotiff-devel libtiff libtiff-devel m4 nfs-utils perl 'perl(XML::LibXML)' pkgconfig pixman pixman-devel python3 python3-devel tcsh time unzip wget
+	echo $PASSWD | sudo -S dnf -y java-devel java
+	echo $PASSWD | sudo -S dnf -y java-17-openjdk-devel java-17-openjdk
+	echo $PASSWD | sudo -S dnf -y java-21-openjdk-devel java-21-openjdk
 	echo $PASSWD | sudo -S dnf -y install python3-dateutil
 
 	echo $PASSWD | sudo -S dnf -y groupinstall "Development Tools"
@@ -1346,7 +1352,7 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 	sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
 	sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-	LD_LIBRARY_PATH=  ./make_mozbc 2>&1 | tee make.log
+	LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
 
 	################## Information on Upper Boundary Conditions ###################
 
@@ -1574,7 +1580,6 @@ if [ "$RHL_64bit_Intel" = "1"]; then
 
 	export DIR="${WRF_FOLDER}"/WRF_CHEM_Tools/Libs
 
-
 	##############################Downloading Libraries############################
 	cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
 
@@ -1586,7 +1591,6 @@ if [ "$RHL_64bit_Intel" = "1"]; then
 	wget -c https://www.ece.uvic.ca/~frodo/jasper/software/jasper-$Jasper_Version.zip
 	wget -c https://github.com/pmodels/mpich/releases/download/v$Mpich_Version/mpich-$Mpich_Version.tar.gz
 	wget -c https://parallel-netcdf.github.io/Release/pnetcdf-$Pnetcdf_Version.tar.gz
-
 
 	############################# CPU Core Management ####################################
 
@@ -1899,7 +1903,7 @@ if [ "$RHL_64bit_Intel" = "1"]; then
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 
-	LD_LIBRARY_PATH=  ./make_mozbc 2>&1 | tee make.log
+	LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
 
 	################## Information on Upper Boundary Conditions ###################
 
@@ -2010,7 +2014,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 		echo $PASSWD | sudo -S apt install emacs -y
 	fi
 
-	echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make ncview okular openbox pipenv pkg-config python3 python3-dev python3-pip python3-dateutil tcsh unzip xauth xorg time
+	echo "$PASSWD" | sudo -S apt -y install bison build-essential byacc cmake csh curl default-jdk default-jre flex libfl-dev g++ gawk gcc gettext gfortran git ksh libcurl4-gnutls-dev libjpeg-dev libncurses6 libncursesw5-dev libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev libxml-libxml-perl m4 make ncview pipenv pkg-config python3 python3-dev python3-pip python3-dateutil tcsh unzip xauth xorg time ghostscript less libbz2-dev libc6-dev libffi-dev libgdbm-dev libopenblas-dev libreadline-dev libssl-dev libtiff-dev libgeotiff-dev tk-dev vim wget
 
 	#Fix any broken installations
 	echo $PASSWD | sudo -S apt --fix-broken install
@@ -2426,7 +2430,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 	sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
 	sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-	LD_LIBRARY_PATH=  ./make_mozbc 2>&1 | tee make.log
+	LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
 
 	################## Information on Upper Boundary Conditions ###################
 
@@ -2609,7 +2613,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 		echo $PASSWD | sudo -S apt install emacs -y
 	fi
 
-	echo $PASSWD | sudo -S apt -y install autoconf automake bison build-essential byacc cmake csh curl default-jdk default-jre flex g++ gawk gcc gfortran git ksh libcurl4-openssl-dev libjpeg-dev libncurses6 libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev m4 make ncview okular openbox pipenv pkg-config python3 python3-dev python3-pip python3-dateutil tcsh unzip xauth xorg time
+	echo "$PASSWD" | sudo -S apt -y install bison build-essential byacc cmake csh curl default-jdk default-jre flex libfl-dev g++ gawk gcc gettext gfortran git ksh libcurl4-gnutls-dev libjpeg-dev libncurses6 libncursesw5-dev libpixman-1-dev libpng-dev libtool libxml2 libxml2-dev libxml-libxml-perl m4 make ncview pipenv pkg-config python3 python3-dev python3-pip python3-dateutil tcsh unzip xauth xorg time ghostscript less libbz2-dev libc6-dev libffi-dev libgdbm-dev libopenblas-dev libreadline-dev libssl-dev libtiff-dev libgeotiff-dev tk-dev vim wget
 
 	# install the Intel compilers
 	echo $PASSWD | sudo -S apt -y install intel-basekit
@@ -2999,7 +3003,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 	export NETCDF_DIR=$DIR/NETCDF
 	sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 
-	LD_LIBRARY_PATH=  ./make_mozbc 2>&1 | tee make.log
+	LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
 
 	################## Information on Upper Boundary Conditions ###################
 
@@ -3193,20 +3197,19 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	# Find the highest version of GCC in /usr/local/bin
 
 	latest_gcc=$(ls /usr/local/bin/gcc-* 2>/dev/null | grep -o 'gcc-[0-9]*' | sort -V | tail -n 1)
- 	latest_gpp=$(ls /usr/local/bin/g++-* 2>/dev/null | grep -o 'g++-[0-9]*' | sort -V | tail -n 1)
- 	latest_gfortran=$(ls /usr/local/bin/gfortran-* 2>/dev/null | grep -o 'gfortran-[0-9]*' | sort -V | tail -n 1)
+	latest_gpp=$(ls /usr/local/bin/g++-* 2>/dev/null | grep -o 'g++-[0-9]*' | sort -V | tail -n 1)
+	latest_gfortran=$(ls /usr/local/bin/gfortran-* 2>/dev/null | grep -o 'gfortran-[0-9]*' | sort -V | tail -n 1)
 
- 	# Display the chosen versions
- 	echo "Selected gcc version: $latest_gcc"
- 	echo "Selected g++ version: $latest_gpp"
- 	echo "Selected gfortran version: $latest_gfortran"
-
+	# Display the chosen versions
+	echo "Selected gcc version: $latest_gcc"
+	echo "Selected g++ version: $latest_gpp"
+	echo "Selected gfortran version: $latest_gfortran"
 
 	export CC=/usr/local/bin/$latest_gcc
 	export CXX=/usr/local/bin/$latest_gpp
 	export FC=/usr/local/bin/$latest_gfortran
 	export F77=/usr/local/bin/$latest_gfortran
-	
+
 	export CFLAGS="-fPIC -fPIE -Wno-implicit-function-declaration -Wall"
 
 	echo " "
@@ -3565,7 +3568,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 	sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
 	sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-	LD_LIBRARY_PATH=  ./make_mozbc 2>&1 | tee make.log
+	LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
 
 	################## Information on Upper Boundary Conditions ###################
 
@@ -3776,20 +3779,19 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
 	# Find the latest version of GCC, G++, and GFortran
 	latest_gcc=$(ls /opt/homebrew/bin/gcc-* 2>/dev/null | grep -o 'gcc-[0-9]*' | sort -V | tail -n 1)
- 	latest_gpp=$(ls /opt/homebrew/bin/g++-* 2>/dev/null | grep -o 'g++-[0-9]*' | sort -V | tail -n 1)
- 	latest_gfortran=$(ls /opt/homebrew/bin/gfortran-* 2>/dev/null | grep -o 'gfortran-[0-9]*' | sort -V | tail -n 1)
+	latest_gpp=$(ls /opt/homebrew/bin/g++-* 2>/dev/null | grep -o 'g++-[0-9]*' | sort -V | tail -n 1)
+	latest_gfortran=$(ls /opt/homebrew/bin/gfortran-* 2>/dev/null | grep -o 'gfortran-[0-9]*' | sort -V | tail -n 1)
 
- 	# Display the chosen versions
- 	echo "Selected gcc version: $latest_gcc"
- 	echo "Selected g++ version: $latest_gpp"
- 	echo "Selected gfortran version: $latest_gfortran"
-
+	# Display the chosen versions
+	echo "Selected gcc version: $latest_gcc"
+	echo "Selected g++ version: $latest_gpp"
+	echo "Selected gfortran version: $latest_gfortran"
 
 	export CC=/opt/homebrew/bin/$latest_gcc
 	export CXX=/opt/homebrew/bin/$latest_gpp
 	export FC=/opt/homebrew/bin/$latest_gfortran
 	export F77=/opt/homebrew/bin/$latest_gfortran
-	
+
 	export CFLAGS="-fPIC -fPIE -Wno-implicit-function-declaration -Wall"
 
 	echo " "
@@ -4148,7 +4150,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 	sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 	sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
 	sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-	LD_LIBRARY_PATH=  ./make_mozbc 2>&1 | tee make.log
+	LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
 
 	################## Information on Upper Boundary Conditions ###################
 
