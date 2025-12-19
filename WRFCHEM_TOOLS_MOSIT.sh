@@ -454,8 +454,8 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
     export boz_argument=
   fi
 
-  export FFLAGS="$fallow_argumen"
-  export FCFLAGS="$fallow_argumen"
+  export FFLAGS="$fallow_argument"
+  export FCFLAGS="$fallow_argument"
 
   echo "##########################################"
   echo "FFLAGS = $FFLAGS"
@@ -1032,8 +1032,8 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
     export boz_argument=
   fi
 
-  export FFLAGS="$fallow_argumen"
-  export FCFLAGS="$fallow_argumen"
+  export FFLAGS="$fallow_argument"
+  export FCFLAGS="$fallow_argument"
 
   echo "##########################################"
   echo "FFLAGS = $FFLAGS"
@@ -2111,8 +2111,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
     export boz_argument=
   fi
 
-  export FFLAGS="$fallow_argumen"
-  export FCFLAGS="$fallow_argumen"
+  export FFLAGS="$fallow_argument"
+  export FCFLAGS="$fallow_argument"
 
   echo "##########################################"
   echo "FFLAGS = $FFLAGS"
@@ -3102,7 +3102,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
   # List of packages to check/install
   packages=(
-    "autoconf" "automake" "bison" "byacc" "cmake" "curl" "flex" "gcc"
+    "autoconf" "automake" "bison" "byacc" "cmake" "curl" "flex" "gcc@13"
     "gedit" "git" "gnu-sed" "java" "ksh"
     "libtool" "m4" "make" "python@3.10" "snapcraft" "tcsh" "wget"
     "xauth" "xorgproto" "xorgrgb" "xquartz"
@@ -3210,8 +3210,6 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   export FC=/usr/local/bin/$latest_gfortran
   export F77=/usr/local/bin/$latest_gfortran
 
-  export CFLAGS="-fPIC -fPIE -Wno-implicit-function-declaration -Wall"
-
   echo " "
 
   #IF statement for GNU compiler issue
@@ -3233,16 +3231,31 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
     export boz_argument=
   fi
 
-  export FFLAGS="$fallow_argumen"
-  export FCFLAGS="$fallow_argumen"
+  export FFLAGS="$fallow_argument"
+  export FCFLAGS="$fallow_argument"
 
-  echo "##########################################"
-  echo "FFLAGS = $FFLAGS"
-  echo "FCFLAGS = $FCFLAGS"
-  echo "CFLAGS = $CFLAGS"
-  echo "##########################################"
+  # Export compiler environment variables
+  export CC=/usr/local/bin/gcc-13
+  export CXX=/usr/local/bin/g++-13
+  export FC=/usr/local/bin/gfortran-13
+  export F77=/usr/local/bin/gfortran-13
+  export CFLAGS="-fPIC -fPIE -Wno-implicit-function-declaration -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types -Wall"
 
-  echo " "
+  # --- critical macOS SDK wiring for Homebrew GCC (fixes _bounds.h) ---
+  export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+
+  export CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }--sysroot=\"$SDKROOT\" -isysroot \"$SDKROOT\""
+  export CFLAGS="${CFLAGS:+$CFLAGS }--sysroot=\"$SDKROOT\" -isysroot \"$SDKROOT\""
+  export CXXFLAGS="${CXXFLAGS:+$CXXFLAGS }--sysroot=\"$SDKROOT\" -isysroot \"$SDKROOT\""
+  export LDFLAGS="${LDFLAGS:+$LDFLAGS }--sysroot=\"$SDKROOT\" -isysroot \"$SDKROOT\""
+
+  echo "CC=$CC"
+  echo "CXX=$CXX"
+  echo "FC=$FC"
+  echo "SDKROOT=$SDKROOT"
+  echo "CFLAGS=$CFLAGS"
+  echo "CPPFLAGS=$CPPFLAGS"
+  echo "LDFLAGS=$LDFLAGS"
 
   #############################zlib############################
   #Uncalling compilers due to comfigure issue with zlib1.2.12
@@ -3670,7 +3683,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
   # List of packages to check/install
   packages=(
-    "autoconf" "automake" "bison" "byacc" "cmake" "curl" "flex" "gcc"
+    "autoconf" "automake" "bison" "byacc" "cmake" "curl" "flex" "gcc@13"
     "gedit" "git" "gnu-sed" "java" "ksh"
     "libtool" "m4" "make" "python@3.10" "snapcraft" "tcsh" "wget"
     "xauth" "xorgproto" "xorgrgb" "xquartz"
@@ -3792,8 +3805,6 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   export FC=/opt/homebrew/bin/$latest_gfortran
   export F77=/opt/homebrew/bin/$latest_gfortran
 
-  export CFLAGS="-fPIC -fPIE -Wno-implicit-function-declaration -Wall"
-
   echo " "
 
   #IF statement for GNU compiler issue
@@ -3815,16 +3826,31 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
     export boz_argument=
   fi
 
-  export FFLAGS="$fallow_argumen"
-  export FCFLAGS="$fallow_argumen"
+  export FFLAGS="$fallow_argument"
+  export FCFLAGS="$fallow_argument"
 
-  echo "##########################################"
-  echo "FFLAGS = $FFLAGS"
-  echo "FCFLAGS = $FCFLAGS"
-  echo "CFLAGS = $CFLAGS"
-  echo "##########################################"
+  # Export compiler environment variables
+  export CC=/usr/local/bin/gcc-13
+  export CXX=/usr/local/bin/g++-13
+  export FC=/usr/local/bin/gfortran-13
+  export F77=/usr/local/bin/gfortran-13
+  export CFLAGS="-fPIC -fPIE -Wno-implicit-function-declaration -Wno-incompatible-function-pointer-types -Wno-incompatible-pointer-types -Wall"
 
-  echo " "
+  # --- critical macOS SDK wiring for Homebrew GCC (fixes _bounds.h) ---
+  export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+
+  export CPPFLAGS="${CPPFLAGS:+$CPPFLAGS }--sysroot=\"$SDKROOT\" -isysroot \"$SDKROOT\""
+  export CFLAGS="${CFLAGS:+$CFLAGS }--sysroot=\"$SDKROOT\" -isysroot \"$SDKROOT\""
+  export CXXFLAGS="${CXXFLAGS:+$CXXFLAGS }--sysroot=\"$SDKROOT\" -isysroot \"$SDKROOT\""
+  export LDFLAGS="${LDFLAGS:+$LDFLAGS }--sysroot=\"$SDKROOT\" -isysroot \"$SDKROOT\""
+
+  echo "CC=$CC"
+  echo "CXX=$CXX"
+  echo "FC=$FC"
+  echo "SDKROOT=$SDKROOT"
+  echo "CFLAGS=$CFLAGS"
+  echo "CPPFLAGS=$CPPFLAGS"
+  echo "LDFLAGS=$LDFLAGS"
 
   #############################zlib############################
   #Uncalling compilers due to comfigure issue with zlib1.2.12
