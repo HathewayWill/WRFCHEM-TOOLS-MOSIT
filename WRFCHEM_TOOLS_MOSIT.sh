@@ -45,7 +45,7 @@ read -p "Press enter to continue"
 ##########################################################################
 export SYS_ARCH=$(uname -m)
 
-if [ "$SYS_ARCH" = "x86_64" ] || [ "$SYS_ARCH" = "arm64" ]; then
+if [ "$SYS_ARCH" = "x86_64" ] || [ "$SYS_ARCH" = "arm64" ] || [ "$SYS_ARCH" = "aarch64" ]; then
   export SYSTEMBIT="64"
 else
   export SYSTEMBIT="32"
@@ -277,31 +277,6 @@ if [ "$SYSTEMBIT" = "64" ] && [ "$SYSTEMOS" = "MacOS" ] && [ "$MAC_CHIP" = "ARM"
   chsh -s /bin/bash
 fi
 
-################### System Information Tests ##############################
-
-echo ""
-echo "--------------------------------------------------"
-echo "Testing for storage space for installation."
-
-HOME_DIR="${HOME}"
-REQUIRED_BYTES=$((350 * 1024 * 1024 * 1024)) # 350GB in bytes
-
-# Get available space in bytes (use -B1 for bytes)
-AVAILABLE_BYTES=$(df -B1 --output=avail "$HOME_DIR" | awk 'NR==2')
-
-# Convert for human-readable printing
-AVAILABLE_HR=$(numfmt --to=iec "$AVAILABLE_BYTES")
-REQUIRED_HR=$(numfmt --to=iec "$REQUIRED_BYTES")
-
-if ((AVAILABLE_BYTES < REQUIRED_BYTES)); then
-  echo -e "\e[31mNot enough storage space for installation. $REQUIRED_HR is required.\e[0m"
-  echo -e "\e[31mStorage Space Available: $AVAILABLE_HR\e[0m"
-  exit 1
-else
-  echo "Sufficient storage space for installation found: $AVAILABLE_HR"
-fi
-
-echo "--------------------------------------------------"
 ############################# Enter sudo users information #############################
 echo "-------------------------------------------------- "
 while true; do
