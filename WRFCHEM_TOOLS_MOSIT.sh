@@ -1,4 +1,9 @@
 #!/bin/bash
+# Accept passed PASSWD from env or $1
+if [[ -z "${PASSWD:-}" && -n "${1:-}" ]]; then
+  export PASSWD="$1"
+fi
+
 # Non-interactive mode when called from another script (args passed) or env flag set
 NONINTERACTIVE=0
 if [[ -n "${MOSIT_NONINTERACTIVE:-}" ]] || [[ $# -ge 1 ]] || [[ ! -t 0 ]]; then
