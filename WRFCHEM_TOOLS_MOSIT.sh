@@ -1,9 +1,4 @@
 #!/bin/bash
-# Accept passed PASSWD from env or $1
-if [[ -z "${PASSWD:-}" && -n "${1:-}" ]]; then
-  export PASSWD="$1"
-fi
-
 # Non-interactive mode when called from another script (args passed) or env flag set
 NONINTERACTIVE=0
 if [[ -n "${MOSIT_NONINTERACTIVE:-}" ]] || [[ $# -ge 1 ]] || [[ ! -t 0 ]]; then
@@ -85,35 +80,50 @@ fi
 
 ########## RHL and Linux Distribution Detection #############
 # More accurate Linux distribution detection using /etc/os-release
-#################################################################
+########## Linux Distribution + Package Manager Detection ##########
 if [ "$SYSTEMOS" = "Linux" ]; then
-  if [ -f /etc/os-release ]; then
-    # Extract the distribution name and version from /etc/os-release
-    export DISTRO_NAME=$(grep -w "NAME" /etc/os-release | cut -d'=' -f2 | tr -d '"')
-    export DISTRO_VERSION=$(grep -w "VERSION_ID" /etc/os-release | cut -d'=' -f2 | tr -d '"')
+  if [ -r /etc/os-release ]; then
+    . /etc/os-release
 
-    # Print the distribution name and version
+    # Human-friendly info
+    DISTRO_NAME="${NAME:-Linux}"
+    DISTRO_VERSION="${VERSION_ID:-unknown}"
     echo "Operating system detected: $DISTRO_NAME, Version: $DISTRO_VERSION"
 
-    # Check if the system is RHL based on /etc/os-release
-    if grep -q "RHL" /etc/os-release; then
-      export SYSTEMOS="RHL"
+    # Classify distro family using ID / ID_LIKE (more reliable than checking yum/dnf)
+    # We'll use SYSTEMOS values you already branch on: "RHL" or "Linux"
+    case " ${ID:-} ${ID_LIKE:-} " in
+      *" rhel "*|*" fedora "*|*" centos "*|*" rocky "*|*" almalinux "*)
+        SYSTEMOS="RHL"
+        ;;
+      *" debian "*|*" ubuntu "*)
+        SYSTEMOS="Linux"   # keep your existing "Linux" meaning Debian/Ubuntu path
+        ;;
+      *)
+        SYSTEMOS="Linux"   # unknowns fall back to generic Linux path
+        ;;
+    esac
+
+    # Choose package manager (used for installs, not OS identity)
+    if command -v dnf >/dev/null 2>&1; then
+      PKG_MGR="dnf"
+    elif command -v yum >/dev/null 2>&1; then
+      PKG_MGR="yum"
+    elif command -v apt-get >/dev/null 2>&1; then
+      PKG_MGR="apt"
+    else
+      PKG_MGR="none"
     fi
 
-    # Check if dnf or yum is installed (dnf is used on newer systems, yum on older ones)
-    if command -v dnf > /dev/null 2>&1; then
-      echo "dnf is installed."
-      export SYSTEMOS="RHL" # Set SYSTEMOS to RHL if dnf is detected
-    elif command -v yum > /dev/null 2>&1; then
-      echo "yum is installed."
-      export SYSTEMOS="RHL" # Set SYSTEMOS to RHL if yum is detected
-    else
-      echo "No package manager (dnf or yum) found."
-    fi
+    echo "Final operating system detected: $SYSTEMOS"
+    echo "Package manager detected: $PKG_MGR"
   else
-    echo "Unable to detect the Linux distribution version."
+    echo "Unable to detect the Linux distribution version (missing /etc/os-release)."
+    SYSTEMOS="Linux"
+    PKG_MGR="none"
   fi
 fi
+
 
 # Print the final detected OS
 echo "Final operating system detected: $SYSTEMOS"
@@ -336,11 +346,11 @@ echo "Beginning Installation"
 # This script installs the WRFCHEM Tools with gnu or intel compilers.
 ####################################################################################################
 
-if [ "$RHL_64BIT_GNU" = "1" ]; then
+if [ "$RHL_64bit_GNU" = "1" ]; then
 
   # Basic Package Management for WRF-CHEM Tools and Processors
   export HOME=$(
-    cd
+    cd ~ &&
     pwd
   )
 
@@ -362,7 +372,7 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
 
   #Directory Listings
   export HOME=$(
-    cd
+    cd ~ &&
     pwd
   )
   mkdir $HOME/WRFCHEM
@@ -463,19 +473,19 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
   #With CC & CXX definied ./configure uses different compiler Flags
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf zlib-$Zlib_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf zlib-$Zlib_Version.tar.gz
   cd zlib-$Zlib_Version/
   ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   ##############################MPICH############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf mpich-$Mpich_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf mpich-$Mpich_Version.tar.gz
   cd mpich-$Mpich_Version/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export PATH=$DIR/MPICH/bin:$PATH
 
@@ -491,30 +501,30 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   export LDFLAGS=-L$DIR/grib2/lib
   export CPPFLAGS=-I$DIR/grib2/include
-  LD_LIBRARY_PATH= tar -xvzf libpng-$Libpng_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf libpng-$Libpng_Version.tar.gz
   cd libpng-$Libpng_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   #############################JasPer############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   unzip jasper-$Jasper_Version.zip
   cd jasper-$Jasper_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
 
   #############################hdf5 library for netcdf4 functionality############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf hdf5-$HDF5_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf hdf5-$HDF5_Version.tar.gz
   cd hdf5-$HDF5_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export HDF5=$DIR/grib2
   export PHDF5=$DIR/grib2
@@ -527,39 +537,39 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
   #Hard path for MPI added
   ##################################################################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
   cd pnetcdf-$Pnetcdf_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export PNETCDF=$DIR/grib2
 
   ##############################Install NETCDF C Library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_C_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_C_Version.tar.gz
   cd netcdf-c-$Netcdf_C_Version/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export PATH=$DIR/NETCDF/bin:$PATH
   export NETCDF=$DIR/NETCDF
 
   ##############################NetCDF fortran library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_Fortran_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_Fortran_Version.tar.gz
   cd netcdf-fortran-$Netcdf_Fortran_Version/
   export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
   export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   echo " "
 
@@ -569,8 +579,8 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
 
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
   export one="1"
   echo " "
@@ -712,40 +722,40 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
 
   echo ""
   echo "Unpacking Mozbc."
-  LD_LIBRARY_PATH= tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
+  env -u LD_LIBRARY_PATH  tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
   echo ""
   echo "Unpacking MEGAN Bio Emission."
-  LD_LIBRARY_PATH= tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+  env -u LD_LIBRARY_PATH  tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
   echo ""
   echo "Unpacking MEGAN Bio Emission Data."
-  LD_LIBRARY_PATH= tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+  env -u LD_LIBRARY_PATH  tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
   echo ""
   echo "Unpacking Wes Coldens"
-  LD_LIBRARY_PATH= tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+  env -u LD_LIBRARY_PATH  tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
   echo ""
   echo "Unpacking Unpacking ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
   echo ""
   echo "Unpacking EDGAR-HTAP."
-  LD_LIBRARY_PATH= tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+  env -u LD_LIBRARY_PATH  tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
   echo ""
   echo "Unpacking EPA ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
   echo ""
   echo "Unpacking Upper Boundary Conditions."
-  LD_LIBRARY_PATH= tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
+  env -u LD_LIBRARY_PATH  tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
   echo ""
   echo "Unpacking Aircraft Preprocessor Files."
   echo ""
-  LD_LIBRARY_PATH= tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
+  env -u LD_LIBRARY_PATH  tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
   echo ""
   echo "Unpacking Fire INventory from NCAR (FINN)"
-  LD_LIBRARY_PATH= tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
-  LD_LIBRARY_PATH= tar -xvf fire_emis_input.tar
-  LD_LIBRARY_PATH= tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
+  env -u LD_LIBRARY_PATH  tar -xvf fire_emis_input.tar
+  env -u LD_LIBRARY_PATH  tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
@@ -884,7 +894,7 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
 
   wget -c http://ftp.cptec.inpe.br/pesquisa/bramsrd/BRAMS_5.4/PREP-CHEM/PREP-CHEM-SRC-1.5.tar.gz
 
-  LD_LIBRARY_PATH= tar -xvzf PREP-CHEM-SRC-1.5.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+  env -u LD_LIBRARY_PATH  tar -xvzf PREP-CHEM-SRC-1.5.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
@@ -913,11 +923,11 @@ if [ "$RHL_64BIT_GNU" = "1" ]; then
   echo " "
 fi
 
-if [ "$RHL_64BIT_GNU" = "2" ]; then
+if [ "$RHL_64bit_GNU" = "2" ]; then
 
   # Basic Package Management for WRF-CHEM Tools and Processors
   export HOME=$(
-    cd
+    cd ~ &&
     pwd
   )
 
@@ -940,7 +950,7 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
 
   #Directory Listings
   export HOME=$(
-    cd
+    cd ~ &&
     pwd
   )
   mkdir $HOME/WRFCHEM
@@ -1041,19 +1051,19 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
   #With CC & CXX definied ./configure uses different compiler Flags
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf zlib-$Zlib_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf zlib-$Zlib_Version.tar.gz
   cd zlib-$Zlib_Version/
   ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   ##############################MPICH############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf mpich-$Mpich_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf mpich-$Mpich_Version.tar.gz
   cd mpich-$Mpich_Version/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export PATH=$DIR/MPICH/bin:$PATH
 
@@ -1069,30 +1079,30 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   export LDFLAGS=-L$DIR/grib2/lib
   export CPPFLAGS=-I$DIR/grib2/include
-  LD_LIBRARY_PATH= tar -xvzf libpng-$Libpng_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf libpng-$Libpng_Version.tar.gz
   cd libpng-$Libpng_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   #############################JasPer############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   unzip jasper-$Jasper_Version.zip
   cd jasper-$Jasper_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
 
   #############################hdf5 library for netcdf4 functionality############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf hdf5-$HDF5_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf hdf5-$HDF5_Version.tar.gz
   cd hdf5-$HDF5_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export HDF5=$DIR/grib2
   export PHDF5=$DIR/grib2
@@ -1105,39 +1115,39 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
   #Hard path for MPI added
   ##################################################################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
   cd pnetcdf-$Pnetcdf_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export PNETCDF=$DIR/grib2
 
   ##############################Install NETCDF C Library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_C_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_C_Version.tar.gz
   cd netcdf-c-$Netcdf_C_Version/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export PATH=$DIR/NETCDF/bin:$PATH
   export NETCDF=$DIR/NETCDF
 
   ##############################NetCDF fortran library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_Fortran_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_Fortran_Version.tar.gz
   cd netcdf-fortran-$Netcdf_Fortran_Version/
   export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
   export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   echo " "
   #################################### System Environment Tests ##############
@@ -1146,8 +1156,8 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
 
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
   export one="1"
   echo " "
@@ -1289,40 +1299,40 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
 
   echo ""
   echo "Unpacking Mozbc."
-  LD_LIBRARY_PATH= tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
+  env -u LD_LIBRARY_PATH  tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
   echo ""
   echo "Unpacking MEGAN Bio Emission."
-  LD_LIBRARY_PATH= tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+  env -u LD_LIBRARY_PATH  tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
   echo ""
   echo "Unpacking MEGAN Bio Emission Data."
-  LD_LIBRARY_PATH= tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+  env -u LD_LIBRARY_PATH  tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
   echo ""
   echo "Unpacking Wes Coldens"
-  LD_LIBRARY_PATH= tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+  env -u LD_LIBRARY_PATH  tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
   echo ""
   echo "Unpacking Unpacking ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
   echo ""
   echo "Unpacking EDGAR-HTAP."
-  LD_LIBRARY_PATH= tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+  env -u LD_LIBRARY_PATH  tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
   echo ""
   echo "Unpacking EPA ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
   echo ""
   echo "Unpacking Upper Boundary Conditions."
-  LD_LIBRARY_PATH= tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
+  env -u LD_LIBRARY_PATH  tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
   echo ""
   echo "Unpacking Aircraft Preprocessor Files."
   echo ""
-  LD_LIBRARY_PATH= tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
+  env -u LD_LIBRARY_PATH  tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
   echo ""
   echo "Unpacking Fire INventory from NCAR (FINN)"
-  LD_LIBRARY_PATH= tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
-  LD_LIBRARY_PATH= tar -xvf fire_emis_input.tar
-  LD_LIBRARY_PATH= tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
+  env -u LD_LIBRARY_PATH  tar -xvf fire_emis_input.tar
+  env -u LD_LIBRARY_PATH  tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
@@ -1461,7 +1471,7 @@ if [ "$RHL_64BIT_GNU" = "2" ]; then
 
   wget -c http://ftp.cptec.inpe.br/pesquisa/bramsrd/BRAMS_5.4/PREP-CHEM/PREP-CHEM-SRC-1.5.tar.gz
 
-  LD_LIBRARY_PATH= tar -xvzf PREP-CHEM-SRC-1.5.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+  env -u LD_LIBRARY_PATH  tar -xvzf PREP-CHEM-SRC-1.5.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
@@ -1544,7 +1554,7 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
 
   #Directory Listings
   export HOME=$(
-    cd
+    cd ~ &&
     pwd
   )
   mkdir $HOME/WRFCHEM_Intel
@@ -1613,40 +1623,40 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
   #With CC & CXX definied ./configure uses different compiler Flags
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf zlib-$Zlib_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf zlib-$Zlib_Version.tar.gz
   cd zlib-$Zlib_Version/
   ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   #############################libpng############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   export LDFLAGS=-L$DIR/grib2/lib
   export CPPFLAGS=-I$DIR/grib2/include
-  LD_LIBRARY_PATH= tar -xvzf libpng-$Libpng_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf libpng-$Libpng_Version.tar.gz
   cd libpng-$Libpng_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   #############################JasPer############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   unzip jasper-$Jasper_Version.zip
   cd jasper-$Jasper_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
 
   #############################hdf5 library for netcdf4 functionality############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf hdf5-$HDF5_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf hdf5-$HDF5_Version.tar.gz
   cd hdf5-$HDF5_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export HDF5=$DIR/grib2
   export PHDF5=$DIR/grib2
@@ -1659,39 +1669,39 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
   #Hard path for MPI added
   ##################################################################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
   cd pnetcdf-$Pnetcdf_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PNETCDF=$DIR/grib2
 
   ##############################Install NETCDF C Library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= LD_LIBRARY_PATH= tar -xvzf v$Netcdf_C_Version.tar.gz
+  LD_LIBRARY_PATH= env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_C_Version.tar.gz
   cd netcdf-c-$Netcdf_C_Version/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PATH=$DIR/NETCDF/bin:$PATH
   export NETCDF=$DIR/NETCDF
 
   ##############################NetCDF fortran library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_Fortran_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_Fortran_Version.tar.gz
   cd netcdf-fortran-$Netcdf_Fortran_Version/
   export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
   export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   echo " "
   #################################### System Environment Tests ##############
@@ -1700,8 +1710,8 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
 
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
   export one="1"
   echo " "
@@ -1842,40 +1852,40 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
 
   echo ""
   echo "Unpacking Mozbc."
-  LD_LIBRARY_PATH= tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
+  env -u LD_LIBRARY_PATH  tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
   echo ""
   echo "Unpacking MEGAN Bio Emission."
-  LD_LIBRARY_PATH= tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+  env -u LD_LIBRARY_PATH  tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
   echo ""
   echo "Unpacking MEGAN Bio Emission Data."
-  LD_LIBRARY_PATH= tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+  env -u LD_LIBRARY_PATH  tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
   echo ""
   echo "Unpacking Wes Coldens"
-  LD_LIBRARY_PATH= tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+  env -u LD_LIBRARY_PATH  tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
   echo ""
   echo "Unpacking Unpacking ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
   echo ""
   echo "Unpacking EDGAR-HTAP."
-  LD_LIBRARY_PATH= tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+  env -u LD_LIBRARY_PATH  tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
   echo ""
   echo "Unpacking EPA ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
   echo ""
   echo "Unpacking Upper Boundary Conditions."
-  LD_LIBRARY_PATH= tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
+  env -u LD_LIBRARY_PATH  tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
   echo ""
   echo "Unpacking Aircraft Preprocessor Files."
   echo ""
-  LD_LIBRARY_PATH= tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
+  env -u LD_LIBRARY_PATH  tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
   echo ""
   echo "Unpacking Fire INventory from NCAR (FINN)"
-  LD_LIBRARY_PATH= tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
-  LD_LIBRARY_PATH= tar -xvf fire_emis_input.tar
-  LD_LIBRARY_PATH= tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
+  env -u LD_LIBRARY_PATH  tar -xvf fire_emis_input.tar
+  env -u LD_LIBRARY_PATH  tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
@@ -2019,7 +2029,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
   #Directory Listings
   export HOME=$(
-    cd
+    cd ~ &&
     pwd
   )
   mkdir $HOME/WRFCHEM
@@ -2120,19 +2130,19 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   #With CC & CXX definied ./configure uses different compiler Flags
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf zlib-$Zlib_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf zlib-$Zlib_Version.tar.gz
   cd zlib-$Zlib_Version/
   ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   ##############################MPICH############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf mpich-$Mpich_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf mpich-$Mpich_Version.tar.gz
   cd mpich-$Mpich_Version/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PATH=$DIR/MPICH/bin:$PATH
 
@@ -2148,30 +2158,30 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   export LDFLAGS=-L$DIR/grib2/lib
   export CPPFLAGS=-I$DIR/grib2/include
-  LD_LIBRARY_PATH= tar -xvzf libpng-$Libpng_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf libpng-$Libpng_Version.tar.gz
   cd libpng-$Libpng_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   #############################JasPer############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   unzip jasper-$Jasper_Version.zip
   cd jasper-$Jasper_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
 
   #############################hdf5 library for netcdf4 functionality############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf hdf5-$HDF5_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf hdf5-$HDF5_Version.tar.gz
   cd hdf5-$HDF5_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export HDF5=$DIR/grib2
   export PHDF5=$DIR/grib2
@@ -2184,39 +2194,39 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   #Hard path for MPI added
   ##################################################################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
   cd pnetcdf-$Pnetcdf_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PNETCDF=$DIR/grib2
 
   ##############################Install NETCDF C Library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_C_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_C_Version.tar.gz
   cd netcdf-c-$Netcdf_C_Version/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PATH=$DIR/NETCDF/bin:$PATH
   export NETCDF=$DIR/NETCDF
 
   ##############################NetCDF fortran library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_Fortran_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_Fortran_Version.tar.gz
   cd netcdf-fortran-$Netcdf_Fortran_Version/
   export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
   export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   echo " "
   #################################### System Environment Tests ##############
@@ -2225,8 +2235,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
 
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
   export one="1"
   echo " "
@@ -2367,40 +2377,40 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
   echo ""
   echo "Unpacking Mozbc."
-  LD_LIBRARY_PATH= tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
+  env -u LD_LIBRARY_PATH  tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
   echo ""
   echo "Unpacking MEGAN Bio Emission."
-  LD_LIBRARY_PATH= tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+  env -u LD_LIBRARY_PATH  tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
   echo ""
   echo "Unpacking MEGAN Bio Emission Data."
-  LD_LIBRARY_PATH= tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+  env -u LD_LIBRARY_PATH  tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
   echo ""
   echo "Unpacking Wes Coldens"
-  LD_LIBRARY_PATH= tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+  env -u LD_LIBRARY_PATH  tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
   echo ""
   echo "Unpacking Unpacking ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
   echo ""
   echo "Unpacking EDGAR-HTAP."
-  LD_LIBRARY_PATH= tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+  env -u LD_LIBRARY_PATH  tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
   echo ""
   echo "Unpacking EPA ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
   echo ""
   echo "Unpacking Upper Boundary Conditions."
-  LD_LIBRARY_PATH= tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
+  env -u LD_LIBRARY_PATH  tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
   echo ""
   echo "Unpacking Aircraft Preprocessor Files."
   echo ""
-  LD_LIBRARY_PATH= tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
+  env -u LD_LIBRARY_PATH  tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
   echo ""
   echo "Unpacking Fire INventory from NCAR (FINN)"
-  LD_LIBRARY_PATH= tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
-  LD_LIBRARY_PATH= tar -xvf fire_emis_input.tar
-  LD_LIBRARY_PATH= tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
+  env -u LD_LIBRARY_PATH  tar -xvf fire_emis_input.tar
+  env -u LD_LIBRARY_PATH  tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
@@ -2539,7 +2549,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
 
   wget -c http://ftp.cptec.inpe.br/pesquisa/bramsrd/BRAMS_5.4/PREP-CHEM/PREP-CHEM-SRC-1.5.tar.gz
 
-  LD_LIBRARY_PATH= tar -xvzf PREP-CHEM-SRC-1.5.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
+  env -u LD_LIBRARY_PATH  tar -xvzf PREP-CHEM-SRC-1.5.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/PREP-CHEM-SRC-1.5
 
@@ -2645,7 +2655,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   #Directory Listings
   export HOME=$(
-    cd
+    cd ~ &&
     pwd
   )
   mkdir $HOME/WRFCHEM_Intel
@@ -2713,40 +2723,40 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   #With CC & CXX definied ./configure uses different compiler Flags
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf zlib-$Zlib_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf zlib-$Zlib_Version.tar.gz
   cd zlib-$Zlib_Version/
   ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   #############################libpng############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   export LDFLAGS=-L$DIR/grib2/lib
   export CPPFLAGS=-I$DIR/grib2/include
-  LD_LIBRARY_PATH= tar -xvzf libpng-$Libpng_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf libpng-$Libpng_Version.tar.gz
   cd libpng-$Libpng_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   #############################JasPer############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   unzip jasper-$Jasper_Version.zip
   cd jasper-$Jasper_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
 
   #############################hdf5 library for netcdf4 functionality############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf hdf5-$HDF5_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf hdf5-$HDF5_Version.tar.gz
   cd hdf5-$HDF5_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export HDF5=$DIR/grib2
   export PHDF5=$DIR/grib2
@@ -2759,39 +2769,39 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   #Hard path for MPI added
   ##################################################################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
   cd pnetcdf-$Pnetcdf_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PNETCDF=$DIR/grib2
 
   ##############################Install NETCDF C Library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_C_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_C_Version.tar.gz
   cd netcdf-c-$Netcdf_C_Version/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --with-zlib=$DIR/grib2 --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PATH=$DIR/NETCDF/bin:$PATH
   export NETCDF=$DIR/NETCDF
 
   ##############################NetCDF fortran library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_Fortran_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_Fortran_Version.tar.gz
   cd netcdf-fortran-$Netcdf_Fortran_Version/
   export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
   export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   echo " "
   #################################### System Environment Tests ##############
@@ -2800,8 +2810,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
 
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
   export one="1"
   echo " "
@@ -2942,40 +2952,40 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   echo ""
   echo "Unpacking Mozbc."
-  LD_LIBRARY_PATH= tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
+  env -u LD_LIBRARY_PATH  tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
   echo ""
   echo "Unpacking MEGAN Bio Emission."
-  LD_LIBRARY_PATH= tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+  env -u LD_LIBRARY_PATH  tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
   echo ""
   echo "Unpacking MEGAN Bio Emission Data."
-  LD_LIBRARY_PATH= tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+  env -u LD_LIBRARY_PATH  tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
   echo ""
   echo "Unpacking Wes Coldens"
-  LD_LIBRARY_PATH= tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+  env -u LD_LIBRARY_PATH  tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
   echo ""
   echo "Unpacking Unpacking ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
   echo ""
   echo "Unpacking EDGAR-HTAP."
-  LD_LIBRARY_PATH= tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+  env -u LD_LIBRARY_PATH  tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
   echo ""
   echo "Unpacking EPA ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
   echo ""
   echo "Unpacking Upper Boundary Conditions."
-  LD_LIBRARY_PATH= tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
+  env -u LD_LIBRARY_PATH  tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
   echo ""
   echo "Unpacking Aircraft Preprocessor Files."
   echo ""
-  LD_LIBRARY_PATH= tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
+  env -u LD_LIBRARY_PATH  tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
   echo ""
   echo "Unpacking Fire INventory from NCAR (FINN)"
-  LD_LIBRARY_PATH= tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
-  LD_LIBRARY_PATH= tar -xvf fire_emis_input.tar
-  LD_LIBRARY_PATH= tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
+  env -u LD_LIBRARY_PATH  tar -xvf fire_emis_input.tar
+  env -u LD_LIBRARY_PATH  tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
@@ -3120,7 +3130,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   ##############################Directory Listing############################
 
   export HOME=$(
-    cd
+    cd ~ &&
     pwd
   )
   mkdir $HOME/WRFCHEM
@@ -3257,21 +3267,21 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   #With CC & CXX definied ./configure uses different compiler Flags
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf zlib-$Zlib_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf zlib-$Zlib_Version.tar.gz
   cd zlib-$Zlib_Version/
   ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   echo " "
 
   ##############################MPICH############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf mpich-$Mpich_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf mpich-$Mpich_Version.tar.gz
   cd mpich-$Mpich_Version/
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PATH=$DIR/MPICH/bin:$PATH
 
@@ -3287,11 +3297,11 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   export LDFLAGS=-L$DIR/grib2/lib
   export CPPFLAGS=-I$DIR/grib2/include
-  LD_LIBRARY_PATH= tar -xvzf libpng-$Libpng_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf libpng-$Libpng_Version.tar.gz
   cd libpng-$Libpng_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   echo " "
   #############################JasPer############################
@@ -3300,8 +3310,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   unzip jasper-$Jasper_Version.zip
   cd jasper-$Jasper_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
 
@@ -3309,11 +3319,11 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   #############################hdf5 library for netcdf4 functionality############################
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf hdf5-$HDF5_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf hdf5-$HDF5_Version.tar.gz
   cd hdf5-$HDF5_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export HDF5=$DIR/grib2
   export PHDF5=$DIR/grib2
@@ -3326,7 +3336,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   #Hard path for MPI added
   ##################################################################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
   cd pnetcdf-$Pnetcdf_Version
   export MPIFC=$DIR/MPICH/bin/mpifort
   export MPIF77=$DIR/MPICH/bin/mpifort
@@ -3334,21 +3344,21 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   export MPICC=$DIR/MPICH/bin/mpicc
   export MPICXX=$DIR/MPICH/bin/mpicxx
   ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PNETCDF=$DIR/grib2
 
   ##############################Install NETCDF C Library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_C_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_C_Version.tar.gz
   cd netcdf-c-$Netcdf_C_Version/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export PATH=$DIR/NETCDF/bin:$PATH
   export NETCDF=$DIR/NETCDF
@@ -3356,15 +3366,15 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
   ##############################NetCDF fortran library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_Fortran_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_Fortran_Version.tar.gz
   cd netcdf-fortran-$Netcdf_Fortran_Version/
   export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
   export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   echo " "
   #################################### System Environment Tests ##############
@@ -3373,8 +3383,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
 
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
   export one="1"
   echo " "
@@ -3515,40 +3525,40 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
   echo ""
   echo "Unpacking Mozbc."
-  LD_LIBRARY_PATH= tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
+  env -u LD_LIBRARY_PATH  tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
   echo ""
   echo "Unpacking MEGAN Bio Emission."
-  LD_LIBRARY_PATH= tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+  env -u LD_LIBRARY_PATH  tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
   echo ""
   echo "Unpacking MEGAN Bio Emission Data."
-  LD_LIBRARY_PATH= tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+  env -u LD_LIBRARY_PATH  tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
   echo ""
   echo "Unpacking Wes Coldens"
-  LD_LIBRARY_PATH= tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+  env -u LD_LIBRARY_PATH  tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
   echo ""
   echo "Unpacking Unpacking ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
   echo ""
   echo "Unpacking EDGAR-HTAP."
-  LD_LIBRARY_PATH= tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+  env -u LD_LIBRARY_PATH  tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
   echo ""
   echo "Unpacking EPA ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
   echo ""
   echo "Unpacking Upper Boundary Conditions."
-  LD_LIBRARY_PATH= tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
+  env -u LD_LIBRARY_PATH  tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
   echo ""
   echo "Unpacking Aircraft Preprocessor Files."
   echo ""
-  LD_LIBRARY_PATH= tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
+  env -u LD_LIBRARY_PATH  tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
   echo ""
   echo "Unpacking Fire INventory from NCAR (FINN)"
-  LD_LIBRARY_PATH= tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
-  LD_LIBRARY_PATH= tar -xvf fire_emis_input.tar
-  LD_LIBRARY_PATH= tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
+  env -u LD_LIBRARY_PATH  tar -xvf fire_emis_input.tar
+  env -u LD_LIBRARY_PATH  tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
@@ -3701,7 +3711,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   ##############################Directory Listing############################
 
   export HOME=$(
-    cd
+    cd ~ &&
     pwd
   )
   mkdir $HOME/WRFCHEM
@@ -3852,21 +3862,21 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   #With CC & CXX definied ./configure uses different compiler Flags
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf zlib-$Zlib_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf zlib-$Zlib_Version.tar.gz
   cd zlib-$Zlib_Version/
   ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   echo " "
 
   ##############################MPICH############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf mpich-$Mpich_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf mpich-$Mpich_Version.tar.gz
   cd mpich-$Mpich_Version/"${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
   F90= ./configure --prefix=$DIR/MPICH --with-device=ch3 FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.make.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.make.log
 
   export PATH=$DIR/MPICH/bin:$PATH
 
@@ -3882,11 +3892,11 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
   export LDFLAGS=-L$DIR/grib2/lib
   export CPPFLAGS=-I$DIR/grib2/include
-  LD_LIBRARY_PATH= tar -xvzf libpng-$Libpng_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf libpng-$Libpng_Version.tar.gz
   cd libpng-$Libpng_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   echo " "
   #############################JasPer############################
@@ -3895,8 +3905,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   unzip jasper-$Jasper_Version.zip
   cd jasper-$Jasper_Version/
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
   export JASPERLIB=$DIR/grib2/lib
   export JASPERINC=$DIR/grib2/include
 
@@ -3904,11 +3914,11 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   #############################hdf5 library for netcdf4 functionality############################
 
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf hdf5-$HDF5_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf hdf5-$HDF5_Version.tar.gz
   cd hdf5-$HDF5_Version
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-hl --enable-fortran --enable-parallel 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export HDF5=$DIR/grib2
   export PHDF5=$DIR/grib2
@@ -3921,7 +3931,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   #Hard path for MPI added
   ##################################################################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf pnetcdf-$Pnetcdf_Version.tar.gz
   cd pnetcdf-$Pnetcdf_Version
   export MPIFC=$DIR/MPICH/bin/mpifort
   export MPIF77=$DIR/MPICH/bin/mpifort
@@ -3929,21 +3939,21 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   export MPICC=$DIR/MPICH/bin/mpicc
   export MPICXX=$DIR/MPICH/bin/mpicxx
   ./configure --prefix=$DIR/grib2 --enable-shared --enable-static 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PNETCDF=$DIR/grib2
 
   ##############################Install NETCDF C Library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_C_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_C_Version.tar.gz
   cd netcdf-c-$Netcdf_C_Version/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
   export LIBS="-lhdf5_hl -lhdf5 -lz -lcurl -lgfortran -lgcc -lm -ldl -lpnetcdf"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --disable-dap --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-pnetcdf --enable-cdf5 --enable-parallel-tests 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   export PATH=$DIR/NETCDF/bin:$PATH
   export NETCDF=$DIR/NETCDF
@@ -3951,15 +3961,15 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
   ##############################NetCDF fortran library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= tar -xvzf v$Netcdf_Fortran_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_Fortran_Version.tar.gz
   cd netcdf-fortran-$Netcdf_Fortran_Version/
   export LD_LIBRARY_PATH=$DIR/NETCDF/lib:$LD_LIBRARY_PATH
   export CPPFLAGS="-I$DIR/NETCDF/include -I$DIR/grib2/include"
   export LDFLAGS="-L$DIR/NETCDF/lib -L$DIR/grib2/lib"
   export LIBS="-lnetcdf -lpnetcdf -lcurl -lhdf5_hl -lhdf5 -lz -lm -ldl -lgcc -lgfortran"
   CC=$MPICC FC=$MPIFC F77=$MPIF77 F90=$MPIF90 CXX=$MPICXX CFLAGS=$CFLAGS FFLAGS=$FFLAGS FCFLAGS=$FCFLAGS ./configure --prefix=$DIR/NETCDF --enable-netcdf-4 --enable-netcdf4 --enable-shared --enable-static --enable-parallel-tests --enable-hdf5 2>&1 | tee configure.log
-  make -j $CPU_QUATER_EVEN 2>&1 | tee make.log
-  make -j $CPU_QUATER_EVEN install 2>&1 | tee make.install.log
+  make -j $CPU_QUARTER_EVEN 2>&1 | tee make.log
+  make -j $CPU_QUARTER_EVEN install 2>&1 | tee make.install.log
 
   echo " "
   #################################### System Environment Tests ##############
@@ -3968,8 +3978,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_NETCDF_MPI_tests.tar
   wget -c https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
 
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
-  LD_LIBRARY_PATH= tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Environment
+  env -u LD_LIBRARY_PATH  tar -xvf Fortran_C_NETCDF_MPI_tests.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Tests/Compatibility
 
   export one="1"
   echo " "
@@ -4110,40 +4120,40 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
   echo ""
   echo "Unpacking Mozbc."
-  LD_LIBRARY_PATH= tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
+  env -u LD_LIBRARY_PATH  tar -xvf mozbc.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/mozbc
   echo ""
   echo "Unpacking MEGAN Bio Emission."
-  LD_LIBRARY_PATH= tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
+  env -u LD_LIBRARY_PATH  tar -xvf megan_bio_emiss.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_emiss
   echo ""
   echo "Unpacking MEGAN Bio Emission Data."
-  LD_LIBRARY_PATH= tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
+  env -u LD_LIBRARY_PATH  tar -xvzf megan.data.tar.gz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/megan_bio_data
   echo ""
   echo "Unpacking Wes Coldens"
-  LD_LIBRARY_PATH= tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
+  env -u LD_LIBRARY_PATH  tar -xvf wes-coldens.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
   echo ""
   echo "Unpacking Unpacking ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvf ANTHRO.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/ANTHRO_EMIS
   echo ""
   echo "Unpacking EDGAR-HTAP."
-  LD_LIBRARY_PATH= tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
+  env -u LD_LIBRARY_PATH  tar -xvzf EDGAR-HTAP.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EDGAR_HTAP
   echo ""
   echo "Unpacking EPA ANTHRO Emission."
-  LD_LIBRARY_PATH= tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
+  env -u LD_LIBRARY_PATH  tar -xvzf EPA_ANTHRO_EMIS.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/EPA_ANTHRO_EMIS
   echo ""
   echo "Unpacking Upper Boundary Conditions."
-  LD_LIBRARY_PATH= tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
+  env -u LD_LIBRARY_PATH  tar -xvf UBC_inputs.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/UBC
   echo ""
   echo "Unpacking Aircraft Preprocessor Files."
   echo ""
-  LD_LIBRARY_PATH= tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
+  env -u LD_LIBRARY_PATH  tar -xvf aircraft_preprocessor_files.tar -C "${WRF_FOLDER}"/WRF_CHEM_Tools/Aircraft
   echo ""
   echo "Unpacking Fire INventory from NCAR (FINN)"
-  LD_LIBRARY_PATH= tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
-  LD_LIBRARY_PATH= tar -xvf fire_emis_input.tar
-  LD_LIBRARY_PATH= tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
-  LD_LIBRARY_PATH= tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf fire_emis.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
+  env -u LD_LIBRARY_PATH  tar -xvf fire_emis_input.tar
+  env -u LD_LIBRARY_PATH  tar -xvzf grass_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tempfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf shrub_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
+  env -u LD_LIBRARY_PATH  tar -xvzf tropfor_from_img.nc.tgz -C "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN/grid_finn_fire_emis_v2020/src
 
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2020_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
   mv "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads/FINNv2.4_MOD_MOZART_2013_c20210617.txt.gz "${WRF_FOLDER}"/WRF_CHEM_Tools/FINN
