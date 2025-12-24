@@ -1,4 +1,9 @@
 #!/bin/bash
+# Non-interactive mode when called from another script (args passed) or env flag set
+NONINTERACTIVE=0
+if [[ -n "${MOSIT_NONINTERACTIVE:-}" ]] || [[ $# -ge 1 ]] || [[ ! -t 0 ]]; then
+  NONINTERACTIVE=1
+fi
 
 # Conda environment test
 if [ -n "$CONDA_DEFAULT_ENV" ]; then
@@ -28,6 +33,7 @@ export Netcdf_Fortran_Version=4.6.2
 export Netcdf_CXX_Version=4.3.1
 
 ############################### Citation Requirement  ####################
+if [[ "$NONINTERACTIVE" -eq 0 ]]; then
 echo " "
 echo " The GitHub software WRF-MOSIT (Version 2.1.1) by W. Hatheway (2023)"
 echo " "
@@ -39,7 +45,7 @@ echo -e "\e[31mCitation: Hatheway, W., Snoun, H., ur Rehman, H., & Mwanthi, A. W
 
 echo " "
 read -p "Press enter to continue"
-
+fi
 ############################### System Architecture Type #################
 # Determine if the system is 32 or 64-bit based on the architecture
 ##########################################################################
