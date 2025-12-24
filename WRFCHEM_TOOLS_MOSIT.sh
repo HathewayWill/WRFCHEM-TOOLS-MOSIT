@@ -285,27 +285,36 @@ fi
 
 ############################# Enter sudo users information #############################
 echo "-------------------------------------------------- "
-while true; do
-  # Prompt for the initial password
-  read -r -s -p "
+
+# 1) Accept PASSWD from environment OR arg1 (WRF-MOSIT passes both)
+if [[ -z "${PASSWD:-}" && -n "${1:-}" ]]; then
+  export PASSWD="$1"
+fi
+
+# 2) If PASSWD exists, skip prompting
+if [[ -n "${PASSWD:-}" ]]; then
+  echo "Using sudo password passed in from parent script."
+else
+  while true; do
+    read -r -s -p "
     Password is only saved locally and will not be seen when typing.
     Please enter your sudo password: " password1
-  echo " "
-  # Prompt for password verification
-  read -r -s -p "Please re-enter your password to verify: " password2
-  echo " "
+    echo
+    read -r -s -p "Please re-enter your password to verify: " password2
+    echo
 
-  # Check if the passwords match
-  if [ "$password1" = "$password2" ]; then
-    export PASSWD=$password1
-    echo "Password verified successfully."
-    break
-  else
-    echo "Passwords do not match. Please enter the passwords again."
-  fi
-done
+    if [[ "$password1" == "$password2" ]]; then
+      export PASSWD="$password1"
+      echo "Password verified successfully."
+      break
+    else
+      echo "Passwords do not match. Please enter the passwords again."
+    fi
+  done
+fi
 
 echo "Beginning Installation"
+
 
 ##################################### WRFCHEM Tools ###############################################
 # This script will install the WRFCHEM pre-processor tools.
