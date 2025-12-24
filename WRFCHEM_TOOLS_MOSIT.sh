@@ -780,7 +780,7 @@ if [ "$RHL_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
+  ./make_mozbc 2>&1 | tee make.log
 
   ################## Information on Upper Boundary Conditions ###################
 
@@ -799,9 +799,9 @@ if [ "$RHL_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
-  LD_LIBRARY_PATH= ./make_util megan_xform 2>&1 | tee make.xform.log
-  LD_LIBRARY_PATH= ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
+  ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+  ./make_util megan_xform 2>&1 | tee make.xform.log
+  ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
   ############################# Anthroprogenic Emissions #########################
 
@@ -813,7 +813,7 @@ if [ "$RHL_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ############################# EDGAR HTAP ######################################
   #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -831,7 +831,7 @@ if [ "$RHL_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ######################### Weseley EXO Coldens ##################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
@@ -842,8 +842,8 @@ if [ "$RHL_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util wesely 2>&1 | tee make.wesely.log
-  LD_LIBRARY_PATH= ./make_util exo_coldens 2>&1 | tee make.exo.log
+  ./make_util wesely 2>&1 | tee make.wesely.log
+  ./make_util exo_coldens 2>&1 | tee make.exo.log
 
   ########################## Aircraft Emissions Preprocessor #####################
   # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
@@ -1357,7 +1357,7 @@ if [ "$RHL_64bit_GNU" = "2" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
+  ./make_mozbc 2>&1 | tee make.log
 
   ################## Information on Upper Boundary Conditions ###################
 
@@ -1376,9 +1376,9 @@ if [ "$RHL_64bit_GNU" = "2" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
-  LD_LIBRARY_PATH= ./make_util megan_xform 2>&1 | tee make.xform.log
-  LD_LIBRARY_PATH= ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
+  ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+  ./make_util megan_xform 2>&1 | tee make.xform.log
+  ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
   ############################# Anthroprogenic Emissions #########################
 
@@ -1390,7 +1390,7 @@ if [ "$RHL_64bit_GNU" = "2" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ############################# EDGAR HTAP ######################################
   #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -1408,7 +1408,7 @@ if [ "$RHL_64bit_GNU" = "2" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ######################### Weseley EXO Coldens ##################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
@@ -1419,8 +1419,8 @@ if [ "$RHL_64bit_GNU" = "2" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util wesely 2>&1 | tee make.wesely.log
-  LD_LIBRARY_PATH= ./make_util exo_coldens 2>&1 | tee make.exo.log
+  ./make_util wesely 2>&1 | tee make.wesely.log
+  ./make_util exo_coldens 2>&1 | tee make.exo.log
 
   ########################## Aircraft Emissions Preprocessor #####################
   # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
@@ -1679,7 +1679,7 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
 
   ##############################Install NETCDF C Library############################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/Downloads
-  LD_LIBRARY_PATH= env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_C_Version.tar.gz
+  env -u LD_LIBRARY_PATH  tar -xvzf v$Netcdf_C_Version.tar.gz
   cd netcdf-c-$Netcdf_C_Version/
   export CPPFLAGS=-I$DIR/grib2/include
   export LDFLAGS=-L$DIR/grib2/lib
@@ -1908,7 +1908,7 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 
-  LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
+  ./make_mozbc 2>&1 | tee make.log
 
   ################## Information on Upper Boundary Conditions ###################
 
@@ -1926,9 +1926,9 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
 
-  LD_LIBRARY_PATH= ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
-  LD_LIBRARY_PATH= ./make_util megan_xform 2>&1 | tee make.xform.log
-  LD_LIBRARY_PATH= ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
+  ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+  ./make_util megan_xform 2>&1 | tee make.xform.log
+  ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
   ############################# Anthroprogenic Emissions #########################
 
@@ -1939,7 +1939,7 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
 
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ############################# EDGAR HTAP ######################################
   #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -1956,7 +1956,7 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
 
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ######################### Weseley EXO Coldens ##################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
@@ -1966,8 +1966,8 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
 
-  LD_LIBRARY_PATH= ./make_util wesely 2>&1 | tee make.wesely.log
-  LD_LIBRARY_PATH= ./make_util exo_coldens 2>&1 | tee make.exo.log
+  ./make_util wesely 2>&1 | tee make.wesely.log
+  ./make_util exo_coldens 2>&1 | tee make.exo.log
 
   ########################## Aircraft Emissions Preprocessor #####################
   # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
@@ -2435,7 +2435,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
+  ./make_mozbc 2>&1 | tee make.log
 
   ################## Information on Upper Boundary Conditions ###################
 
@@ -2454,9 +2454,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
-  LD_LIBRARY_PATH= ./make_util megan_xform 2>&1 | tee make.xform.log
-  LD_LIBRARY_PATH= ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
+  ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+  ./make_util megan_xform 2>&1 | tee make.xform.log
+  ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
   ############################# Anthroprogenic Emissions #########################
 
@@ -2468,7 +2468,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ############################# EDGAR HTAP ######################################
   #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -2486,7 +2486,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ######################### Weseley EXO Coldens ##################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
@@ -2497,8 +2497,8 @@ if [ "$Ubuntu_64bit_GNU" = "1" ]; then
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util wesely 2>&1 | tee make.wesely.log
-  LD_LIBRARY_PATH= ./make_util exo_coldens 2>&1 | tee make.exo.log
+  ./make_util wesely 2>&1 | tee make.wesely.log
+  ./make_util exo_coldens 2>&1 | tee make.exo.log
 
   ########################## Aircraft Emissions Preprocessor #####################
   # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
@@ -2648,7 +2648,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export MPIF77=mpiifx
   export MPIF90=mpiifx
   export MPICC=mpiicx
-  export MPICXX=mpiicpc
+  export MPICXX=mpiicpx
   export CFLAGS="-fPIC -fPIE -O3 -Wno-implicit-function-declaration -Wno-incompatible-pointer-types "
   export FFLAGS="-m64"
   export FCFLAGS="-m64"
@@ -3008,7 +3008,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
 
-  LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
+  ./make_mozbc 2>&1 | tee make.log
 
   ################## Information on Upper Boundary Conditions ###################
 
@@ -3026,9 +3026,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
 
-  LD_LIBRARY_PATH= ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
-  LD_LIBRARY_PATH= ./make_util megan_xform 2>&1 | tee make.xform.log
-  LD_LIBRARY_PATH= ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
+  ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+  ./make_util megan_xform 2>&1 | tee make.xform.log
+  ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
   ############################# Anthroprogenic Emissions #########################
 
@@ -3039,7 +3039,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
 
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ############################# EDGAR HTAP ######################################
   #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -3056,7 +3056,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
 
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ######################### Weseley EXO Coldens ##################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
@@ -3066,8 +3066,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export NETCDF_DIR=$DIR/NETCDF
   sed -i 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
 
-  LD_LIBRARY_PATH= ./make_util wesely 2>&1 | tee make.wesely.log
-  LD_LIBRARY_PATH= ./make_util exo_coldens 2>&1 | tee make.exo.log
+  ./make_util wesely 2>&1 | tee make.wesely.log
+  ./make_util exo_coldens 2>&1 | tee make.exo.log
 
   ########################## Aircraft Emissions Preprocessor #####################
   # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
@@ -3586,7 +3586,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
+  ./make_mozbc 2>&1 | tee make.log
 
   ################## Information on Upper Boundary Conditions ###################
 
@@ -3605,9 +3605,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
-  LD_LIBRARY_PATH= ./make_util megan_xform 2>&1 | tee make.xform.log
-  LD_LIBRARY_PATH= ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
+  ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+  ./make_util megan_xform 2>&1 | tee make.xform.log
+  ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
   ############################# Anthroprogenic Emissions #########################
 
@@ -3619,7 +3619,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ############################# EDGAR HTAP ######################################
   #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -3637,7 +3637,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ######################### Weseley EXO Coldens ##################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
@@ -3648,8 +3648,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util wesely 2>&1 | tee make.wesley.log
-  LD_LIBRARY_PATH= ./make_util exo_coldens 2>&1 | tee make.exo.log
+  ./make_util wesely 2>&1 | tee make.wesley.log
+  ./make_util exo_coldens 2>&1 | tee make.exo.log
 
   ########################## Aircraft Emissions Preprocessor #####################
   # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
@@ -4181,7 +4181,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_mozbc
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_mozbc 2>&1 | tee make.log
+  ./make_mozbc 2>&1 | tee make.log
 
   ################## Information on Upper Boundary Conditions ###################
 
@@ -4200,9 +4200,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
-  LD_LIBRARY_PATH= ./make_util megan_xform 2>&1 | tee make.xform.log
-  LD_LIBRARY_PATH= ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
+  ./make_util megan_bio_emiss 2>&1 | tee make.bio.log
+  ./make_util megan_xform 2>&1 | tee make.xform.log
+  ./make_util surfdata_xform 2>&1 | tee make.surfdata.log
 
   ############################# Anthroprogenic Emissions #########################
 
@@ -4214,7 +4214,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ############################# EDGAR HTAP ######################################
   #  This directory contains EDGAR-HTAP anthropogenic emission files for the
@@ -4232,7 +4232,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_anthro
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_anthro 2>&1 | tee make.log
+  ./make_anthro 2>&1 | tee make.log
 
   ######################### Weseley EXO Coldens ##################################
   cd "${WRF_FOLDER}"/WRF_CHEM_Tools/wes_coldens
@@ -4243,8 +4243,8 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
   sed -i'' -e 's/"${ar_libs} -lnetcdff"/"-lnetcdff ${ar_libs}"/' make_util
   sed -i'' -e '8s/FFLAGS = --g/FFLAGS = --g ${fallow_argument}/' Makefile
   sed -i'' -e '10s/FFLAGS = -g/FFLAGS = -g ${fallow_argument}/' Makefile
-  LD_LIBRARY_PATH= ./make_util wesely 2>&1 | tee make.wesley.log
-  LD_LIBRARY_PATH= ./make_util exo_coldens 2>&1 | tee make.exo.log
+  ./make_util wesely 2>&1 | tee make.wesley.log
+  ./make_util exo_coldens 2>&1 | tee make.exo.log
 
   ########################## Aircraft Emissions Preprocessor #####################
   # This is an IDL based preprocessor to create WRF-Chem read -ry aircraft emissions files
