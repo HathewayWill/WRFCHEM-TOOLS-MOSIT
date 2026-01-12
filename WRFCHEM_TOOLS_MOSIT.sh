@@ -641,9 +641,9 @@ if [ "$RHL_64bit_GNU" = "1" ]; then
 
   echo " "
   echo "Test 4"
-  $CC -c -m64 TEST_4_fortran+c_c.c
-  $FC -c -m64 TEST_4_fortran+c_f.f90
-  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  $CC -c  TEST_4_fortran+c_c.c
+  $FC -c  TEST_4_fortran+c_f.f90
+  $FC  TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
   ./a.out | tee env_test4.txt
   export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
   if [ $TEST_PASS -ge 1 ]; then
@@ -1218,9 +1218,9 @@ if [ "$RHL_64bit_GNU" = "2" ]; then
 
   echo " "
   echo "Test 4"
-  $CC -c -m64 TEST_4_fortran+c_c.c
-  $FC -c -m64 TEST_4_fortran+c_f.f90
-  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  $CC -c  TEST_4_fortran+c_c.c
+  $FC -c  TEST_4_fortran+c_f.f90
+  $FC  TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
   ./a.out | tee env_test4.txt
   export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
   if [ $TEST_PASS -ge 1 ]; then
@@ -1555,8 +1555,8 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
   export MPICC=mpiicx
   export MPICXX=mpiicpx
   export CFLAGS="-fPIC -fPIE -O3 -Wno-implicit-function-declaration -Wno-incompatible-pointer-types "
-  export FFLAGS="-m64"
-  export FCFLAGS="-m64"
+  export FFLAGS=""
+  export FCFLAGS=""
 
   #Directory Listings
   export HOME=$(
@@ -1772,9 +1772,9 @@ if [ "$RHL_64bit_Intel" = "1" ]; then
 
   echo " "
   echo "Test 4"
-  $CC -c -m64 TEST_4_fortran+c_c.c
-  $FC -c -m64 TEST_4_fortran+c_f.f90
-  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  $CC -c  TEST_4_fortran+c_c.c
+  $FC -c  TEST_4_fortran+c_f.f90
+  $FC  TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
   ./a.out | tee env_test4.txt
   export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
   if [ $TEST_PASS -ge 1 ]; then
@@ -2297,9 +2297,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ] && [ "$aarch64" != "1" ]; then
 
   echo " "
   echo "Test 4"
-  $CC -c -m64 TEST_4_fortran+c_c.c
-  $FC -c -m64 TEST_4_fortran+c_f.f90
-  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  $CC -c  TEST_4_fortran+c_c.c
+  $FC -c  TEST_4_fortran+c_f.f90
+  $FC  TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
   ./a.out | tee env_test4.txt
   export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
   if [ $TEST_PASS -ge 1 ]; then
@@ -2886,9 +2886,9 @@ if [ "$Ubuntu_64bit_GNU" = "1" ] && [ "$aarch64" = "1" ]; then
 
   echo " "
   echo "Test 4"
-  $CC -c -m64 TEST_4_fortran+c_c.c
-  $FC -c -m64 TEST_4_fortran+c_f.f90
-  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  $CC -c  TEST_4_fortran+c_c.c
+  $FC -c  TEST_4_fortran+c_f.f90
+  $FC  TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
   ./a.out | tee env_test4.txt
   export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
   if [ $TEST_PASS -ge 1 ]; then
@@ -3245,8 +3245,8 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
   export MPICC=mpiicx
   export MPICXX=mpiicpx
   export CFLAGS="-fPIC -fPIE -O3 -Wno-implicit-function-declaration -Wno-incompatible-pointer-types "
-  export FFLAGS="-m64"
-  export FCFLAGS="-m64"
+  export FFLAGS=""
+  export FCFLAGS=""
 
   #Directory Listings
   export HOME=$(
@@ -3461,9 +3461,9 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
   echo " "
   echo "Test 4"
-  $CC -c -m64 TEST_4_fortran+c_c.c
-  $FC -c -m64 TEST_4_fortran+c_f.f90
-  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  $CC -c  TEST_4_fortran+c_c.c
+  $FC -c  TEST_4_fortran+c_f.f90
+  $FC  TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
   ./a.out | tee env_test4.txt
   export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
   if [ $TEST_PASS -ge 1 ]; then
@@ -4034,9 +4034,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
   echo " "
   echo "Test 4"
-  $CC -c -m64 TEST_4_fortran+c_c.c
-  $FC -c -m64 TEST_4_fortran+c_f.f90
-  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  $CC -c  TEST_4_fortran+c_c.c
+  $FC -c  TEST_4_fortran+c_f.f90
+  $FC  TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
   ./a.out | tee env_test4.txt
   export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
   if [ $TEST_PASS -ge 1 ]; then
@@ -4629,9 +4629,9 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
   echo " "
   echo "Test 4"
-  $CC -c -m64 TEST_4_fortran+c_c.c
-  $FC -c -m64 TEST_4_fortran+c_f.f90
-  $FC -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
+  $CC -c  TEST_4_fortran+c_c.c
+  $FC -c  TEST_4_fortran+c_f.f90
+  $FC  TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o
   ./a.out | tee env_test4.txt
   export TEST_PASS=$(grep -w -o -c "SUCCESS" env_test4.txt | awk '{print$1}')
   if [ $TEST_PASS -ge 1 ]; then
