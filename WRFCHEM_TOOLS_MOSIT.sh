@@ -2592,7 +2592,7 @@ if [ "$Ubuntu_64bit_GNU" = "1" ] && [ "$aarch64" != "1" ]; then
 
 fi
 
-if [ "$Ubuntu_64bit_GNU" = "1" ] && ["$aarch64" = "1" ]; then
+if [ "$Ubuntu_64bit_GNU" = "1" ] && [ "$aarch64" = "1" ]; then
 
   # Basic Package Management for WRF-CHEM Tools and Processors
 
