@@ -3217,8 +3217,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
 	# install the Intel compilers
 	echo $PASSWD | sudo -S apt -y install intel-oneapi-toolkit
-	echo $PASSWD | sudo -S apt -y install intel-basekit
-	echo $PASSWD | sudo -S apt -y install intel-hpckit
+
 	echo $PASSWD | sudo -S apt -y install intel-oneapi-python
 
 	echo $PASSWD | sudo -S apt -y update
