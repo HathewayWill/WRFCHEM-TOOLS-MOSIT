@@ -3693,7 +3693,7 @@ if [ "$Ubuntu_64bit_Intel" = "1" ]; then
 
 fi
 
-if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
+if [ "$SYSTEMOS" = "MacOS" ] && if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
 	#############################basic package managment############################
 	brew cleanup -s
@@ -4274,7 +4274,7 @@ if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "Intel" ]; then
 
 fi
 
-if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
+if [ "$SYSTEMOS" = "MacOS" ] && if [ "$macos_64bit_GNU" = "1" ] && [ "$MAC_CHIP" = "ARM" ]; then
 
 	#############################basic package managment############################
 	brew cleanup -s
