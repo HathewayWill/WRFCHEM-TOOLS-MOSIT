@@ -24,24 +24,24 @@ This is a BASH script that provides options to install the following WRF CHEM To
 ### Libraries Installed (Latest libraries as of 10/01/2023)
 - Libraries are manually installed in sub-folders utilizing either Intel or GNU Compilers.
     - Libraries installed with GNU compilers
-        - zlib (1.3.1)
-        - MPICH (4.2.2)
-        - libpng (1.6.39)
+        - zlib (1.3.2)
+        - MPICH (5.0.1)
+        - libpng (1.6.58)
         - JasPer (1.900.1)
-        - HDF5 (1.14.4.3)
-        - PHDF5 (1.14.4.3)
-        - Parallel-NetCDF (1.13.0)
-        - NetCDF-C (4.9.2)
+        - HDF5 (1.14.6)
+        - PHDF5 (1.14.6)
+        - Parallel-NetCDF (1.14.1)
+        - NetCDF-C (4.10.0)
         - NetCDF-Fortran (4.6.1)
         - Miniconda
     - Libraries installed with Intel compilers
-        - zlib (1.3.1)
-        - libpng (1.6.39)
+        - zlib (1.3.2)
+        - libpng (1.6.58)
         - JasPer (1.900.1)
-        - HDF5 (1.14.4.3)
-        - PHDF5 (1.14.4.3)
-        - Parallel-NetCDF (1.13.0)
-        - NetCDF-C (4.9.2)
+        - HDF5 (1.14.6)
+        - PHDF5 (1.14.6)
+        - Parallel-NetCDF (1.14.1)
+        - NetCDF-C (4.10.0)
         - NetCDF-Fortran (4.6.1)
         - Miniconda
         - Intel-Basekit
